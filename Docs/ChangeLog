@@ -1,0 +1,608 @@
+------------------------------------------------------------
+revno: 4148
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.30-release
+timestamp: Wed 2013-01-16 08:09:26 +0100
+message:
+  Removed Conflicts: mysql-libs mysql-libs-advanced from spec file
+------------------------------------------------------------
+revno: 4147
+committer: Bjorn Munch <bjorn.munch@oracle.com>
+branch nick: rel-5530
+timestamp: Tue 2013-01-15 09:56:36 +0100
+message:
+  A bit more intelligent processing of .in files in mysql-test/collections
+------------------------------------------------------------
+revno: 4146
+committer: Olav Sandstaa <olav.sandstaa@oracle.com>
+branch nick: 5.5.30-release
+timestamp: Tue 2013-01-15 08:52:38 +0100
+message:
+  Fix for Bug#14636211 WRONG RESULT (EXTRA ROW) ON A FROM SUBQUERY 
+                       WITH A VARIABLE AND ORDER BY
+          Bug#16035412 MYSQL SERVER 5.5.29 WRONG SORTING USING COMPLEX INDEX
+              
+  This is a fix for a regression introduced by Bug#12667154:
+  Bug#12667154 attempted to fix a performance problem with subqueries
+  that did filesort. For doing filesort, the optimizer creates a quick
+  select object to use when building the sort index. This quick select
+  object was deleted after the first call to create_sort_index(). Thus,
+  for queries where the subquery was executed multiple times, the quick
+  object was only used for the first execution. For all later executions
+  of the subquery, filesort used a complete table scan for building the
+  sort index. The fix for Bug#12667154 tried to fix this by not deleting
+  the quick object after the first execution of create_sort_index() so
+  that it would be re-used for building the sort index by the following
+  executions of the subquery.
+  
+  This regression introduced in Bug#12667154 is that due to not deleting
+  the quick select object after building the sort index, the quick
+  object could in some cases be used also during the second phase of the
+  execution of the subquery instead of using the created sort
+  index. This caused wrong results to be returned.
+  
+  The fix for this issue is to delete the reference to the select object
+  after it has been used in create_sort_index(). In this way the select 
+  and quick objects will not be available when doing the second phase
+  of the execution of the select operation. To ensure that the select
+  object can be re-used for the following executions of the subquery
+  we make a copy of the select pointer. This is used for restoring the
+  select object after the select operation is completed.
+------------------------------------------------------------
+revno: 4145 [merge]
+tags: clone-5.5.30-build
+committer: Satya Bodapati <satya.bodapati@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2013-01-07 16:58:02 +0530
+message:
+  Null Merge mysql-5.1 to mysql-5.5
+    ------------------------------------------------------------
+    revno: 2661.830.69
+    committer: Satya Bodapati <satya.bodapati@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Mon 2013-01-07 16:56:16 +0530
+    message:
+      Post Fix to Bug#14628410 - ASSERTION `! IS_SET()' FAILED IN
+      			    DIAGNOSTICS_AREA::SET_OK_STATUS
+      
+      Use DBUG_RETURN() instead of return() if DBUG_ENTER() is
+      used in the function. This patch is to  fix the Windows 
+      pb2 failure on mysql-5.1
+      
+      Approved by Marko. rb#1792
+------------------------------------------------------------
+revno: 4144 [merge]
+committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+branch nick: 5.5
+timestamp: Mon 2013-01-07 16:19:06 +0530
+message:
+  Merge of patch for Bug#16066243 from mysql-5.1.
+    ------------------------------------------------------------
+    revno: 2661.830.68
+    committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+    branch nick: B16066243-5.1
+    timestamp: Mon 2013-01-07 16:16:08 +0530
+    message:
+      Bug#16066243 PB2 FAILURES I_MAIN.BUG15912213 AND
+            I_MAIN.CTYPE_UTF8 FOR MACOSX10.6 FOR 5.1
+      
+      Part 2: Fix for test failures on Windows.
+------------------------------------------------------------
+revno: 4143 [merge]
+committer: Satya Bodapati <satya.bodapati@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2013-01-04 17:34:02 +0530
+message:
+  Merge Post Fix for BUG#14628410 from mysql-5.1 to mysql-5.5
+    ------------------------------------------------------------
+    revno: 2661.830.67
+    committer: Satya Bodapati <satya.bodapati@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Fri 2013-01-04 17:30:39 +0530
+    message:
+      Post Fix to Bug#14628410 - ASSERTION `! IS_SET()' FAILED IN
+      			    DIAGNOSTICS_AREA::SET_OK_STATUS
+      
+      Test fails on 5.1 valgrind build. This is because of close(-1)
+      system call.
+      
+      Fixed by adding extra checks for valid file descriptor.
+      
+      Approved by Vasil(Calvin). rb#1792
+------------------------------------------------------------
+revno: 4142 [merge]
+committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+branch nick: 5.5
+timestamp: Fri 2013-01-04 16:42:49 +0530
+message:
+  Merge of patch for bug#16066243 from mysql-5.1.
+    ------------------------------------------------------------
+    revno: 2661.830.66
+    committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+    branch nick: B16066243-5.1
+    timestamp: Fri 2013-01-04 16:38:12 +0530
+    message:
+      Bug#16066243 PB2 FAILURES I_MAIN.BUG15912213 AND
+          I_MAIN.CTYPE_UTF8 FOR MACOSX10.6 FOR 5.1
+      
+      While converting directory name to filename, a
+      file separator (FN_LIBCHAR) might get appended
+      to the resulting file name. This can result in
+      off-by-one error when length of the input string
+      is equal to FN_REFLEN. In this case, the terminating
+      '\0' gets written beyond the buffer allocated to store
+      the result.
+      
+      Fixed by incrementing the dst buffer size by 1. As
+      extra safety, switched to strnmov() and added a debug
+      assert to check the length of the input file name.
+      
+      No test case added as the scenario is already
+      covered by the test cases added for bugs in
+      the description.
+------------------------------------------------------------
+revno: 4141
+committer: Praveenkumar Hulakund <praveenkumar.hulakund@oracle.com>
+branch nick: mysql_5_5
+timestamp: Fri 2013-01-04 11:48:11 +0530
+message:
+  Bug#13868860: LIMIT '5' IS EXECUTED WITHOUT ERROR WHEN '5' IS PLACE
+  	      HOLDER AND USE SERVER-SIDE 
+  
+  Updating i_main_client_test path.
+  
+  Followup patch.
+------------------------------------------------------------
+revno: 4140
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2013-01-03 19:19:28 +0530
+message:
+  Fixing a pb2 random failure.  This is already fixed in 5.6+. 
+------------------------------------------------------------
+revno: 4139 [merge]
+committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2013-01-02 18:32:38 +0530
+message:
+  BUG#11753923-SQL THREAD CRASHES ON DISK FULL
+  Merging fix from mysql-5.1
+    ------------------------------------------------------------
+    revno: 2661.830.65
+    committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Wed 2013-01-02 16:31:58 +0530
+    message:
+      BUG#11753923-SQL THREAD CRASHES ON DISK FULL
+      Problem:If Disk becomes full while writing into the binlog,
+      then the server instance hangs till someone frees the space.
+      After user frees up the disk space, mysql server crashes
+      with an assert (m_status != DA_EMPTY)
+      
+      Analysis: wait_for_free_space is being called in an
+      infinite loop i.e., server instance will hang until
+      someone frees up the space. So there is no need to
+      set status bit in diagnostic area.
+      
+      Fix: Replace my_error/my_printf_error with
+      sql_print_warning() which prints the warning in error log.
+------------------------------------------------------------
+revno: 4138
+committer: Marc Alff <marc.alff@oracle.com>
+branch nick: mysql-5.5-bug16060864
+timestamp: Wed 2013-01-02 11:00:55 +0100
+message:
+  Bug#16060864 SEGMENTATION FAULT IN PERFORMANCE_SCHEMA WITH HISTORY SIZE 0
+  
+  Before this fix, configuring the server with:
+  - performance_schema_events_waits_history_size=0
+  - performance_schema_events_waits_history_long_size=0
+  could cause a crash in the performance schema.
+  
+  These settings to 0 are intended to be valid and supported,
+  and are in fact working properly in mysql 5.6 and up already.
+  
+  This fix backports the code fix and test cases from mysql 5.6
+  to the mysql 5.5 release.
+------------------------------------------------------------
+revno: 4137
+committer: Kent Boortz <kent.boortz@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2013-01-02 06:18:27 +0100
+message:
+  Updated Windows MSI package copyright year to 2013
+------------------------------------------------------------
+revno: 4136 [merge]
+committer: Kent Boortz <kent.boortz@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2013-01-01 03:36:10 +0100
+message:
+  Updated README and client executables copyright year to 2013
+    ------------------------------------------------------------
+    revno: 2661.830.64
+    committer: Kent Boortz <kent.boortz@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Tue 2013-01-01 03:33:40 +0100
+    message:
+      Updated README and client executables copyright year to 2013
+------------------------------------------------------------
+revno: 4135 [merge]
+committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+branch nick: mysql-5.5
+timestamp: Sat 2012-12-29 23:49:11 +0530
+message:
+  BUG#14726272: BACKPORT FIX FOR BUG 11746142 TO 5.5 AND 5.1
+  Merging fix from mysql-5.1
+    ------------------------------------------------------------
+    revno: 2661.830.63
+    committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Sat 2012-12-29 23:46:31 +0530
+    message:
+      BUG#14726272 BACKPORT FIX FOR BUG 11746142 TO 5.5 AND 5.1
+      
+      The test script which was added with earlier push
+      does not work with embedded case as there is no
+      pid file created in such cases.
+      Adding "not_embedded.inc"
+------------------------------------------------------------
+revno: 4134 [merge]
+committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2012-12-28 16:21:07 +0530
+message:
+  BUG#14726272- BACKPORT FIX FOR BUG 11746142 TO 5.5 AND 5.1
+  Merging fix from mysql-5.1
+    ------------------------------------------------------------
+    revno: 2661.830.62
+    committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Fri 2012-12-28 16:13:48 +0530
+    message:
+      BUG#14726272- BACKPORT FIX FOR BUG 11746142 TO 5.5 AND 5.1
+      Details of BUG#11746142: CALLING MYSQLD WHILE ANOTHER 
+      INSTANCE IS RUNNING, REMOVES PID FILE
+      Fix: Before removing the pid file, ensure it was created
+      by the same process, leave it intact otherwise.
+------------------------------------------------------------
+revno: 4133 [merge]
+committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+branch nick: 5.5
+timestamp: Thu 2012-12-27 17:36:11 +0530
+message:
+  Merge of patch for Bug#16046140 from mysql-5.1.
+    ------------------------------------------------------------
+    revno: 2661.830.61
+    committer: Nirbhay Choubey <nirbhay.choubey@oracle.com>
+    branch nick: B16046140-5.1
+    timestamp: Thu 2012-12-27 17:33:34 +0530
+    message:
+      Bug#16046140 BIN/MYSQLD_SAFE: TEST: ARGUMENT EXPECTED
+      
+      Some shell interpreters do not support '-e' test
+      primary to construct conditions.
+      
+      man test 1 (on S10)
+      ...skip...
+      -e file True if file exists. (Not available in sh.)
+      ...skip...
+      
+      Hence, check for the existence of a file using
+      '-e' might result in a syntax error on such
+      shell programs.
+      
+      Fixed by replacing it by '-f'.
+------------------------------------------------------------
+revno: 4132 [merge]
+committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+branch nick: test-5.5
+timestamp: Thu 2012-12-27 02:43:20 +0100
+message:
+  merge
+    ------------------------------------------------------------
+    revno: 2661.830.60
+    committer: Mattias Jonsson <mattias.jonsson@oracle.com>
+    branch nick: test-5.1-valgrind
+    timestamp: Thu 2012-12-27 02:27:00 +0100
+    message:
+      Bug#14589559 Post push fix for valgrind warnings.
+------------------------------------------------------------
+revno: 4131 [merge]
+committer: Chaithra Gopalareddy <chaithra.gopalareddy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2012-12-26 20:28:10 +0530
+message:
+  Merge from 5.1 to 5.5
+    ------------------------------------------------------------
+    revno: 2661.830.59
+    committer: Chaithra Gopalareddy <chaithra.gopalareddy@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Wed 2012-12-26 20:21:19 +0530
+    message:
+      Bug#12347040: MEMORY LEAK IN CONVERT_TZ COULD POSSIBLY CAUSE
+                          DOS ATTACKS
+            
+      Problem:
+      For detailed description, see Bug#42502. This bug is a duplicate
+      of Bug#42502. The complete fix for Bug#42502 was not made as
+      proposed. Hence the bug still persists.
+            
+      Fix:
+      Make the changes as proposed originally for the bugfix of 42502.
+      Which is to remove the allocation of the memory before we actually
+      check for any errors.
+------------------------------------------------------------
+revno: 4130 [merge]
+author: akhil.mohan@oracle.com
+committer: Akhil Mohan <akhil.mohan@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2012-12-26 12:45:46 +0100
+message:
+  Upmerge of the 5.1.67 build
+    ------------------------------------------------------------
+    revno: 2661.830.58 [merge]
+    author: akhil.mohan@oracle.com
+    committer: Akhil Mohan <akhil.mohan@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Wed 2012-12-26 12:42:47 +0100
+    message:
+      Merge from mysql-5.1.67-release
+        ------------------------------------------------------------
+        revno: 2661.839.2
+        tags: mysql-5.1.67
+        committer: Joerg Bruehe <joerg.bruehe@oracle.com>
+        branch nick: clone-5.1
+        timestamp: Fri 2012-12-07 10:47:57 +0100
+        message:
+          Last-minute fix to 5.1.67,
+          taking a change done to main 5.1 by Dmitri Lenev.
+          
+          This is the original comment:
+          
+          > committer: Dmitry Lenev <Dmitry.Lenev@oracle.com>
+          > branch nick: mysql-5.1-15954896
+          > timestamp: Wed 2012-12-05 19:26:56 +0400
+          > message:
+          >   Bug #15954896 "SP, MULTI-TABLE DELETE AND LONG ALIAS".
+          
+            Using too long table aliases in stored routines might
+            have caused server crashes.
+          
+            Code in sp_head::merge_table_list() which is responsible
+            for collecting information about tables used in stored
+            routine was not aware of the fact that table alias might
+            have arbitrary length. I.e. it assumed that table alias
+            can't be longer than NAME_LEN bytes and allocated buffer
+            for a key identifying table accordingly.
+          
+            This patch fixes the issue by ensuring that we use
+            dynamically allocated buffer for table key when table
+            alias is too long. By default stack based buffer is used
+            in which NAME_LEN bytes are reserved for table alias.
+        ------------------------------------------------------------
+        revno: 2661.839.1
+        author: akhil.mohan@oracle.com
+        committer: Akhil Mohan <akhil.mohan@oracle.com>
+        branch nick: mysql-5.1.67-release
+        timestamp: Thu 2012-11-29 19:34:47 +0100
+        message:
+          applying patch for BUG15912213
+------------------------------------------------------------
+revno: 4129 [merge]
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2012-12-24 16:51:23 +0530
+message:
+  Null merge from mysql-5.1 to mysql-5.5. 
+    ------------------------------------------------------------
+    revno: 2661.830.57
+    committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Mon 2012-12-24 16:49:42 +0530
+    message:
+      Fixing a pb2 issue.  There is some difference in the output in my local machine and pb2 machines in the explain output.  
+------------------------------------------------------------
+revno: 4128 [merge]
+committer: Chaithra Gopalareddy <chaithra.gopalareddy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2012-12-24 06:42:02 +0530
+message:
+  Merge from 5.1
+    ------------------------------------------------------------
+    revno: 2661.830.56
+    committer: Chaithra Gopalareddy <chaithra.gopalareddy@oracle.com>
+    branch nick: mysql-5.1
+    timestamp: Mon 2012-12-24 06:39:54 +0530
+    message:
+      Bug#11757005: UNION CONVERTS UNSIGNED MEDIUMINT AND BIGINT
+                    TO SIGNED
+      Problem:
+      When we are joining types (of fields) in case of a union, we usually
+      upgrade the datatypes to the largest present in the query.
+      In case of mediumint, it is not happening.
+      Analysis:
+      When joined with types LONG and LONGLONG, mediumint should get
+      upgraded to LONG and LONGLONG respectively.
+      W.r.t the given query, constant '1' will be created as a LONGLONG
+      internally and SIGNED flag is enabled. As a result, while combining
+      types for the field, LONGLONG along with MEDIUMINT gets converted
+      to LONG first. LONG with MEDIUMINT(of the third select) gets converted
+      to MEDIUMINT. SIGNED FLAG would be that of the first field's.
+      As a result, the final result would be SIGNED MEDIUMINT.
+      Fix:
+      While joining types, MEDIUMINT with LONGLONG and MEDIUMINT with LONG
+      is converted to LONGLONG and LONG respectively. Also, made some 
+      changes for FLOAT and DOUBLE.
+------------------------------------------------------------
+revno: 4127 [merge]
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5-merge
+timestamp: Fri 2012-12-21 10:26:26 +0100
+message:
+  merge 5.1 => 5.5
+    ------------------------------------------------------------
+    revno: 2661.830.55
+    committer: Tor Didriksen <tor.didriksen@oracle.com>
+    branch nick: 5.1
+    timestamp: Thu 2012-12-20 10:56:09 +0100
+    message:
+      Bug#16027468 ADDRESSSANITIZER BUG IN MYSQLTEST
+      
+      DBUG_ENTER and DBUG_LEAVE must *always* match,
+      otherwise all subsequent DBUG_ENTER calls will 
+      be poking into undefined stack frames.
+------------------------------------------------------------
+revno: 4126
+committer: Roy Lyseng <roy.lyseng@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2012-12-21 09:53:42 +0100
+message:
+  Bug#15972635: Incorrect results returned in 32 table join with HAVING
+  
+  The problem is a shift operation that is not 64-bit safe.
+  The consequence is that used tables information for a join with 32 tables
+  or more will be incorrect.
+  
+  Fixed by adding a type cast in Item_sum::update_used_tables().
+  
+  Also used the opportunity to fix some other potential bugs by adding an
+  explicit type-cast to an integer in a left-shift operation.
+  Some of them were quite harmless, but was fixed in order to get the same
+  signed-ness as the other operand of the operation it was used in.
+  
+  sql/item_cmpfunc.cc
+    Adjusted signed-ness for some integers in left-shift.
+  
+  sql/item_subselect.cc
+    Added type-cast to nesting_map (which is a 32/64 bit type, so
+    potential bug for deeply nested queries).
+  
+  sql/item_sum.cc
+    Added type-cast to nesting_map (32/64-bit type) and table_map
+    (64-bit type).
+  
+  sql/opt_range.cc
+    Added type-cast to ulonglong (which is a 64-bit type).
+  
+  sql/sql_base.cc
+    Added type-cast to nesting_map (which is a 32/64-bit type).
+  
+  sql/sql_select.cc
+    Added type-cast to nesting_map (32/64-bit type) and key_part_map
+    (64-bit type).
+  
+  sql/strfunc.cc
+    Changed type-cast from longlong to ulonglong, to preserve signed-ness.
+------------------------------------------------------------
+revno: 4125 [merge]
+committer: prabakaran thirumalai <prabakaran.thirumalai@oracle.com>
+branch nick: mysql-5.5-try
+timestamp: Fri 2012-12-21 11:07:05 +0530
+message:
+  Bug#14627287 THREAD CACHE - BYPASSES PRIVILEGES
+  merge from 5.1
+    ------------------------------------------------------------
+    revno: 2661.830.54
+    committer: prabakaran thirumalai <prabakaran.thirumalai@oracle.com>
+    branch nick: mysql-5.1-try
+    timestamp: Fri 2012-12-21 11:04:49 +0530
+    message:
+      Bug#14627287 THREAD CACHE - BYPASSES PRIVILEGES
+      
+      Analysis:
+      When thread cache is enabled, it does not properly initialize
+      thd->start_utime when a thread is picked from the thread cache.
+      This breaks the quota management mechanism. 
+      THD::time_out_user_resource_limits() resets 
+      m_user_connect->conn_per_hour to 0 based on thd->start_utime
+      
+      Fix:
+      Initialize start_utime when cached thread is reused.
+      
+      Notes:
+      Enabled back tests which were disabled because of this issue.
+------------------------------------------------------------
+revno: 4124
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2012-12-20 19:26:20 +0530
+message:
+  Bug #13819630 ARCHIVE TABLE WITH 1000+ PARTITIONS CRASHES SERVER 
+  ON "DROP TABLE"
+  
+  In the function ha_archive::write_row(), there is an error code path
+  that exits the function without releasing the mutex that was acquired
+  earlier.  
+  
+  rb#1743 approved by ramil.
+------------------------------------------------------------
+revno: 4123
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2012-12-20 11:59:36 +0530
+message:
+  Bug #14556349 RENAME OF COMPRESSED TABLE AND INSERT BUFFER MERGE CAUSE
+  HANG
+  
+  Problem Statement:
+  
+  When the operation RENAME TABLE is about rename the tablespace of the
+  table, it will stop all i/o operations on the tablespace temporarily.
+  For this the fil_space_t::stop_ios member is used.
+  
+  Once the fil_space_t::stop_ios member is set to TRUE in the RENAME
+  TABLE operation, it is expected that no new i/o operation will be done
+  on the tablespace and all pending i/o operation can be completed on
+  the tablespace.
+  
+  If the pending i/o operations initiate any new i/o operations then
+  there will be deadlock.  The RENAME TABLE operation will be waiting
+  for pending i/o on the tablespace to be completed, and the pending i/o
+  operations will be waiting on the RENAME TABLE operation to set the
+  file_space_t::stop_ios flag to be set to FALSE.
+  
+  But in the given scenario the pending i/o operations did not initiate
+  new i/o.  But they where still unnecessarily checking the
+  fil_space_t::stop_ios flag.  This resulted in deadlock.
+  
+  Solution:
+  
+  I noticed that this deadlock happens in fil_space_get_size() and
+  fil_space_get_zip_size() in the i/o threads.  These functions check
+  the stop_ios flag even when no i/o will be initiated.  I modified
+  these functions to ensure that they check the stop_ios flag only when
+  they will be initiating an i/o operation.  This solves the problem.
+  
+  rb://1635 (mysql-5.5)
+  rb://1660 (mysql-trunk) approved by Inaam, Jimmy, and ima.
+------------------------------------------------------------
+revno: 4122 [merge]
+author: hery.ramilison@oracle.com
+committer: Hery Ramilison <hery.ramilison@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2012-12-19 13:25:07 +0100
+message:
+  Merge from mysql-5.5.29-release
+    ------------------------------------------------------------
+    revno: 4033.1.7
+    tags: mysql-5.5.29
+    committer: Dmitry Lenev <Dmitry.Lenev@oracle.com>
+    branch nick: mysql-5.5.29-release
+    timestamp: Mon 2012-12-10 10:06:37 +0400
+    message:
+      Bug #15954896 "SP, MULTI-TABLE DELETE AND LONG ALIAS".
+      
+      Using too long table aliases in stored routines might
+      have caused server crashes.
+      
+      Code in sp_head::merge_table_list() which is responsible
+      for collecting information about tables used in stored
+      routine was not aware of the fact that table alias might
+      have arbitrary length. I.e. it assumed that table alias
+      can't be longer than NAME_LEN bytes and allocated buffer
+      for a key identifying table accordingly.
+      
+      This patch fixes the issue by ensuring that we use
+      dynamically allocated buffer for table key when table
+      alias is too long. By default stack based buffer is used
+      in which NAME_LEN bytes are reserved for table alias.
