@@ -4646,6 +4646,15 @@ TRP_ROR_INTERSECT *get_best_ror_intersect(const PARAM *param, SEL_TREE *tree,
     ROR_SCAN_INFO *scan;
     if (!tree->ror_scans_map.is_set(idx))
       continue;
+    /*
+      Ignore clustering keys.
+    */
+    uint keyno= param->real_keynr[idx];
+    if (keyno != cpk_no && test(param->table->file->index_flags(keyno,0,0) & HA_CLUSTERED_INDEX))
+    {
+      tree->n_ror_scans--;
+      continue;
+    }
     if (!(scan= make_ror_scan(param, idx, tree->keys[idx])))
       return NULL;
     if (param->real_keynr[idx] == cpk_no)
