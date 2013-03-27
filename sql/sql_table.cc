@@ -6694,6 +6694,18 @@ bool mysql_alter_table(THD *thd,char *new_db, char *new_name,
       The final .frm file is already created as a temporary file
       and will be renamed to the original table name later.
     */
+    {
+    char path[FN_REFLEN + 1];
+    build_table_filename(path, sizeof(path) - 1, new_db, tmp_name, "", FN_IS_TMP);
+    uchar *frm_data; size_t frm_len;
+    int error = readfrm(path, &frm_data, &frm_len);
+    assert(error == 0);
+
+    error= table->file->new_alter_table_frm_data(frm_data, frm_len);
+    assert(error == 0);
+
+    my_free(frm_data);
+    }
 
     /* Need to commit before a table is unlocked (NDB requirement). */
     DBUG_PRINT("info", ("Committing before unlocking table"));
