@@ -438,6 +438,7 @@ int ha_init_errors(void)
   SETMSG(HA_ERR_INDEX_COL_TOO_LONG,	ER_DEFAULT(ER_INDEX_COLUMN_TOO_LONG));
   SETMSG(HA_ERR_INDEX_CORRUPT,		ER_DEFAULT(ER_INDEX_CORRUPT));
   SETMSG(HA_ERR_TABLE_IN_FK_CHECK,	ER_DEFAULT(ER_TABLE_IN_FK_CHECK));
+  SETMSG(HA_ERR_DISK_FULL,          ER_DEFAULT(ER_DISK_FULL));
 
   /* Register the error messages for use with my_error(). */
   return my_error_register(get_handler_errmsgs, HA_ERR_FIRST, HA_ERR_LAST);
@@ -3007,6 +3008,9 @@ void handler::print_error(int error, myf errflag)
     break;
   case HA_ERR_TABLE_IN_FK_CHECK:
     textno= ER_TABLE_IN_FK_CHECK;
+    break;
+  case HA_ERR_DISK_FULL:
+    textno= ER_DISK_FULL;
     break;
   default:
     {
