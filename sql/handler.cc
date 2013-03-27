@@ -2590,7 +2590,7 @@ int handler::update_auto_increment()
       nr= compute_next_insert_id(nr-1, variables);
     }
 
-    if (table->s->next_number_keypart == 0)
+    if (!is_auto_inc_singleton() || table->s->next_number_keypart == 0)
     {
       /* We must defer the appending until "nr" has been possibly truncated */
       append= TRUE;
