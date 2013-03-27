@@ -4921,6 +4921,8 @@ bool ha_show_status(THD *thd, handlerton *db_type, enum ha_stat_type stat)
 
   if (!result)
     my_eof(thd);
+  else
+    my_error(ER_GET_ERRNO, MYF(0), my_errno);
   return result;
 }
 
