@@ -163,6 +163,8 @@
 */
 #define HA_CAN_REPAIR                    (LL(1) << 37)
 
+#define HA_CAN_WRITE_DURING_OPTIMIZE     (LL(1) << 63)
+
 /*
   Set of all binlog flags. Currently only contain the capabilities
   flags.
