@@ -1078,6 +1078,28 @@ public:
 
   /*
     -------------------------------------------------------------------------
+    MODULE in-place ALTER TABLE from 5.6
+    -------------------------------------------------------------------------
+    These methods are in the handler interface. (used by innodb-plugin)
+    They are used for in-place alter table:
+    -------------------------------------------------------------------------
+  */
+    virtual bool try_hot_alter_table();
+
+    virtual enum_alter_inplace_result
+      check_if_supported_inplace_alter(TABLE *altered_table,
+                                       Alter_inplace_info *ha_alter_info);
+    virtual bool prepare_inplace_alter_table(TABLE *altered_table,
+                                             Alter_inplace_info *ha_alter_info);
+    virtual bool inplace_alter_table(TABLE *altered_table,
+                                     Alter_inplace_info *ha_alter_info);
+    virtual bool commit_inplace_alter_table(TABLE *altered_table,
+                                            Alter_inplace_info *ha_alter_info,
+                                            bool commit);
+    virtual void notify_table_changed();
+
+  /*
+    -------------------------------------------------------------------------
     MODULE tablespace support
     -------------------------------------------------------------------------
     Admin of table spaces is not applicable to the partition handler (InnoDB)
