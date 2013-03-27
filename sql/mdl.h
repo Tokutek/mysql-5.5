@@ -492,6 +492,7 @@ public:
   enum_mdl_type get_type() const { return m_type; }
   MDL_lock *get_lock() const { return m_lock; }
   void downgrade_exclusive_lock(enum_mdl_type type);
+  void downgrade_shared_lock(enum_mdl_type type);
 
   bool has_stronger_or_equal_type(enum_mdl_type type) const;
 
