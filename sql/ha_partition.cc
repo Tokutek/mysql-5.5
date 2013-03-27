@@ -69,6 +69,11 @@
 
 static const char *ha_par_ext= ".par";
 
+static int partition_discover(handlerton *hton, THD* thd, const char *db, 
+                              const char *name,
+                              uchar **frmblob, 
+                              size_t *frmlen);
+
 /****************************************************************************
                 MODULE create/delete handler object
 ****************************************************************************/
@@ -94,7 +99,7 @@ static int partition_initialize(void *p)
   partition_hton->flags= HTON_NOT_USER_SELECTABLE |
                          HTON_HIDDEN |
                          HTON_TEMPORARY_NOT_SUPPORTED;
-
+  partition_hton->discover= partition_discover;
   return 0;
 }
 
@@ -8365,6 +8370,78 @@ int ha_partition::new_alter_table_frm_data(const uchar *frm_data, size_t frm_len
     }
   }
   DBUG_RETURN(error);
+}
+
+#include "sql_array.h"
+
+int ha_partition::discover(THD *thd, const char *db, const char *name, uchar **frmblob, size_t *frmlen)
+{
+  int error;
+  char path[FN_REFLEN];
+  uint path_length= build_table_filename(path, sizeof(path) - 1, db, name, "", 0);
+  assert(path_length > 0);
+  if (read_par_file(path))
+      return EINVAL;
+
+  Dynamic_array<handlerton *> engines;
+
+  uchar *buff= (uchar *) (m_file_buffer + PAR_ENGINES_OFFSET);
+  for (uint i= 0; i < m_tot_parts; i++)
+  {
+    handlerton *hton= ha_resolve_by_legacy_type(thd, (enum legacy_db_type)*(buff + i));
+    if (!hton || !hton->discover2)
+      return EINVAL;
+    engines.append(hton);
+  }
+
+  uchar *frmblob0 = NULL;
+  size_t frmlen0 = 0;
+  char *name_buffer_ptr= m_name_buffer_ptr;
+  for (uint i= 0; i < m_tot_parts; i++) 
+  {
+    handlerton *hton = engines.at(i);
+    char name_buff[FN_REFLEN];
+    create_partition_name(name_buff, name, name_buffer_ptr, NORMAL_PART_NAME, TRUE);
+    uchar *this_frmblob = NULL;
+    size_t this_frmlen = 0;
+    error= hton->discover2(hton, thd, db, name_buff, false, &this_frmblob, &this_frmlen);
+    if (error)
+      break;
+    if (i == 0)
+    {
+      frmblob0 = this_frmblob;
+      frmlen0 = this_frmlen;
+    } else {
+      if (frmlen0 != this_frmlen || memcmp(frmblob0, this_frmblob, this_frmlen))
+        error= EINVAL;
+      my_free(this_frmblob);
+      if (error)
+        break;
+    }
+    name_buffer_ptr += strlen(name_buffer_ptr) + 1;
+  }
+
+  if (!error)
+  {
+    *frmblob = frmblob0;
+    *frmlen = frmlen0;
+  } else {
+    my_free(frmblob0);
+  }
+
+  return error;
+}
+
+static int partition_discover(handlerton *hton, THD* thd, const char *db, 
+                              const char *name,
+                              uchar **frmblob, 
+                              size_t *frmlen)
+{
+  TABLE_SHARE *table_share = NULL;
+  ha_partition *new_partition= new ha_partition(hton, table_share);
+  int error= new_partition->discover(thd, db, name, frmblob, frmlen);
+  delete new_partition;
+  return error;
 }
 
 struct st_mysql_storage_engine partition_storage_engine=
