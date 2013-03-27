@@ -2095,12 +2095,17 @@ export bool sql_mode_string_representation(THD *thd, ulong sql_mode,
   the slave ignores the MODE_NO_DIR_IN_CREATE variable, so slave's value
   differs from master's (see log_event.cc: Query_log_event::do_apply_event()).
 */
+// TokuDB: Assuming TokuDB is set as the default 
+// storage engine, we want to disallow changing engines. 
+// This will prevent new users from benchmarking the  
+// wrong storage engine (among other things.) 
+// This can be undone by setting this mode switch to OFF/0. 
 static Sys_var_set Sys_sql_mode(
        "sql_mode",
        "Syntax: sql-mode=mode[,mode[,mode...]]. See the manual for the "
        "complete list of valid sql modes",
        SESSION_VAR(sql_mode), CMD_LINE(REQUIRED_ARG),
-       sql_mode_names, DEFAULT(0), NO_MUTEX_GUARD, NOT_IN_BINLOG,
+       sql_mode_names, DEFAULT(MODE_NO_ENGINE_SUBSTITUTION), NO_MUTEX_GUARD, NOT_IN_BINLOG,
        ON_CHECK(check_sql_mode), ON_UPDATE(fix_sql_mode));
 
 #if defined(HAVE_OPENSSL) && !defined(EMBEDDED_LIBRARY)
