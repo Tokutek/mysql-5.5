@@ -1450,6 +1450,8 @@ public:
   int ha_rename_partitions(const char *path);
 
   void adjust_next_insert_id_after_explicit_value(ulonglong nr);
+  virtual bool is_auto_inc_singleton() 
+  { return true; }
   int update_auto_increment();
   void print_keydup_error(uint key_nr, const char *msg);
   virtual void print_error(int error, myf errflag);
