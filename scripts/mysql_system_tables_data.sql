@@ -50,3 +50,13 @@ INSERT INTO tmp_proxies_priv VALUES ('localhost', 'root', '', '', TRUE, '', now(
 REPLACE INTO tmp_proxies_priv SELECT @current_hostname, 'root', '', '', TRUE, '', now() FROM DUAL WHERE LOWER (@current_hostname) != 'localhost';
 INSERT INTO  proxies_priv SELECT * FROM tmp_proxies_priv WHERE @had_proxies_priv_table=0;
 DROP TABLE tmp_proxies_priv;
+
+CREATE TEMPORARY TABLE tmp_plugin LIKE plugin; 
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb','ha_tokudb.so'); 
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_user_data','ha_tokudb.so'); 
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_user_data_exact','ha_tokudb.so'); 
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_file_map','ha_tokudb.so');
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_fractal_tree_info','ha_tokudb.so');
+INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_fractal_tree_block_map','ha_tokudb.so');
+INSERT INTO plugin SELECT * FROM tmp_plugin; 
+DROP TABLE tmp_plugin;
