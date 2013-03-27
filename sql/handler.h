@@ -2242,6 +2242,8 @@ private:
   { return 0; }
   virtual int prepare_range_scan(const key_range *start_key, const key_range *end_key)
   { return 0; }
+  virtual int new_alter_table_frm_data(const uchar *frm_data, size_t frm_len)
+  { return 0; }
 };
 
 
