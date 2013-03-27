@@ -2305,7 +2305,6 @@ MDL_context::upgrade_shared_lock_to_exclusive(MDL_ticket *mdl_ticket,
   DBUG_RETURN(FALSE);
 }
 
-
 /**
   A fragment of recursive traversal of the wait-for graph
   in search for deadlocks. Direct the deadlock visitor to all
@@ -2686,6 +2685,24 @@ void MDL_ticket::downgrade_exclusive_lock(enum_mdl_type type)
   mysql_prlock_unlock(&m_lock->m_rwlock);
 }
 
+void MDL_ticket::downgrade_shared_lock(enum_mdl_type type)
+{
+  mysql_mutex_assert_not_owner(&LOCK_open);
+
+  /* verify that type < m_type for some definition of < */
+  assert(type <= m_type);
+
+  mysql_prlock_wrlock(&m_lock->m_rwlock);
+  /*
+    To update state of MDL_lock object correctly we need to temporarily
+    exclude ticket from the granted queue and then include it back.
+  */
+  m_lock->m_granted.remove_ticket(this);
+  m_type= type;
+  m_lock->m_granted.add_ticket(this);
+  m_lock->reschedule_waiters();
+  mysql_prlock_unlock(&m_lock->m_rwlock);
+}
 
 /**
   Auxiliary function which allows to check if we have some kind of lock on
