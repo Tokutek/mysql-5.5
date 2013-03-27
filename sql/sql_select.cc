@@ -13543,6 +13543,12 @@ uint find_shortest_key(TABLE *table, const key_map *usable_keys)
         continue;
       if (usable_keys->is_set(nr))
       {
+        if (test(table->file->index_flags(nr, 0, 0) & HA_CLUSTERED_INDEX))
+        {
+          if (best != MAX_KEY)
+            continue;
+          best= nr;
+        }
         if (table->key_info[nr].key_length < min_length)
         {
           min_length=table->key_info[nr].key_length;
