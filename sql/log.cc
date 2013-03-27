@@ -1519,7 +1519,7 @@ binlog_trans_log_savepos(THD *thd, my_off_t *pos)
     thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
-  DBUG_ASSERT(mysql_bin_log.is_open());
+  DBUG_ASSERT(cache_mngr && mysql_bin_log.is_open());
   *pos= cache_mngr->trx_cache.get_byte_position();
   DBUG_PRINT("return", ("*pos: %lu", (ulong) *pos));
   DBUG_VOID_RETURN;
@@ -1582,6 +1582,9 @@ int binlog_init(void *p)
 
 static int binlog_close_connection(handlerton *hton, THD *thd)
 {
+  int error= thd->binlog_setup_trx_data();
+  if (error)
+    return error;
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
   DBUG_ASSERT(cache_mngr->trx_cache.empty() && cache_mngr->stmt_cache.empty());
@@ -1787,6 +1790,9 @@ static int binlog_commit(handlerton *hton, THD *thd, bool all)
 {
   int error= 0;
   DBUG_ENTER("binlog_commit");
+  error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -1843,6 +1849,9 @@ static int binlog_rollback(handlerton *hton, THD *thd, bool all)
 {
   DBUG_ENTER("binlog_rollback");
   int error= 0;
+  error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -4532,7 +4541,7 @@ bool use_trans_cache(const THD* thd, bool is_transactional)
   return
     ((thd->is_current_stmt_binlog_format_row() ||
      thd->variables.binlog_direct_non_trans_update) ? is_transactional :
-     (is_transactional || !cache_mngr->trx_cache.empty()));
+     (is_transactional || (cache_mngr && !cache_mngr->trx_cache.empty())));
 }
 
 /**
@@ -4732,6 +4741,10 @@ int THD::binlog_write_table_map(TABLE *table, bool is_transactional)
   Table_map_log_event
     the_event(this, table, table->s->table_map_id, is_transactional);
 
+  error= this->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
+
   if (binlog_table_maps == 0)
     binlog_start_trans_and_stmt();
 
@@ -4822,6 +4835,7 @@ MYSQL_BIN_LOG::remove_pending_rows_event(THD *thd, bool is_transactional)
 {
   DBUG_ENTER("MYSQL_BIN_LOG::remove_pending_rows_event");
 
+  thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -4859,6 +4873,7 @@ MYSQL_BIN_LOG::flush_and_set_pending_rows_event(THD *thd,
   DBUG_PRINT("enter", ("event: 0x%lx", (long) event));
 
   int error= 0;
+  thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -6634,6 +6649,9 @@ void TC_LOG_BINLOG::close()
 int TC_LOG_BINLOG::log_xid(THD *thd, my_xid xid)
 {
   DBUG_ENTER("TC_LOG_BINLOG::log");
+  int error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
   /*
