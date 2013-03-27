@@ -3995,7 +3995,8 @@ bool mysql_create_table_no_lock(THD *thd,
                                 bool *is_trans,
                                 KEY **key_info_p,
                                 uint *key_count_p,
-                                bool compat55, bool no_handler_files, bool no_create_table)
+                                bool compat55, bool no_handler_files, bool no_create_table,
+                                bool use_existing_pack_record, bool pack_record)
 {
   char		path[FN_REFLEN + 1];
   uint          path_length;
@@ -4022,8 +4023,15 @@ bool mysql_create_table_no_lock(THD *thd,
   set_table_default_charset(thd, create_info, (char*) db);
 
   db_options= create_info->table_options;
-  if (create_info->row_type == ROW_TYPE_DYNAMIC)
-    db_options|=HA_OPTION_PACK_RECORD;
+  if (use_existing_pack_record) {
+    if (pack_record) {
+      db_options|=HA_OPTION_PACK_RECORD;
+    }
+  }
+  else {
+    if (create_info->row_type == ROW_TYPE_DYNAMIC)
+      db_options|=HA_OPTION_PACK_RECORD;
+  }
   alias= table_case_name(create_info, table_name);
   if (!(file= get_new_handler((TABLE_SHARE*) 0, thd->mem_root,
                               create_info->db_type)))
@@ -8435,8 +8443,9 @@ mysql_inplace_alter_table(THD *thd,
   bool frm_only= create_info->frm_only;
   create_info->frm_only= true;
   tmp_disable_binlog(thd);
+  bool existing_pack_record = (table->s->db_options_in_use & HA_OPTION_PACK_RECORD) != 0;
   error= mysql_create_table_no_lock(thd, alter_ctx->new_db, alter_ctx->tmp_name,
-                                    create_info, alter_info, 1, 0, NULL, &key_info, &key_count, false, false, true);
+                                    create_info, alter_info, 1, 0, NULL, &key_info, &key_count, false, false, true, true, existing_pack_record);
   reenable_binlog(thd);
   create_info->frm_only = frm_only;
   if (error)
