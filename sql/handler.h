@@ -847,8 +847,7 @@ struct handlerton
                         struct handler_iterator *fill_this_in);
    int (*discover)(handlerton *hton, THD* thd, const char *db, 
                    const char *name,
-                   uchar **frmblob, 
-                   size_t *frmlen);
+                   uchar **frmblob, size_t *frmlen);
    int (*find_files)(handlerton *hton, THD *thd,
                      const char *db,
                      const char *path,
@@ -890,6 +889,11 @@ struct handlerton
 
    uint32 license; /* Flag for Engine License */
    void *data; /* Location for engines to keep personal structures */
+
+#define MYSQL_HANDLERTON_INCLUDE_DISCOVER2 1
+   int (*discover2)(handlerton *hton, THD* thd, const char *db, 
+                    const char *name, bool translate_name,
+                    uchar **frmblob, size_t *frmlen);
 };
 
 
