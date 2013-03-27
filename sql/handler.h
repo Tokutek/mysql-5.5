@@ -179,6 +179,11 @@
 #define HA_ONLY_WHOLE_INDEX	16	/* Can't use part key searches */
 #define HA_KEYREAD_ONLY         64	/* Support HA_EXTRA_KEYREAD */
 
+// no IO if read data when scan index
+//  i.e index is covering
+// skipping 128 because SOME product has HA_KEY_SCAN_NOT_ROR
+#define HA_CLUSTERED_INDEX      256
+
 /*
   bits in alter_table_flags:
 */
