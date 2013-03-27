@@ -662,6 +662,7 @@ bool mysql_insert(THD *thd,TABLE_LIST *table_list,
   bool transactional_table, joins_freed= FALSE;
   bool changed;
   bool was_insert_delayed= (table_list->lock_type ==  TL_WRITE_DELAYED);
+  bool using_bulk_insert= 0;
   uint value_count;
   ulong counter = 1;
   ulonglong id;
@@ -834,8 +835,12 @@ bool mysql_insert(THD *thd,TABLE_LIST *table_list,
       Engines can't handle a bulk insert in parallel with a read form the
       same table in the same connection.
     */
-    if (thd->locked_tables_mode <= LTM_LOCK_TABLES)
+    if (thd->locked_tables_mode <= LTM_LOCK_TABLES && 
+        values_list.elements > 1)
+    {
+      using_bulk_insert= 1;
       table->file->ha_start_bulk_insert(values_list.elements);
+    }
   }
 
   thd->abort_on_warning= (!ignore && (thd->variables.sql_mode &
@@ -958,7 +963,7 @@ bool mysql_insert(THD *thd,TABLE_LIST *table_list,
       auto_inc values from the delayed_insert thread as they share TABLE.
     */
     table->file->ha_release_auto_increment();
-    if (thd->locked_tables_mode <= LTM_LOCK_TABLES &&
+    if (thd->locked_tables_mode <= LTM_LOCK_TABLES && using_bulk_insert &&
         table->file->ha_end_bulk_insert() && !error)
     {
       table->file->print_error(my_errno,MYF(0));
