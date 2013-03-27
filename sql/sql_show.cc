@@ -1327,6 +1327,8 @@ int store_create_info(THD *thd, TABLE_LIST *table_list, String *packet,
       packet->append(STRING_WITH_LEN("FULLTEXT KEY "));
     else if (key_info->flags & HA_SPATIAL)
       packet->append(STRING_WITH_LEN("SPATIAL KEY "));
+    else if (key_info->flags & HA_CLUSTERING)  
+      packet->append(STRING_WITH_LEN("CLUSTERING KEY "));
     else
       packet->append(STRING_WITH_LEN("KEY "));
 
