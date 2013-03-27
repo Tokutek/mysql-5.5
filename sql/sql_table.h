@@ -149,7 +149,8 @@ bool mysql_create_table_no_lock(THD *thd, const char *db,
                                 bool *is_trans,
                                 KEY **key_info_p = NULL,
                                 uint *key_count_p = NULL,
-                                bool compat55 = true, bool no_handler_files = true, bool no_create_table = true);
+                                bool compat55 = true, bool no_handler_files = true, bool no_create_table = true,
+                                bool use_existing_pack_record = false, bool pack_record = false);
 bool mysql_prepare_alter_table(THD *thd, TABLE *table,
                                HA_CREATE_INFO *create_info,
                                Alter_info *alter_info);
