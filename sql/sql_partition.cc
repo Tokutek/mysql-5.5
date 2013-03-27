@@ -6933,6 +6933,7 @@ uint fast_alter_partition_table(THD *thd, TABLE *table,
     A final step is to write the query to the binlog and send ok to the
     user
   */
+  my_free(lpt->pack_frm_data);
   DBUG_RETURN(fast_end_partition(thd, lpt->copied, lpt->deleted, table_list));
 err:
   if (action_completed)
@@ -6952,6 +6953,7 @@ err:
     close_temporary(lpt->table, 1, 0);
   }
   downgrade_mdl_if_lock_tables_mode(thd, mdl_ticket, MDL_SHARED_NO_READ_WRITE);
+  my_free(lpt->pack_frm_data);
   DBUG_RETURN(TRUE);
 }
 #endif

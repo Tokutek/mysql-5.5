@@ -1302,7 +1302,8 @@ bool ha_partition::is_crashed() const
 int ha_partition::prepare_new_partition(TABLE *tbl,
                                         HA_CREATE_INFO *create_info,
                                         handler *file, const char *part_name,
-                                        partition_element *p_elem)
+                                        partition_element *p_elem,
+                                        const uchar *frm_data, size_t frm_length)
 {
   int error;
   DBUG_ENTER("prepare_new_partition");
@@ -1325,6 +1326,8 @@ int ha_partition::prepare_new_partition(TABLE *tbl,
   }
   DBUG_PRINT("info", ("partition %s created", part_name));
   if ((error= file->ha_open(tbl, part_name, m_mode, m_open_test_lock)))
+    goto error_open;
+  if (frm_data && (error= file->new_alter_table_frm_data(frm_data, frm_length)))
     goto error_open;
   DBUG_PRINT("info", ("partition %s opened", part_name));
   /*
@@ -1648,7 +1651,7 @@ int ha_partition::change_partitions(HA_CREATE_INFO *create_info,
           if ((error= prepare_new_partition(table, create_info,
                                             new_file_array[part],
                                             (const char *)part_name_buff,
-                                            sub_elem)))
+                                            sub_elem, pack_frm_data, pack_frm_len)))
           {
             cleanup_new_partition(part_count);
             DBUG_RETURN(error);
@@ -1665,7 +1668,7 @@ int ha_partition::change_partitions(HA_CREATE_INFO *create_info,
         if ((error= prepare_new_partition(table, create_info,
                                           new_file_array[i],
                                           (const char *)part_name_buff,
-                                          part_elem)))
+                                          part_elem, pack_frm_data, pack_frm_len)))
         {
           cleanup_new_partition(part_count);
           DBUG_RETURN(error);
@@ -7841,6 +7844,22 @@ void ha_partition::notify_table_changed()
     (*file)->ha_notify_table_changed();
 
   DBUG_VOID_RETURN;
+}
+
+int ha_partition::new_alter_table_frm_data(const uchar *frm_data, size_t frm_len)
+{
+  DBUG_ENTER("ha_partition::new_alter_table_frm_data");
+  int error= 0;
+  for (uint i= 0; i < m_tot_parts; i++)
+  {
+    if (m_file[i])
+    {
+      error= m_file[i]->new_alter_table_frm_data(frm_data, frm_len);
+      if (error)
+        break;
+    }
+  }
+  DBUG_RETURN(error);
 }
 
 struct st_mysql_storage_engine partition_storage_engine=
