@@ -2230,6 +2230,10 @@ private:
   { return HA_ERR_WRONG_COMMAND; }
   virtual int rename_partitions(const char *path)
   { return HA_ERR_WRONG_COMMAND; }
+
+ public:
+  virtual int prepare_index_scan()
+  { return 0; }
 };
 
 
