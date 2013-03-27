@@ -4158,6 +4158,24 @@ static int get_schema_tables_record(THD *thd, TABLE_LIST *tables,
       case ROW_TYPE_PAGE:
         tmp_buff= "Paged";
         break;
+      case ROW_TYPE_TOKU_UNCOMPRESSED:
+        tmp_buff= "tokudb_uncompressed";
+        break;
+      case ROW_TYPE_TOKU_ZLIB:
+        tmp_buff= "tokudb_zlib";
+        break;
+      case ROW_TYPE_TOKU_QUICKLZ:
+        tmp_buff= "tokudb_quicklz";
+        break;
+      case ROW_TYPE_TOKU_LZMA:
+        tmp_buff= "tokudb_lzma";
+        break;
+      case ROW_TYPE_TOKU_FAST:
+        tmp_buff= "tokudb_fast";
+        break;
+      case ROW_TYPE_TOKU_SMALL:
+        tmp_buff= "tokudb_small";
+        break;
       }
 
       table->field[6]->store(tmp_buff, strlen(tmp_buff), cs);
