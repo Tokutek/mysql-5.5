@@ -874,6 +874,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
 %token  CLASS_ORIGIN_SYM              /* SQL-2003-N */
 %token  CLIENT_SYM
 %token  CLOSE_SYM                     /* SQL-2003-R */
+%token  CLUSTERING_SYM
 %token  COALESCE                      /* SQL-2003-N */
 %token  CODE_SYM
 %token  COLLATE_SYM                   /* SQL-2003-R */
@@ -1500,7 +1501,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
         option_type opt_var_type opt_var_ident_type
 
 %type <key_type>
-        normal_key_type opt_unique constraint_key_type fulltext spatial
+        normal_key_type opt_unique constraint_key_type fulltext spatial clustering
 
 %type <key_alg>
         btree_or_rtree
@@ -2142,6 +2143,16 @@ create:
         | CREATE server_def
           {
             Lex->sql_command= SQLCOM_CREATE_SERVER;
+          }
+        | CREATE clustering INDEX_SYM ident key_alg ON table_ident
+          {
+            if (add_create_index_prepare(Lex, $7))
+              MYSQL_YYABORT;
+          }
+          '(' key_list ')' normal_key_options
+          {
+            if (add_create_index(Lex, $2, $4))
+              MYSQL_YYABORT;
           }
         ;
 
@@ -5383,6 +5394,12 @@ key_def:
           {
             Lex->col_list.empty(); /* Alloced by sql_alloc */
           }
+        | clustering opt_key_or_index opt_ident init_key_options
+            '(' key_list ')' fulltext_key_options
+          {
+            if (add_create_index (Lex, $1, $3))
+              MYSQL_YYABORT;
+          }
         ;
 
 opt_check_constraint:
@@ -6081,6 +6098,10 @@ spatial:
 #endif
           }
         ;
+
+clustering:
+	  CLUSTERING_SYM { $$=Key::CLUSTERING; }
+	;
 
 init_key_options:
           {
