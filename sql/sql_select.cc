@@ -13950,12 +13950,14 @@ test_if_skip_sort_order(JOIN_TAB *tab,ORDER *order,ha_rows select_limit,
       filesort() and join cache are usually faster than reading in 
       index order and not using join cache, except in case that chosen
       index is clustered primary key.
+      Also not in case where the index is a clustering index
     */
     if ((select_limit >= table_records) &&
         (tab->type == JT_ALL &&
          tab->join->tables > tab->join->const_tables + 1) &&
          ((unsigned) best_key != table->s->primary_key ||
-          !table->file->primary_key_is_clustered()))
+          !table->file->primary_key_is_clustered()) &&
+        !(best_key >= 0 && test(table->file->index_flags(best_key,0,0) & HA_CLUSTERED_INDEX)))
       goto use_filesort;
 
     if (best_key >= 0)
