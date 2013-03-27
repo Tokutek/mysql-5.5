@@ -8230,6 +8230,8 @@ static bool fill_alter_inplace_info(THD *thd,
   DBUG_RETURN(false);
 }
 
+volatile int stall_inplace_alter_table_mdl_x = 0;
+
 static enum inplace_alter_table_result
 do_mysql_inplace_alter_table(THD *thd,
                              TABLE_LIST *table_list,
@@ -8305,7 +8307,8 @@ do_mysql_inplace_alter_table(THD *thd,
   }
   
   // MDL X
-  if (wait_while_table_is_used(thd, table, HA_EXTRA_FORCE_REOPEN))
+  while (stall_inplace_alter_table_mdl_x) sleep(1);
+  if (wait_while_table_is_used(thd, table, HA_EXTRA_NOT_USED))
   {
     result= INPLACE_ALTER_ERROR; goto do_rollback;
   }
