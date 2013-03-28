@@ -2271,7 +2271,7 @@ MDL_context::upgrade_shared_lock_to_exclusive(MDL_ticket *mdl_ticket,
 
   /* Only allow upgrades from MDL_SHARED_NO_WRITE/NO_READ_WRITE */
   DBUG_ASSERT(mdl_ticket->m_type == MDL_SHARED_NO_WRITE ||
-              mdl_ticket->m_type == MDL_SHARED_NO_READ_WRITE);
+              mdl_ticket->m_type == MDL_SHARED_NO_READ_WRITE || mdl_ticket->m_type == MDL_SHARED_WRITE);
 
   mdl_xlock_request.init(&mdl_ticket->m_lock->key, MDL_EXCLUSIVE,
                          MDL_TRANSACTION);
