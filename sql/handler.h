@@ -2765,6 +2765,26 @@ protected:
 
 public:
  /* End of On-line/in-place ALTER TABLE interface. */
+public:
+  // Offload an update to the storage engine.  
+  // Returns 0 if the storage engine handled the update.
+  // Returns ENOTSUP if the storage engine can not handle the update and the slow update code path
+  // should continue executing the update.
+  // Returns an error if the update should be terminated.
+  int ha_fast_update(THD *thd, List<Item> &update_fields, List<Item> &update_values, Item *conds);
+
+  // Offload an upsert to the storage engine.
+  // Expects the row to be stored in record[0].
+  // Returns 0 if the storage engine handled the upsert.
+  // Returns ENOTSUP if the storage engine can not handle the upsert and the slow insert code path
+  // should continue executing the insert.
+  // Returns an error if the insert should be terminated.
+  int ha_upsert(THD *thd, List<Item> &update_fields, List<Item> &update_values);
+private:
+  virtual int fast_update(THD *thd, List<Item> &update_fields, List<Item> &update_values, Item *conds)
+  { return ENOTSUP; }
+  virtual int upsert(THD *thd, List<Item> &update_fields, List<Item> &update_values)
+  { return ENOTSUP; }
 };
 
 
