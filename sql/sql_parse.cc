@@ -2786,7 +2786,7 @@ end_with_restore_list:
                                   select_lex->order_list.elements,
                                   select_lex->order_list.first,
                                   unit->select_limit_cnt,
-                                  lex->duplicates, lex->ignore,
+                                  lex->duplicates, lex->ignore, lex->noar,
                                   &found, &updated));
     MYSQL_UPDATE_DONE(res, found, updated);
     /* mysql_update return 2 if we need to switch to multi-update */
@@ -2912,7 +2912,7 @@ end_with_restore_list:
     MYSQL_INSERT_START(thd->query());
     res= mysql_insert(thd, all_tables, lex->field_list, lex->many_values,
 		      lex->update_list, lex->value_list,
-                      lex->duplicates, lex->ignore);
+                      lex->duplicates, lex->ignore, lex->noar);
     MYSQL_INSERT_DONE(res, (ulong) thd->get_row_count_func());
     /*
       If we have inserted into a VIEW, and the base table has

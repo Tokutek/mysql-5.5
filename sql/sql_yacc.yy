@@ -1134,6 +1134,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
 %token  NEG
 %token  NEW_SYM                       /* SQL-2003-R */
 %token  NEXT_SYM                      /* SQL-2003-N */
+%token  NOAR_SYM
 %token  NODEGROUP_SYM
 %token  NONE_SYM                      /* SQL-2003-R */
 %token  NOT2_SYM
@@ -6853,10 +6854,14 @@ opt_to:
         | AS {}
         ;
 
+opt_noar:
+          /* empty */ { Lex->noar= 0;}
+        | NOAR_SYM { Lex->noar= 1;}
+        ;
+
 /*
   SLAVE START and SLAVE STOP are deprecated. We keep them for compatibility.
 */
-
 slave:
           START_SYM SLAVE slave_thread_opts
           {
@@ -10481,7 +10486,7 @@ insert:
             mysql_init_select(lex);
           }
           insert_lock_option
-          opt_ignore insert2
+          opt_ignore opt_noar insert2
           {
             Select->set_lock_for_tables($3);
             Lex->current_select= &Lex->select_lex;
@@ -10677,7 +10682,7 @@ update:
             lex->sql_command= SQLCOM_UPDATE;
             lex->duplicates= DUP_ERROR; 
           }
-          opt_low_priority opt_ignore join_table_list
+          opt_low_priority opt_ignore opt_noar join_table_list
           SET update_list
           {
             LEX *lex= Lex;

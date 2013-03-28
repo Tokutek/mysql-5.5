@@ -227,6 +227,7 @@ static void prepare_record_for_error_message(int error, TABLE *table)
 }
 
 
+
 /*
   Process usual UPDATE
 
@@ -255,7 +256,7 @@ int mysql_update(THD *thd,
                  COND *conds,
                  uint order_num, ORDER *order,
 		 ha_rows limit,
-		 enum enum_duplicates handle_duplicates, bool ignore,
+		 enum enum_duplicates handle_duplicates, bool ignore, bool noar, 
                  ha_rows *found_return, ha_rows *updated_return)
 {
   bool		using_limit= limit != HA_POS_ERROR;
@@ -279,6 +280,7 @@ int mysql_update(THD *thd,
   ulonglong     id;
   List<Item> all_fields;
   THD::killed_state killed_status= THD::NOT_KILLED;
+
   DBUG_ENTER("mysql_update");
 
   if (open_tables(thd, &table_list, &table_count, 0))
@@ -650,6 +652,19 @@ int mysql_update(THD *thd,
   if (table->file->ha_table_flags() & HA_PARTIAL_COLUMN_READ)
     table->prepare_for_position();
 
+  error= ENOTSUP;
+  if (noar)
+  {
+    error= table->file->ha_fast_update(thd, fields, values, conds);
+    if (error == 0)
+      error= -1; // error < 0 means really no error at all (see below)
+    else if (error != ENOTSUP)
+    {
+      table->file->print_error(error, MYF(0));
+      error= 1;
+    }
+  }
+  if (error == ENOTSUP)
   while (!(error=info.read_record(&info)) && !thd->killed)
   {
     thd->examined_row_count++;

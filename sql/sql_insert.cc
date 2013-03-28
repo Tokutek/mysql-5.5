@@ -656,7 +656,7 @@ bool mysql_insert(THD *thd,TABLE_LIST *table_list,
                   List<Item> &update_fields,
                   List<Item> &update_values,
                   enum_duplicates duplic,
-		  bool ignore)
+		  bool ignore, bool noar)
 {
   int error, res;
   bool transactional_table, joins_freed= FALSE;
@@ -933,7 +933,13 @@ bool mysql_insert(THD *thd,TABLE_LIST *table_list,
     }
     else
 #endif
-      error=write_record(thd, table ,&info);
+    {
+      error= ENOTSUP;
+      if (noar)
+        error= table->file->ha_upsert(thd, update_fields, update_values);
+      if (error == ENOTSUP)
+        error= write_record(thd, table, &info);
+    }
     if (error)
       break;
     thd->warning_info->inc_current_row_for_warning();
