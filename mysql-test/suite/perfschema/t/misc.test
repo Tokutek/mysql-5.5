@@ -3,6 +3,7 @@
 
 --source include/not_embedded.inc
 --source include/have_perfschema.inc
+--source include/have_partition.inc
 
 #
 # Bug#45496 Performance schema: assertion fails in
@@ -59,7 +60,7 @@ drop table test.ghost;
 
 # Shoud return nothing
 select * from performance_schema.file_instances
-  where file_name like "%ghost%";
+  where file_name like "%ghost%" and event_name not like "%partition";
 
 #
 # Bug#52586 Misleading error message on attempt to access

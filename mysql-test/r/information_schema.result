@@ -75,6 +75,11 @@ TABLE_PRIVILEGES
 TRIGGERS
 USER_PRIVILEGES
 VIEWS
+TokuDB_user_data_exact
+TokuDB_fractal_tree_info
+TokuDB_user_data
+TokuDB_fractal_tree_block_map
+TokuDB_file_map
 columns_priv
 db
 event
@@ -113,6 +118,11 @@ TABLESPACES	TABLESPACES
 TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
+TokuDB_user_data_exact	TokuDB_user_data_exact
+TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_user_data	TokuDB_user_data
+TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
 time_zone_leap_second	time_zone_leap_second
@@ -133,6 +143,11 @@ TABLESPACES	TABLESPACES
 TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
+TokuDB_user_data_exact	TokuDB_user_data_exact
+TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_user_data	TokuDB_user_data
+TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
 time_zone_leap_second	time_zone_leap_second
@@ -153,6 +168,11 @@ TABLESPACES	TABLESPACES
 TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
+TokuDB_user_data_exact	TokuDB_user_data_exact
+TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_user_data	TokuDB_user_data
+TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
 time_zone_leap_second	time_zone_leap_second
@@ -642,6 +662,11 @@ TABLESPACES
 TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
+TokuDB_user_data_exact
+TokuDB_fractal_tree_info
+TokuDB_user_data
+TokuDB_fractal_tree_block_map
+TokuDB_file_map
 create database information_schema;
 ERROR 42000: Access denied for user 'root'@'localhost' to database 'information_schema'
 use information_schema;
@@ -652,6 +677,11 @@ TABLESPACES	SYSTEM VIEW
 TABLE_CONSTRAINTS	SYSTEM VIEW
 TABLE_PRIVILEGES	SYSTEM VIEW
 TRIGGERS	SYSTEM VIEW
+TokuDB_user_data_exact	SYSTEM VIEW
+TokuDB_fractal_tree_info	SYSTEM VIEW
+TokuDB_user_data	SYSTEM VIEW
+TokuDB_fractal_tree_block_map	SYSTEM VIEW
+TokuDB_file_map	SYSTEM VIEW
 create table t1(a int);
 ERROR 42000: Access denied for user 'root'@'localhost' to database 'information_schema'
 use test;
@@ -665,6 +695,11 @@ TABLESPACES
 TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
+TokuDB_user_data_exact
+TokuDB_fractal_tree_info
+TokuDB_user_data
+TokuDB_fractal_tree_block_map
+TokuDB_file_map
 select table_name from tables where table_name='user';
 table_name
 user
@@ -863,8 +898,10 @@ TABLES	TABLE_NAME	select
 TABLE_CONSTRAINTS	TABLE_NAME	select
 TABLE_PRIVILEGES	TABLE_NAME	select
 VIEWS	TABLE_NAME	select
-INNODB_BUFFER_PAGE	TABLE_NAME	select
+TokuDB_user_data_exact	table_name	select
+TokuDB_user_data	table_name	select
 INNODB_BUFFER_PAGE_LRU	TABLE_NAME	select
+INNODB_BUFFER_PAGE	TABLE_NAME	select
 delete from mysql.user where user='mysqltest_4';
 delete from mysql.db where user='mysqltest_4';
 flush privileges;
@@ -873,7 +910,7 @@ table_schema IN ('mysql', 'INFORMATION_SCHEMA', 'test', 'mysqltest')
 AND table_name not like 'ndb%' AND table_name not like 'innodb_%'
 GROUP BY TABLE_SCHEMA;
 table_schema	count(*)
-information_schema	30
+information_schema	35
 mysql	23
 create table t1 (i int, j int);
 create trigger trg1 before insert on t1 for each row
@@ -1169,7 +1206,7 @@ group by column_type order by num;
 column_type	group_concat(table_schema, '.', table_name)	num
 varchar(27)	information_schema.COLUMNS	1
 varchar(7)	information_schema.ROUTINES,information_schema.VIEWS	2
-varchar(20)	information_schema.FILES,information_schema.FILES,information_schema.PLUGINS,information_schema.PLUGINS,information_schema.PLUGINS,information_schema.PROFILING	6
+varchar(20)	information_schema.FILES,information_schema.FILES,information_schema.FILES,information_schema.PLUGINS,information_schema.PLUGINS,information_schema.PLUGINS,information_schema.PROFILING,information_schema.TABLES	8
 create table t1(f1 char(1) not null, f2 char(9) not null)
 default character set utf8;
 select CHARACTER_MAXIMUM_LENGTH, CHARACTER_OCTET_LENGTH from
@@ -1339,6 +1376,11 @@ TABLES	information_schema.TABLES	1
 TABLESPACES	information_schema.TABLESPACES	1
 TABLE_CONSTRAINTS	information_schema.TABLE_CONSTRAINTS	1
 TABLE_PRIVILEGES	information_schema.TABLE_PRIVILEGES	1
+TokuDB_file_map	information_schema.TokuDB_file_map	1
+TokuDB_fractal_tree_block_map	information_schema.TokuDB_fractal_tree_block_map	1
+TokuDB_fractal_tree_info	information_schema.TokuDB_fractal_tree_info	1
+TokuDB_user_data	information_schema.TokuDB_user_data	1
+TokuDB_user_data_exact	information_schema.TokuDB_user_data_exact	1
 TRIGGERS	information_schema.TRIGGERS	1
 USER_PRIVILEGES	information_schema.USER_PRIVILEGES	1
 VIEWS	information_schema.VIEWS	1

@@ -55,7 +55,7 @@ while ($run)
    while ($loop_run)
    {
       eval $create_index;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       eval $insert_record;
       if (!$mysql_errno)
       {
@@ -66,7 +66,7 @@ while ($run)
       eval $drop_index;
       eval $insert_record;
       # NDB: ER_DUP_UNIQUE, others: ER_DUP_ENTRY
-      --error 0,ER_DUP_ENTRY,ER_DUP_UNIQUE
+      --error 0,ER_DUP_ENTRY,ER_DUP_UNIQUE,ER_DUP_KEY
       eval $create_index;
       if (!$mysql_errno)
       {
@@ -112,7 +112,7 @@ while ($run)
    while ($loop_run)
    {
       EXECUTE create_index;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       EXECUTE insert_record;
       if (!$mysql_errno)
       {
@@ -122,7 +122,7 @@ while ($run)
       }
       EXECUTE drop_index;
       EXECUTE insert_record;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       EXECUTE create_index;
       if (!$mysql_errno)
       {
@@ -167,7 +167,7 @@ while ($run)
    while ($loop_run)
    {
       eval $create_index;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       eval $insert_record;
       if (!$mysql_errno)
       {
@@ -180,7 +180,7 @@ while ($run)
       connection default;
       eval $insert_record;
       connection con2;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       eval $create_index;
       if (!$mysql_errno)
       {
@@ -231,7 +231,7 @@ while ($run)
    while ($loop_run)
    {
       EXECUTE create_index;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       EXECUTE insert_record;
       if (!$mysql_errno)
       {
@@ -244,7 +244,7 @@ while ($run)
       connection default;
       EXECUTE insert_record;
       connection con2;
-      --error 0,ER_DUP_ENTRY
+      --error 0,ER_DUP_ENTRY,ER_DUP_KEY
       EXECUTE create_index;
       if (!$mysql_errno)
       {

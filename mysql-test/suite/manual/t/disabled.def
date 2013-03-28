@@ -1,0 +1,1 @@
+rpl_replication_delay : #4521 disabled by tokutek since it is non-deterministic
