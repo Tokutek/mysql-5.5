@@ -720,6 +720,82 @@ The following options may be given as the first argument:
  -t, --tmpdir=name   Path for temporary files. Several paths may be specified,
  separated by a colon (:), in this case they are used in a
  round-robin fashion
+ --tokudb[=name]     Enable or disable TokuDB plugin. Possible values are ON,
+ OFF, FORCE (don't start if the plugin fails to load).
+ --tokudb-analyze-time=# 
+ analyze time
+ --tokudb-block-size=# 
+ fractal tree block size
+ --tokudb-cache-size=# 
+ TokuDB cache table size
+ --tokudb-checkpoint-lock 
+ Tokudb Checkpoint Lock
+ --tokudb-checkpoint-on-flush-logs 
+ TokuDB Checkpoint on Flush Logs 
+ --tokudb-checkpointing-period=# 
+ TokuDB Checkpointing period
+ --tokudb-cleaner-iterations=# 
+ TokuDB cleaner_iterations
+ --tokudb-cleaner-period=# 
+ TokuDB cleaner_period
+ --tokudb-commit-sync 
+ sync on txn commit
+ (Defaults to on; use --skip-tokudb-commit-sync to disable.)
+ --tokudb-create-index-online 
+ if on, create index done online
+ (Defaults to on; use --skip-tokudb-create-index-online to disable.)
+ --tokudb-data-dir=name 
+ TokuDB Data Directory
+ --tokudb-debug=#    TokuDB Debug
+ --tokudb-directio   TokuDB Enable Direct I/O 
+ --tokudb-disable-hot-alter 
+ if on, hot alter table is disabled
+ --tokudb-disable-prefetching 
+ if on, prefetching disabled
+ --tokudb-disable-slow-alter 
+ if on, alter tables that require copy are disabled
+ --tokudb-disable-slow-update 
+ disable slow update
+ --tokudb-disable-slow-upsert 
+ disable slow upsert
+ --tokudb-fs-reserve-percent=# 
+ TokuDB file system space reserve (percent free required)
+ --tokudb-init-flags=# 
+ Sets TokuDB DB_ENV->open flags
+ --tokudb-load-save-space 
+ if on, intial loads are slower but take less space
+ --tokudb-lock-timeout=# 
+ TokuDB lock timeout
+ --tokudb-log-client-errors 
+ Tokudb Log Client Errors
+ --tokudb-log-dir=name 
+ TokuDB Log Directory
+ --tokudb-max-lock-memory=# 
+ TokuDB max memory for locks
+ --tokudb-pk-insert-mode=# 
+ set the primary key insert mode
+ --tokudb-prelock-empty 
+ Tokudb Prelock Empty Table
+ (Defaults to on; use --skip-tokudb-prelock-empty to disable.)
+ --tokudb-read-block-size=# 
+ fractal tree read block size
+ --tokudb-read-buf-size=# 
+ fractal tree read block size
+ --tokudb-read-status-frequency=# 
+ TokuDB frequency that show processlist updates status of
+ reads
+ --tokudb-row-format[=name] 
+ Specifies the compression method for a table during this
+ session. Possible values are TOKUDB_UNCOMPRESSED,
+ TOKUDB_ZLIB, TOKUDB_QUICKLZ, TOKUDB_LZMA, TOKUDB_FAST,
+ TOKUDB_SMALL and TOKUDB_DEFAULT
+ --tokudb-tmp-dir=name 
+ Tokudb Tmp Dir
+ --tokudb-version=name 
+ TokuDB Version
+ --tokudb-write-status-frequency=# 
+ TokuDB frequency that show processlist updates status of
+ writes
  --transaction-alloc-block-size=# 
  Allocation block size for transactions to be stored in
  binary log
@@ -769,7 +845,7 @@ connect-timeout 10
 console FALSE
 date-format %Y-%m-%d
 datetime-format %Y-%m-%d %H:%i:%s
-default-storage-engine InnoDB
+default-storage-engine TokuDB
 default-time-zone (No default value)
 default-week-format 0
 delay-key-write ON
@@ -893,7 +969,7 @@ performance-schema-max-table-handles 100000
 performance-schema-max-table-instances 50000
 performance-schema-max-thread-classes 50
 performance-schema-max-thread-instances 1000
-plugin-load (No default value)
+plugin-load tokudb=ha_tokudb.so
 port 3306
 port-open-timeout 0
 preload-buffer-size 32768
@@ -942,7 +1018,7 @@ slow-launch-time 2
 slow-query-log FALSE
 sort-buffer-size 2097152
 sporadic-binlog-dump-fail FALSE
-sql-mode 
+sql-mode NO_ENGINE_SUBSTITUTION
 stored-program-cache 256
 symbolic-links FALSE
 sync-binlog 0
@@ -961,6 +1037,40 @@ thread-stack 262144
 time-format %H:%i:%s
 timed-mutexes FALSE
 tmp-table-size 16777216
+tokudb ON
+tokudb-analyze-time 60
+tokudb-block-size 4194304
+tokudb-cache-size 0
+tokudb-checkpoint-lock FALSE
+tokudb-checkpoint-on-flush-logs FALSE
+tokudb-checkpointing-period 60
+tokudb-cleaner-iterations 5
+tokudb-cleaner-period 1
+tokudb-commit-sync TRUE
+tokudb-create-index-online TRUE
+tokudb-data-dir (No default value)
+tokudb-debug 0
+tokudb-directio FALSE
+tokudb-disable-hot-alter FALSE
+tokudb-disable-prefetching FALSE
+tokudb-disable-slow-alter FALSE
+tokudb-disable-slow-update FALSE
+tokudb-disable-slow-upsert FALSE
+tokudb-fs-reserve-percent 5
+tokudb-init-flags 11403457
+tokudb-load-save-space FALSE
+tokudb-lock-timeout 4000
+tokudb-log-client-errors FALSE
+tokudb-log-dir (No default value)
+tokudb-max-lock-memory 0
+tokudb-pk-insert-mode 1
+tokudb-prelock-empty TRUE
+tokudb-read-block-size 131072
+tokudb-read-buf-size 131072
+tokudb-read-status-frequency 10000
+tokudb-row-format tokudb_default
+tokudb-tmp-dir (No default value)
+tokudb-write-status-frequency 1000
 transaction-alloc-block-size 8192
 transaction-isolation REPEATABLE-READ
 transaction-prealloc-size 4096

@@ -1,0 +1,15 @@
+##############################################################################
+#
+#  List the test cases that are to be disabled temporarily.
+#
+#  Separate the test case name and the comment with ':'.
+#
+#    <testcasename> : BUG#<xxxx> <date disabled> <disabler> <comment>
+#
+#  Do not use any TAB characters for whitespace.
+#
+##############################################################################
+setup          : 2012-04-12  tcallaghan   this is not an actual test, it sets up other tests
+read           : 2012-04-12  tcallaghan   test does not run, case sensitivity and other issues, no value seen
+modify         : 2012-04-12  tcallaghan   test does not run, case sensitivity and other issues, no value seen
+work           : 2012-04-12  tcallaghan   test does not run, case sensitivity and other issues, no value seen
