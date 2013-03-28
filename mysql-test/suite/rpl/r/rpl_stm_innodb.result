@@ -56,7 +56,7 @@ SELECT COUNT(*) FROM mysqltest1.t1;
 COUNT(*)
 0
 INSERT INTO mysqltest1.t1 SET f1= 2;
-CREATE TEMPORARY TABLE mysqltest1.tmp2(a INT);
+CREATE TEMPORARY TABLE mysqltest1.tmp2(a INT) engine=innodb;
 ROLLBACK;
 SHOW CREATE TABLE mysqltest1.tmp2;
 Table	Create Table

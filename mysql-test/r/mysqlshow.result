@@ -109,16 +109,21 @@ Database: information_schema
 | TRIGGERS                              |
 | USER_PRIVILEGES                       |
 | VIEWS                                 |
-| INNODB_BUFFER_PAGE                    |
+| TokuDB_user_data_exact                |
 | INNODB_TRX                            |
-| INNODB_BUFFER_POOL_STATS              |
+| TokuDB_fractal_tree_info              |
 | INNODB_LOCK_WAITS                     |
-| INNODB_CMPMEM                         |
+| TokuDB_user_data                      |
 | INNODB_CMP                            |
-| INNODB_LOCKS                          |
+| TokuDB_fractal_tree_block_map         |
 | INNODB_CMPMEM_RESET                   |
 | INNODB_CMP_RESET                      |
 | INNODB_BUFFER_PAGE_LRU                |
+| INNODB_BUFFER_POOL_STATS              |
+| INNODB_BUFFER_PAGE                    |
+| INNODB_CMPMEM                         |
+| TokuDB_file_map                       |
+| INNODB_LOCKS                          |
 +---------------------------------------+
 Database: INFORMATION_SCHEMA
 +---------------------------------------+
@@ -154,16 +159,21 @@ Database: INFORMATION_SCHEMA
 | TRIGGERS                              |
 | USER_PRIVILEGES                       |
 | VIEWS                                 |
-| INNODB_BUFFER_PAGE                    |
+| TokuDB_user_data_exact                |
 | INNODB_TRX                            |
-| INNODB_BUFFER_POOL_STATS              |
+| TokuDB_fractal_tree_info              |
 | INNODB_LOCK_WAITS                     |
-| INNODB_CMPMEM                         |
+| TokuDB_user_data                      |
 | INNODB_CMP                            |
-| INNODB_LOCKS                          |
+| TokuDB_fractal_tree_block_map         |
 | INNODB_CMPMEM_RESET                   |
 | INNODB_CMP_RESET                      |
 | INNODB_BUFFER_PAGE_LRU                |
+| INNODB_BUFFER_POOL_STATS              |
+| INNODB_BUFFER_PAGE                    |
+| INNODB_CMPMEM                         |
+| TokuDB_file_map                       |
+| INNODB_LOCKS                          |
 +---------------------------------------+
 Wildcard: inf_rmation_schema
 +--------------------+

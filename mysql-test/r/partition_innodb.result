@@ -222,6 +222,7 @@ ALTER TABLE t1 ADD CONSTRAINT test_ibfk_1 FOREIGN KEY (parent_id) REFERENCES t2 
 ERROR HY000: Foreign key clause is not yet supported in conjunction with partitioning
 DROP TABLE t1, t2;
 create table t1 (a varchar(5), b int signed, c varchar(10), d datetime)
+ENGINE=InnoDB
 partition by range columns(b,c)
 subpartition by hash(to_seconds(d))
 ( partition p0 values less than (2, 'b'),
@@ -419,12 +420,12 @@ engine = x
 partition by key (a);
 Warnings:
 Warning	1286	Unknown storage engine 'x'
-Warning	1266	Using storage engine InnoDB for table 't1'
+Warning	1266	Using storage engine MyISAM for table 't1'
 show create table t1;
 Table	Create Table
 t1	CREATE TABLE `t1` (
   `a` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1
+) ENGINE=MyISAM DEFAULT CHARSET=latin1
 /*!50100 PARTITION BY KEY (a) */
 drop table t1;
 create table t1 (a int)

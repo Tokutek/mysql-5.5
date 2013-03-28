@@ -43,7 +43,7 @@ let $engine= 'InnoDB';
 --source suite/parts/inc/partition_key_4col.inc
 --source suite/parts/inc/partition_key_8col.inc
 --source suite/parts/inc/partition_key_16col.inc
---source suite/parts/inc/partition_key_32col.inc
+--source suite/parts/inc/partition_key_32col_nofail.inc
 
 #------------------------------------------------------------------------------#
 # Execute storage engine specific tests

@@ -4,6 +4,8 @@ DROP TABLE IF EXISTS t1,t2;
 
 ######## Running UPDATE tests for DATE ########
 
+SET TIME_ZONE='+0:00';    # UTC0
+
 # Create tables
 CREATE TABLE t1(c1 DATE NOT NULL PRIMARY KEY, c2 DATE NULL, c3 INT, INDEX idx2(c2));
 # Insert into table
