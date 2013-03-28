@@ -6493,7 +6493,6 @@ uint kill_one_thread(THD *thd, ulong id, bool only_kill_query)
   DBUG_RETURN(error);
 }
 
-
 /*
   kills a thread and sends response
 
@@ -6512,6 +6511,8 @@ void sql_kill(THD *thd, ulong id, bool only_kill_query)
   {
     if (! thd->killed)
       my_ok(thd);
+    else
+      my_error(thd->killed_errno(), MYF(0), id);
   }
   else
     my_error(error, MYF(0), id);
