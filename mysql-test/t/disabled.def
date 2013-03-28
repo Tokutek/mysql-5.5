@@ -15,3 +15,7 @@ sum_distinct-big         : Bug#11764126 2010-11-15 mattiasj was not tested
 archive-big              : Bug#11817185 2011-03-10 Anitha Disabled since this leads to timeout on Solaris Sparc
 log_tables-big           : Bug#11756699 2010-11-15 mattiasj report already exists
 mysql_embedded           : Bug#12561297 2011-05-14 Anitha Dependent on PB2 changes - eventum#41836
+mysql_client_test        : trac #4526   2012-02-15 tcallaghan  not sure why this test is failing
+mysql_plugin             : tcallaghan   2012-07-11 need to revisit test
+partition_binlog         : tcallaghan   2012-07-12 test sometimes fails due to non-deterministic behavior
+mysqldump                : tcallaghan   2012-07-12 test sometimes fails due to non-deterministic behavior

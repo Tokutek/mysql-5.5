@@ -45,7 +45,7 @@ our $quick_collect;
 # default storage engine settings, and use MyISAM
 # as default.  (temporary option used in connection
 # with the change of default storage engine to InnoDB)
-our $default_myisam= 1;
+our $default_myisam= 0;
  
 
 sub collect_option {
