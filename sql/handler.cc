@@ -2201,7 +2201,14 @@ handler *handler::clone(const char *name, MEM_ROOT *mem_root)
   return new_handler;
 }
 
-
+double handler::keyread_time(uint keynr, uint ranges, ha_rows records)
+{
+  uint keys_per_block= (table->file->stats.block_size/2/
+			(table->key_info[keynr].key_length+
+			 table->file->ref_length) + 1);
+  return ((double) (records+keys_per_block-1)/
+          (double) keys_per_block);
+}
 
 void handler::ha_statistic_increment(ulong SSV::*offset) const
 {
