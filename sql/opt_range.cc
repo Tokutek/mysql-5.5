@@ -4071,6 +4071,7 @@ skip_to_ror_scan:
 static double get_index_only_read_time(const PARAM* param, ha_rows records,
                                        int keynr)
 {
+#if 0
   double read_time;
   uint keys_per_block= (param->table->file->stats.block_size/2/
 			(param->table->key_info[keynr].key_length+
@@ -4078,6 +4079,9 @@ static double get_index_only_read_time(const PARAM* param, ha_rows records,
   read_time=((double) (records+keys_per_block-1)/
              (double) keys_per_block);
   return read_time;
+#else
+  return param->table->file->keyread_time(keynr, 1, records);
+#endif
 }
 
 
