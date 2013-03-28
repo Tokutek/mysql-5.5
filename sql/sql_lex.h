@@ -2294,6 +2294,7 @@ struct LEX: public Query_tables_list
    */
   List<String>        load_set_str_list;
   List<String>	      interval_list;
+  List<String>        mc_key_list;
   List<LEX_USER>      users_list;
   List<LEX_COLUMN>    columns;
   List<Item>	      *insert_list,field_list,value_list,update_list;
