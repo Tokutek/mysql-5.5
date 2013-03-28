@@ -326,9 +326,12 @@ enum legacy_db_type
   DB_TYPE_MARIA,
   /** Performance schema engine. */
   DB_TYPE_PERFORMANCE_SCHEMA,
+  DB_TYPE_TOKUDB=41,
   DB_TYPE_FIRST_DYNAMIC=42,
   DB_TYPE_DEFAULT=127 // Must be last
 };
+
+#define DB_TYPE_TOKUDB_DEFINED 1
 
 enum row_type { ROW_TYPE_NOT_USED=-1, ROW_TYPE_DEFAULT, ROW_TYPE_FIXED,
 		ROW_TYPE_DYNAMIC, ROW_TYPE_COMPRESSED,
