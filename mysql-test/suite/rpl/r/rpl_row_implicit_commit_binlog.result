@@ -415,7 +415,7 @@ master-bin.000001	#	Query	#	#	use `test`; DROP INDEX ix ON tt_1
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 INSERT INTO tt_1(ddl_case) VALUES (11);
-CREATE TEMPORARY TABLE tt_xx (a int);
+CREATE TEMPORARY TABLE tt_xx (a int) ENGINE = Innodb;
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 Log_name	Pos	Event_type	Server_id	End_log_pos	Info
@@ -464,7 +464,7 @@ master-bin.000001	#	Xid	#	#	COMMIT /* XID */
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 INSERT INTO tt_1(ddl_case) VALUES (7);
-CREATE TABLE tt_xx (a int);
+CREATE TABLE tt_xx (a int) ENGINE = Innodb;
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 Log_name	Pos	Event_type	Server_id	End_log_pos	Info
@@ -472,7 +472,7 @@ master-bin.000001	#	Query	#	#	BEGIN
 master-bin.000001	#	Table_map	#	#	table_id: # (test.tt_1)
 master-bin.000001	#	Write_rows	#	#	table_id: # flags: STMT_END_F
 master-bin.000001	#	Xid	#	#	COMMIT /* XID */
-master-bin.000001	#	Query	#	#	use `test`; CREATE TABLE tt_xx (a int)
+master-bin.000001	#	Query	#	#	use `test`; CREATE TABLE tt_xx (a int) ENGINE = Innodb
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
