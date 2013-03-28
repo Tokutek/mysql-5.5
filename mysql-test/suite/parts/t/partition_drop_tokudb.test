@@ -1,0 +1,28 @@
+# test that drop partitions does not hang
+
+#------------------------------------------------------------------------------#
+# General not engine specific settings and requirements
+
+##### Options, for debugging support #####
+let $debug= 0;
+
+# The server must support partitioning.
+--source include/have_partition.inc
+
+#------------------------------------------------------------------------------#
+# Engine specific settings and requirements
+
+##### Storage engine to be tested
+--source include/have_tokudb.inc
+
+DROP TABLE IF EXISTS t1;
+create table t1 (col1 int) engine='TokuDB'
+partition by range(abs(col1))
+(partition p0 values less than (15),
+partition p1 values less than maxvalue);
+SHOW CREATE TABLE t1;
+ALTER TABLE t1 DROP PARTITION p0;
+FLUSH TABLES;
+SHOW CREATE TABLE t1;
+SELECT * FROM t1;
+DROP TABLE t1;

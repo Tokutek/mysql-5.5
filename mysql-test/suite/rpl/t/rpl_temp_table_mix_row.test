@@ -18,8 +18,8 @@ source include/have_innodb.inc;
 --echo [on master]
 --connection master
 
-CREATE TABLE t1 (a CHAR(48));
-CREATE TEMPORARY TABLE t1_tmp1(a INT);
+CREATE TABLE t1 (a CHAR(48)) ENGINE=InnoDB;
+CREATE TEMPORARY TABLE t1_tmp1(a INT) ENGINE=InnoDB;
 INSERT INTO t1 VALUES (UUID());
 
 --echo [on slave]
@@ -97,13 +97,13 @@ sync_slave_with_master;
 -- connection master
 
 # action: setup environment
-CREATE TABLE t1 (a int);
-CREATE TABLE t2 ( i1 INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (i1) );
-CREATE TABLE t3 ( i1 INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (i1) );
+CREATE TABLE t1 (a int) ENGINE=InnoDB;
+CREATE TABLE t2 ( i1 INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (i1) ) ENGINE=InnoDB;
+CREATE TABLE t3 ( i1 INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (i1) ) ENGINE=InnoDB;
 CREATE TRIGGER tr1 AFTER DELETE ON t2 FOR EACH ROW INSERT INTO t3 () VALUES ();
 
 # assertion: assert that CREATE is logged as STATEMENT
-CREATE TEMPORARY TABLE t1_tmp (i1 int);
+CREATE TEMPORARY TABLE t1_tmp (i1 int) ENGINE=InnoDB;
 
 # assertion: assert that ALTER TABLE is logged as STATEMENT
 ALTER TABLE t1_tmp ADD COLUMN b INT;
@@ -112,7 +112,7 @@ ALTER TABLE t1_tmp ADD COLUMN b INT;
 DELETE FROM t2;
 
 # assertion: assert that t2_tmp will not make into the binlog (RBR logging atm)
-CREATE TEMPORARY TABLE t2_tmp (a int);
+CREATE TEMPORARY TABLE t2_tmp (a int) ENGINE=InnoDB;
 
 # assertion: assert that ALTER TABLE on t1_tmp will not make into the binlog
 ALTER TABLE t1_tmp ADD COLUMN c INT;

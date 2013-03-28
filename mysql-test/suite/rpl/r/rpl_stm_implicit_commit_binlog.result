@@ -384,13 +384,13 @@ master-bin.000001	#	Query	#	#	use `test`; DROP INDEX ix ON tt_1
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 INSERT INTO tt_1(ddl_case) VALUES (11);
-CREATE TEMPORARY TABLE tt_xx (a int);
+CREATE TEMPORARY TABLE tt_xx (a int) ENGINE = Innodb;
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 Log_name	Pos	Event_type	Server_id	End_log_pos	Info
 master-bin.000001	#	Query	#	#	BEGIN
 master-bin.000001	#	Query	#	#	use `test`; INSERT INTO tt_1(ddl_case) VALUES (11)
-master-bin.000001	#	Query	#	#	use `test`; CREATE TEMPORARY TABLE tt_xx (a int)
+master-bin.000001	#	Query	#	#	use `test`; CREATE TEMPORARY TABLE tt_xx (a int) ENGINE = Innodb
 master-bin.000001	#	Xid	#	#	COMMIT /* XID */
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 
@@ -432,14 +432,14 @@ master-bin.000001	#	Xid	#	#	COMMIT /* XID */
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 INSERT INTO tt_1(ddl_case) VALUES (7);
-CREATE TABLE tt_xx (a int);
+CREATE TABLE tt_xx (a int) ENGINE = Innodb;
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-
 Log_name	Pos	Event_type	Server_id	End_log_pos	Info
 master-bin.000001	#	Query	#	#	BEGIN
 master-bin.000001	#	Query	#	#	use `test`; INSERT INTO tt_1(ddl_case) VALUES (7)
 master-bin.000001	#	Xid	#	#	COMMIT /* XID */
-master-bin.000001	#	Query	#	#	use `test`; CREATE TABLE tt_xx (a int)
+master-bin.000001	#	Query	#	#	use `test`; CREATE TABLE tt_xx (a int) ENGINE = Innodb
 -e-e-e-e-e-e-e-e-e-e-e- >> << -e-e-e-e-e-e-e-e-e-e-e-
 
 -b-b-b-b-b-b-b-b-b-b-b- >> << -b-b-b-b-b-b-b-b-b-b-b-

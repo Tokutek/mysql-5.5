@@ -355,7 +355,7 @@ while ($ddl_cases >= 1)
   }
   if ($ddl_cases == 11)
   {
-    let $cmd= CREATE TEMPORARY TABLE tt_xx (a int);
+    let $cmd= CREATE TEMPORARY TABLE tt_xx (a int) ENGINE = $engine;
     let $in_temporary= yes;
     # In SBR and MIXED modes, the DDL statement is written to the binary log but
     # does not commit the current transaction.
@@ -553,7 +553,7 @@ while ($ddl_cases >= 1)
   }
   if ($ddl_cases == 7)
   {
-    let $cmd= CREATE TABLE tt_xx (a int);
+    let $cmd= CREATE TABLE tt_xx (a int) ENGINE = $engine;
   }
   if ($ddl_cases == 6)
   {

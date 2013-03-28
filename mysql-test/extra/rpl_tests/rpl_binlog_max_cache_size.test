@@ -143,14 +143,14 @@ BEGIN;
 if (`SELECT @@binlog_format = 'STATEMENT' || @@binlog_format = 'MIXED'`)
 {
   --disable_query_log
-  CREATE TABLE t4 SELECT * FROM t1;
+  CREATE TABLE t4 ENGINE=Innodb SELECT * FROM t1;
   --enable_query_log
 }
 if (`SELECT @@binlog_format = 'ROW'`)
 {
   --disable_query_log
   --error ER_TRANS_CACHE_FULL, ER_STMT_CACHE_FULL, ER_ERROR_ON_WRITE
-  CREATE TABLE t4 SELECT * FROM t1;
+  CREATE TABLE t4 ENGINE=Innodb SELECT * FROM t1;
   --enable_query_log
 }
 
@@ -173,7 +173,7 @@ BEGIN;
 --enable_query_log
 
 --disable_query_log
-CREATE TABLE t5 (a int);
+CREATE TABLE t5 (a int) ENGINE=Innodb;
 --enable_query_log
 
 --sync_slave_with_master
