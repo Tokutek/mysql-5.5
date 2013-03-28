@@ -5260,7 +5260,21 @@ int handler::ha_delete_row(const uchar *buf)
   return 0;
 }
 
-
+int handler::ha_fast_update(THD *thd, List<Item> &update_fields, List<Item> &update_values, Item *conds) 
+{
+  int error= fast_update(thd, update_fields, update_values, conds);
+  if (error == 0)
+    mark_trx_read_write();
+  return error;
+}
+  
+int handler::ha_upsert(THD *thd, List<Item> &update_fields, List<Item> &update_values) 
+{
+  int error= upsert(thd, update_fields, update_values);
+  if (error == 0)
+    mark_trx_read_write();
+  return error;
+}
 
 /** @brief
   use_hidden_primary_key() is called in case of an update/delete when
