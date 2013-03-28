@@ -23,7 +23,7 @@ a	b
 2	4
 drop table test.ghost;
 select * from performance_schema.file_instances
-where file_name like "%ghost%";
+where file_name like "%ghost%" and event_name not like "%partition";
 FILE_NAME	EVENT_NAME	OPEN_COUNT
 select * from performance_schema.no_such_table;
 ERROR 42S02: Table 'performance_schema.no_such_table' doesn't exist

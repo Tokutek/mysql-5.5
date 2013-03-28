@@ -228,6 +228,7 @@ DROP TABLE t1, t2;
 # BUG#47774, Assertion failure in InnoDB using column list partitioning
 #
 create table t1 (a varchar(5), b int signed, c varchar(10), d datetime)
+ENGINE=InnoDB
 partition by range columns(b,c)
 subpartition by hash(to_seconds(d))
 ( partition p0 values less than (2, 'b'),
