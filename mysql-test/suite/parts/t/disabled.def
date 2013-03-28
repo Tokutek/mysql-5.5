@@ -1,0 +1,14 @@
+##############################################################################
+#
+#  List the test cases that are to be disabled temporarily.
+#
+#  Separate the test case name and the comment with ':'.
+#
+#    <testcasename> : BUG#<xxxx> <date disabled> <disabler> <comment>
+#
+#  Do not use any TAB characters for whitespace.
+#
+##############################################################################
+partition_mgm_lc0_tokudb     : trac #4721   2012-04-12 tcallaghan  need to change auto_increment behavior for this test to pass
+partition_auto_increment_tokudb     : trac #4721   2012-04-12 tcallaghan  need to change auto_increment behavior for this test to pass
+partition_debug_tokudb : #5479 disable until fixed in 5.6

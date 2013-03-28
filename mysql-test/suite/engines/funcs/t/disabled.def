@@ -95,3 +95,9 @@ rpl_relayspace : Result Difference Due To Change In .inc file
 rpl_row_inexist_tbl : Result Difference Due To Change In .inc file
 rpl_sp : Result Difference Due To Change In .inc file
 rpl_rbr_to_sbr : Result Difference Due To Change In .inc file
+rpl_row_until : Test Timesout
+
+ai_init_alter_table  : #4640 #4626 tokudb auto increment is different
+ai_init_create_table : #4640 #4626 tokudb auto increment is different
+ai_reset_by_truncate : #4640 #4626 tokudb auto increment is different
+de_truncate_autoinc  : #4640 #4626 tokudb auto increment is different

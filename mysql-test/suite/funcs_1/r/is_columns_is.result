@@ -97,7 +97,7 @@ def	information_schema	FILES	LOGFILE_GROUP_NUMBER	9	NULL	YES	bigint	NULL	NULL	19
 def	information_schema	FILES	MAXIMUM_SIZE	18	NULL	YES	bigint	NULL	NULL	20	0	NULL	NULL	bigint(21) unsigned			select	
 def	information_schema	FILES	MAX_DATA_LENGTH	30	NULL	YES	bigint	NULL	NULL	20	0	NULL	NULL	bigint(21) unsigned			select	
 def	information_schema	FILES	RECOVER_TIME	23	NULL	YES	bigint	NULL	NULL	19	0	NULL	NULL	bigint(4)			select	
-def	information_schema	FILES	ROW_FORMAT	26	NULL	YES	varchar	10	30	NULL	NULL	utf8	utf8_general_ci	varchar(10)			select	
+def	information_schema	FILES	ROW_FORMAT	26	NULL	YES	varchar	20	60	NULL	NULL	utf8	utf8_general_ci	varchar(20)			select	
 def	information_schema	FILES	STATUS	37		NO	varchar	20	60	NULL	NULL	utf8	utf8_general_ci	varchar(20)			select	
 def	information_schema	FILES	TABLESPACE_NAME	4	NULL	YES	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
 def	information_schema	FILES	TABLE_CATALOG	5		NO	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
@@ -266,7 +266,7 @@ def	information_schema	TABLES	DATA_LENGTH	10	NULL	YES	bigint	NULL	NULL	20	0	NULL
 def	information_schema	TABLES	ENGINE	5	NULL	YES	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
 def	information_schema	TABLES	INDEX_LENGTH	12	NULL	YES	bigint	NULL	NULL	20	0	NULL	NULL	bigint(21) unsigned			select	
 def	information_schema	TABLES	MAX_DATA_LENGTH	11	NULL	YES	bigint	NULL	NULL	20	0	NULL	NULL	bigint(21) unsigned			select	
-def	information_schema	TABLES	ROW_FORMAT	7	NULL	YES	varchar	10	30	NULL	NULL	utf8	utf8_general_ci	varchar(10)			select	
+def	information_schema	TABLES	ROW_FORMAT	7	NULL	YES	varchar	20	60	NULL	NULL	utf8	utf8_general_ci	varchar(20)			select	
 def	information_schema	TABLES	TABLE_CATALOG	1		NO	varchar	512	1536	NULL	NULL	utf8	utf8_general_ci	varchar(512)			select	
 def	information_schema	TABLES	TABLE_COLLATION	18	NULL	YES	varchar	32	96	NULL	NULL	utf8	utf8_general_ci	varchar(32)			select	
 def	information_schema	TABLES	TABLE_COMMENT	21		NO	varchar	2048	6144	NULL	NULL	utf8	utf8_general_ci	varchar(2048)			select	
@@ -297,6 +297,26 @@ def	information_schema	TABLE_PRIVILEGES	PRIVILEGE_TYPE	5		NO	varchar	64	192	NULL
 def	information_schema	TABLE_PRIVILEGES	TABLE_CATALOG	2		NO	varchar	512	1536	NULL	NULL	utf8	utf8_general_ci	varchar(512)			select	
 def	information_schema	TABLE_PRIVILEGES	TABLE_NAME	4		NO	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
 def	information_schema	TABLE_PRIVILEGES	TABLE_SCHEMA	3		NO	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
+def	information_schema	TokuDB_file_map	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_file_map	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	blocknum	4	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	checkpoint_count	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	offset	5	NULL	YES	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	size	6	NULL	YES	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_allocated	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_in_use	4	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	5	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	6	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_info	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_info	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_user_data	database_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_user_data	data_size	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_user_data	table_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_user_data_exact	database_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_user_data_exact	data_size	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_user_data_exact	table_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TRIGGERS	ACTION_CONDITION	9	NULL	YES	longtext	4294967295	4294967295	NULL	NULL	utf8	utf8_general_ci	longtext			select	
 def	information_schema	TRIGGERS	ACTION_ORDER	8	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(4)			select	
 def	information_schema	TRIGGERS	ACTION_ORIENTATION	11		NO	varchar	9	27	NULL	NULL	utf8	utf8_general_ci	varchar(9)			select	
@@ -484,7 +504,7 @@ NULL	information_schema	FILES	LAST_ACCESS_TIME	datetime	NULL	NULL	NULL	NULL	date
 NULL	information_schema	FILES	RECOVER_TIME	bigint	NULL	NULL	NULL	NULL	bigint(4)
 NULL	information_schema	FILES	TRANSACTION_COUNTER	bigint	NULL	NULL	NULL	NULL	bigint(4)
 NULL	information_schema	FILES	VERSION	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
-3.0000	information_schema	FILES	ROW_FORMAT	varchar	10	30	utf8	utf8_general_ci	varchar(10)
+3.0000	information_schema	FILES	ROW_FORMAT	varchar	20	60	utf8	utf8_general_ci	varchar(20)
 NULL	information_schema	FILES	TABLE_ROWS	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
 NULL	information_schema	FILES	AVG_ROW_LENGTH	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
 NULL	information_schema	FILES	DATA_LENGTH	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
@@ -649,7 +669,7 @@ NULL	information_schema	STATISTICS	SUB_PART	bigint	NULL	NULL	NULL	NULL	bigint(3)
 3.0000	information_schema	TABLES	TABLE_TYPE	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 3.0000	information_schema	TABLES	ENGINE	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 NULL	information_schema	TABLES	VERSION	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
-3.0000	information_schema	TABLES	ROW_FORMAT	varchar	10	30	utf8	utf8_general_ci	varchar(10)
+3.0000	information_schema	TABLES	ROW_FORMAT	varchar	20	60	utf8	utf8_general_ci	varchar(20)
 NULL	information_schema	TABLES	TABLE_ROWS	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
 NULL	information_schema	TABLES	AVG_ROW_LENGTH	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
 NULL	information_schema	TABLES	DATA_LENGTH	bigint	NULL	NULL	NULL	NULL	bigint(21) unsigned
@@ -685,6 +705,26 @@ NULL	information_schema	TABLESPACES	NODEGROUP_ID	bigint	NULL	NULL	NULL	NULL	bigi
 3.0000	information_schema	TABLE_PRIVILEGES	TABLE_NAME	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 3.0000	information_schema	TABLE_PRIVILEGES	PRIVILEGE_TYPE	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 3.0000	information_schema	TABLE_PRIVILEGES	IS_GRANTABLE	varchar	3	9	utf8	utf8_general_ci	varchar(3)
+3.0000	information_schema	TokuDB_file_map	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_file_map	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_block_map	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_block_map	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+NULL	information_schema	TokuDB_fractal_tree_block_map	checkpoint_count	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_block_map	blocknum	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_block_map	offset	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_block_map	size	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_fractal_tree_info	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_info	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_allocated	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	bigint	NULL	NULL	NULL	NULL	bigint(0)
+NULL	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_user_data	database_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_user_data	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+NULL	information_schema	TokuDB_user_data	data_size	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_user_data_exact	database_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_user_data_exact	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+NULL	information_schema	TokuDB_user_data_exact	data_size	bigint	NULL	NULL	NULL	NULL	bigint(0)
 3.0000	information_schema	TRIGGERS	TRIGGER_CATALOG	varchar	512	1536	utf8	utf8_general_ci	varchar(512)
 3.0000	information_schema	TRIGGERS	TRIGGER_SCHEMA	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 3.0000	information_schema	TRIGGERS	TRIGGER_NAME	varchar	64	192	utf8	utf8_general_ci	varchar(64)
