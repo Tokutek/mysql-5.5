@@ -160,7 +160,7 @@ SET DEBUG_SYNC = 'RESET';
 # Connection: con1.
 SET DEBUG_SYNC= 'thread_end SIGNAL con1_end';
 KILL @id;
-ERROR 70100: Query execution was interrupted
+Got one of the listed errors
 SET DEBUG_SYNC= 'now WAIT_FOR con1_end';
 # ER_SERVER_SHUTDOWN, CR_SERVER_GONE_ERROR, CR_SERVER_LOST,
 # depending on the timing of close of the connection socket
