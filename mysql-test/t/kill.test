@@ -343,7 +343,7 @@ SET DEBUG_SYNC = 'RESET';
 let $ID= `SELECT @id := CONNECTION_ID()`;
 SET DEBUG_SYNC= 'thread_end SIGNAL con1_end';
 --disable_reconnect
---error ER_QUERY_INTERRUPTED
+--error 1053,ER_QUERY_INTERRUPTED
 KILL @id;
 
 connection con2;
