@@ -10,6 +10,8 @@
 # Original Date: 2008-06-27                                                    #
 ################################################################################
 
+--source include/not_mac.inc
+
 # The server must support partitioning.
 --source include/have_partition.inc
 
