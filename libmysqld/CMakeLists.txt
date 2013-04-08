@@ -112,6 +112,7 @@ SET(LIBS
   ${LIBWRAP} ${LIBCRYPT} ${LIBDL}
   ${MYSQLD_STATIC_PLUGIN_LIBS}
   sql_embedded
+  ${HOT_BACKUP_LIBS}
 )
 
 # Some storage engine were compiled for embedded specifically
