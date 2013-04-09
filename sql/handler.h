@@ -747,6 +747,8 @@ struct handlerton
     This is going away and new engines will just use "name" for this.
   */
   enum legacy_db_type db_type;
+  enum legacy_db_type other_db_type;
+
   /*
     each storage engine has it's own memory area (actually a pointer)
     in the thd, for storing per-connection information.
