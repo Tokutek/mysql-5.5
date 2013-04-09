@@ -191,6 +191,7 @@ enum enum_sql_command {
   SQLCOM_SHOW_PROFILE, SQLCOM_SHOW_PROFILES,
   SQLCOM_SIGNAL, SQLCOM_RESIGNAL,
   SQLCOM_SHOW_RELAYLOG_EVENTS, 
+  SQLCOM_BACKUP,
   /*
     When a command is added here, be sure it's also added in mysqld.cc
     in "struct show_var_st status_vars[]= {" ...
