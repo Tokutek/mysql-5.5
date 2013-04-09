@@ -77,6 +77,7 @@ SET (SQL_SOURCE
                sql_signal.cc rpl_handler.cc mdl.cc sql_admin.cc
                transaction.cc sys_vars.cc sql_truncate.cc datadict.cc
                sql_reload.cc
+               sql_backup.cc
                ${GEN_SOURCES}
                ${MYSYS_LIBWRAP_SOURCE})
 
