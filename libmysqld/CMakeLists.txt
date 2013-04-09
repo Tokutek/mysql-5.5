@@ -86,7 +86,7 @@ SET(SQL_EMBEDDED_SOURCES emb_qcache.cc libmysqld.c lib_sql.cc
            ../sql/sql_signal.cc ../sql/rpl_handler.cc
 	       ../sql/rpl_utility.cc
            ../sql/sys_vars.cc
-           ../sql/sys_backup.cc
+           ../sql/sql_backup.cc
            ${CMAKE_BINARY_DIR}/sql/sql_builtin.cc
            ../sql/mdl.cc ../sql/transaction.cc
            ${GEN_SOURCES}
