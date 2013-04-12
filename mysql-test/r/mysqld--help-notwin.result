@@ -724,6 +724,9 @@ The following options may be given as the first argument:
  OFF, FORCE (don't start if the plugin fails to load).
  --tokudb-analyze-time=# 
  analyze time
+ --tokudb-backup-throttle=# 
+ The rate (bytes per second) that the backup is allowed to
+ read data out of the mysql data directory
  --tokudb-block-size=# 
  fractal tree block size
  --tokudb-cache-size=# 
@@ -1039,6 +1042,7 @@ timed-mutexes FALSE
 tmp-table-size 16777216
 tokudb ON
 tokudb-analyze-time 60
+tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
 tokudb-cache-size 0
 tokudb-checkpoint-lock FALSE
