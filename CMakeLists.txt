@@ -115,9 +115,6 @@ FOREACH(_base
   ENDIF()
 ENDFOREACH()
 
-## TOKU: Setting rpath so that toku hot backup can be linked to from lib dir.
-SET(CMAKE_INSTALL_RPATH "\$ORIGIN/../lib/:\$\$ORIGIN/../lib/")
-
 # Following autotools tradition, add preprocessor definitions
 # specified in environment variable CPPFLAGS
 IF(DEFINED ENV{CPPFLAGS})
@@ -287,6 +284,9 @@ SET (MYSQLD_STATIC_PLUGIN_LIBS "" CACHE INTERNAL "")
  # Add storage engines and plugins.
  CONFIGURE_PLUGINS()
 ENDIF()
+
+## TOKU: Setting rpath so that toku hot backup can be linked to from lib dir.
+SET(CMAKE_INSTALL_RPATH "\$ORIGIN/../${INSTALL_LIBDIR}/:\$\$ORIGIN/../${INSTALL_LIBDIR}/")
 
 ## TOKU: produces HotBackup library 
 ADD_SUBDIRECTORY(toku_backup)
