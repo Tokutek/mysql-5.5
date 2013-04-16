@@ -40,3 +40,5 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
 void sql_backup_throttle(unsigned long rate) {
     tokubackup_throttle_backup(rate);
 }
+
+const char *tokubackup_version = tokubackup_version_string;
