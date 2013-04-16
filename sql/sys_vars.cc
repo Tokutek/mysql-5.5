@@ -3356,6 +3356,13 @@ static Sys_var_ulong Sys_tokudb_backup_throttle(
        NO_MUTEX_GUARD, NOT_IN_BINLOG, ON_CHECK(0),
        ON_UPDATE(update_backup_throttle));
 
+static Sys_var_charptr Sys_tokubackup_version(
+       "tokubackup_version",
+       "The version number of the installed tokutek backup library",
+       READ_ONLY GLOBAL_VAR(tokubackup_version), NO_CMD_LINE, IN_SYSTEM_CHARSET,
+       DEFAULT(0));
+                            
+
 /****************************************************************************
   Used templates
 ****************************************************************************/
