@@ -148,8 +148,18 @@ IF(NOT WITHOUT_DYNAMIC_PLUGINS)
   ENDIF()
 ENDIF()
 
+# Toku: We want the tokudb version of mysql to use jemalloc.
+# These extra flags are needed to make it work in the context of mysqld 
+IF(DEFINED TOKU_JEMALLOC_LIBRARY)
+  SET(OPTIONAL_JEMALLOC_LIBRARY "${TOKU_JEMALLOC_LIBRARY}")
+  MESSAGE(STATUS "${OPTIONAL_JEMALLOC_LIBRARY}")
+ELSE()
+  SET(OPTIONAL_JEMALLOC_LIBRARY "")
+ENDIF()
+
 SET_TARGET_PROPERTIES(mysqld PROPERTIES ENABLE_EXPORTS TRUE) 
-TARGET_LINK_LIBRARIES(mysqld ${HOT_BACKUP_LIBS} sql mysys)
+# Toku: NOTE: Hot Backup *MUST* be linked to mysqld first!
+TARGET_LINK_LIBRARIES(mysqld ${HOT_BACKUP_LIBS} "${OPTIONAL_JEMALLOC_LIBRARY}" sql mysys)
 
 # Provide plugins with minimal set of libraries
 SET(INTERFACE_LIBS ${LIBRT})
