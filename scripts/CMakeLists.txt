@@ -80,8 +80,6 @@ INSTALL(FILES
   DESTINATION ${INSTALL_MYSQLSHAREDIR} COMPONENT Server
 )
 
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/tokustat.py ${CMAKE_CURRENT_SOURCE_DIR}/tokufilecheck.py DESTINATION ${INSTALL_BINDIR} COMPONENT Server)
-
 # TCMalloc hacks
 IF(MALLOC_LIB)
   MESSAGE("Using tcmalloc '${MALLOC_LIB}'")
@@ -331,6 +329,7 @@ ELSE()
     mysqldumpslow
     mysqld_multi
     mysqld_safe
+    tokustat.py tokufilecheck.py
   )
   FOREACH(file ${BIN_SCRIPTS})
     IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/${file}.sh)
