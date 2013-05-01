@@ -149,7 +149,7 @@ IF(NOT WITHOUT_DYNAMIC_PLUGINS)
 ENDIF()
 
 IF(UNIX)
-  SET(JEMALLOC_LIBRARY -Wl,--whole-archive jemalloc -Wl,-no-whole-archive)
+  SET(JEMALLOC_LIBRARY -Wl,--whole-archive jemalloc -Wl,--no-whole-archive)
 ELSEIF(APPLE)
   SET(JEMALLOC_LIBRARY -Wl,-force_load jemalloc)
 ELSE()
