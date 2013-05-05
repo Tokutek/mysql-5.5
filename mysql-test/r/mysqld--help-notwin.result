@@ -790,8 +790,8 @@ The following options may be given as the first argument:
  --tokudb-row-format[=name] 
  Specifies the compression method for a table during this
  session. Possible values are TOKUDB_UNCOMPRESSED,
- TOKUDB_ZLIB, TOKUDB_QUICKLZ, TOKUDB_LZMA, TOKUDB_FAST,
- TOKUDB_SMALL and TOKUDB_DEFAULT
+ TOKUDB_ZLIB, TOKUDB_QUICKLZ, TOKUDB_LZMA, TOKUDB_LZ4,
+ TOKUDB_FAST, TOKUDB_SMALL and TOKUDB_DEFAULT
  --tokudb-tmp-dir=name 
  Tokudb Tmp Dir
  --tokudb-version=name 

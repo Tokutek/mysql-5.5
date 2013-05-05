@@ -4102,6 +4102,9 @@ static int get_schema_tables_record(THD *thd, TABLE_LIST *tables,
       case ROW_TYPE_TOKU_LZMA:
         tmp_buff= "tokudb_lzma";
         break;
+      case ROW_TYPE_TOKU_LZ4:
+        tmp_buff= "tokudb_lz4";
+        break;
       case ROW_TYPE_TOKU_FAST:
         tmp_buff= "tokudb_fast";
         break;
