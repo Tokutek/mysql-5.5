@@ -3142,6 +3142,7 @@ public:
   {
     return Item_field::save_in_field(field_arg, no_conversions);
   }
+  enum Type type() const { return INSERT_VALUE_ITEM; }
   /* 
    We use RAND_TABLE_BIT to prevent Item_insert_value from
    being treated as a constant and precalculated before execution
