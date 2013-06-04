@@ -6,18 +6,38 @@
 
 ulong backup_throttle = ULONG_MAX;
 
+struct backup_poll {
+    THD *thd;
+    char *the_string;
+    size_t len;
+    backup_poll(THD *t): thd(t), the_string(NULL), len(0) {};
+    ~backup_poll(void) {
+        if (the_string) {
+            free(the_string);
+        }
+    }
+};
+
 static int mysql_backup_poll_fun(float progress, const char *progress_string, void *poll_extra);
 static int mysql_backup_poll_fun(float progress, const char *progress_string, void *poll_extra) {
-    THD *thd = (THD*)poll_extra;
-    if (thd->killed) {
+    backup_poll *bp = (backup_poll*)poll_extra;
+    if (bp->thd->killed) {
         return ER_ABORTING_CONNECTION;
     }
     float percentage = progress * 100;
-    int len = 100+strlen(progress_string);
-    char str[len];
-    int r = snprintf(str, len, "Backup about %.0f%% done: %s", percentage, progress_string);
-    assert(r<len);
-    thd_proc_info(thd, str);
+    char *old_string = NULL;
+    {
+        int len = 100+strlen(progress_string);
+        if ((size_t)len > bp->len) {
+            old_string = bp->the_string; // don't free this until after we set the thd_proc_info (since it may still be refered to)
+            bp->the_string = (char*)malloc(len);
+            bp->len    = len;
+        }
+    }
+    int r = snprintf(bp->the_string, bp->len, "Backup about %.0f%% done: %s", percentage, progress_string);
+    assert((size_t)r<bp->len);
+    thd_proc_info(bp->thd, bp->the_string);
+    if (old_string) free(old_string);
     return 0;
 }
 
@@ -31,9 +51,12 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
     fprintf(stderr, "Now I call backup from %s:%d.  The dest directory is %s, source dir is %s\n", __FILE__, __LINE__, dest_dir, source_dir);
     const char *source_dirs[] = {source_dir};
     const char *dest_dirs  [] = {dest_dir};
+    backup_poll bp(thd);
     int r = tokubackup_create_backup(source_dirs, dest_dirs, 1,
-                                     mysql_backup_poll_fun, thd,
+                                     mysql_backup_poll_fun, &bp,
                                      mysql_error_fun,       thd);
+    thd_proc_info(thd, "backup done"); // set this before freeing the pointer to the bp string, since it may be still refered to inside.
+    free(bp.the_string);
     return r;
 }
 
