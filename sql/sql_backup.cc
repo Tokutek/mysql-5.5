@@ -13,7 +13,7 @@ struct backup_poll {
     backup_poll(THD *t): thd(t), the_string(NULL), len(0) {};
     ~backup_poll(void) {
         if (the_string) {
-            free(the_string);
+            my_free(the_string);
         }
     }
 };
@@ -37,7 +37,7 @@ static int mysql_backup_poll_fun(float progress, const char *progress_string, vo
     int r = snprintf(bp->the_string, bp->len, "Backup about %.0f%% done: %s", percentage, progress_string);
     assert((size_t)r<bp->len);
     thd_proc_info(bp->thd, bp->the_string);
-    if (old_string) free(old_string);
+    if (old_string) my_free(old_string);
     return 0;
 }
 
@@ -56,7 +56,6 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
                                      mysql_backup_poll_fun, &bp,
                                      mysql_error_fun,       thd);
     thd_proc_info(thd, "backup done"); // set this before freeing the pointer to the bp string, since it may be still refered to inside.
-    my_free(bp.the_string);
     return r;
 }
 
