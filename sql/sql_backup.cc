@@ -30,7 +30,7 @@ static int mysql_backup_poll_fun(float progress, const char *progress_string, vo
         int len = 100+strlen(progress_string);
         if ((size_t)len > bp->len) {
             old_string = bp->the_string; // don't free this until after we set the thd_proc_info (since it may still be refered to)
-            bp->the_string = (char*)malloc(len);
+            bp->the_string = (char*)my_malloc(len, MY_FAE);
             bp->len    = len;
         }
     }
@@ -56,7 +56,7 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
                                      mysql_backup_poll_fun, &bp,
                                      mysql_error_fun,       thd);
     thd_proc_info(thd, "backup done"); // set this before freeing the pointer to the bp string, since it may be still refered to inside.
-    free(bp.the_string);
+    my_free(bp.the_string);
     return r;
 }
 
