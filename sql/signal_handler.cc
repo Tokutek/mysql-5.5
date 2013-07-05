@@ -240,6 +240,8 @@ extern "C" sig_handler handle_fatal_signal(int sig)
       "\"mlockall\" bugs.\n");
   }
 
+  ha_handle_fatal_signal(current_thd, sig);
+
 #ifdef HAVE_WRITE_CORE
   if (test_flags & TEST_CORE_ON_SIGNAL)
   {
