@@ -1992,6 +1992,25 @@ int ha_start_consistent_snapshot(THD *thd)
   return 0;
 }
 
+static my_bool handle_fatal_signal(THD *thd, plugin_ref plugin,
+                                   void *arg)
+{
+  int sig = *((int*)arg);
+  handlerton *hton= plugin_data(plugin, handlerton *);
+  if (hton->state == SHOW_OPTION_YES &&
+      hton->handle_fatal_signal)
+  {
+    hton->handle_fatal_signal(hton, thd, sig);
+    return true;
+  }
+  return false;
+}
+
+int ha_handle_fatal_signal(THD *thd, int sig)
+{
+  plugin_foreach(thd, handle_fatal_signal, MYSQL_STORAGE_ENGINE_PLUGIN, &sig);
+  return 0;
+}
 
 static my_bool flush_handlerton(THD *thd, plugin_ref plugin,
                                 void *arg)
