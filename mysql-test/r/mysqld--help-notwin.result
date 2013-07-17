@@ -762,6 +762,11 @@ The following options may be given as the first argument:
  TokuDB file system space reserve (percent free required)
  --tokudb-fsync-log-period=# 
  TokuDB fsync log period
+ --tokudb-gdb-on-fatal 
+ TokuDB enable gdb debug info on fatal signal
+ (Defaults to on; use --skip-tokudb-gdb-on-fatal to disable.)
+ --tokudb-gdb-path=name 
+ TokuDB path to gdb for extra debug info on fatal signal
  --tokudb-init-flags=# 
  Sets TokuDB DB_ENV->open flags
  --tokudb-load-save-space 
@@ -1060,6 +1065,8 @@ tokudb-disable-slow-update FALSE
 tokudb-disable-slow-upsert FALSE
 tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
+tokudb-gdb-on-fatal TRUE
+tokudb-gdb-path /usr/bin/gdb
 tokudb-init-flags 11403457
 tokudb-load-save-space FALSE
 tokudb-lock-timeout 4000
