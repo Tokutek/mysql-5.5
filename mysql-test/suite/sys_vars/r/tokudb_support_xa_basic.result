@@ -1,0 +1,174 @@
+SET @session_start_value = @@session.tokudb_support_xa;
+SELECT @session_start_value;
+@session_start_value
+1
+SET @global_start_value = @@global.tokudb_support_xa;
+SELECT @global_start_value;
+@global_start_value
+1
+'#--------------------FN_DYNVARS_046_01------------------------#'
+SET @@session.tokudb_support_xa = 0;
+SET @@session.tokudb_support_xa = DEFAULT;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = 0;
+SET @@global.tokudb_support_xa = DEFAULT;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
+'#---------------------FN_DYNVARS_046_02-------------------------#'
+SET tokudb_support_xa = 1;
+SELECT @@tokudb_support_xa;
+@@tokudb_support_xa
+1
+SELECT session.tokudb_support_xa;
+ERROR 42S02: Unknown table 'session' in field list
+SELECT local.tokudb_support_xa;
+ERROR 42S02: Unknown table 'local' in field list
+SELECT global.tokudb_support_xa;
+ERROR 42S02: Unknown table 'global' in field list
+SET session tokudb_support_xa = 0;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+0
+SET global tokudb_support_xa = 0;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+'#--------------------FN_DYNVARS_046_03------------------------#'
+SET @@session.tokudb_support_xa = 0;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+0
+SET @@session.tokudb_support_xa = 1;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = 0;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+SET @@global.tokudb_support_xa = 1;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
+'#--------------------FN_DYNVARS_046_04-------------------------#'
+SET @@session.tokudb_support_xa = -0.6;
+ERROR 42000: Incorrect argument type to variable 'tokudb_support_xa'
+SET @@session.tokudb_support_xa = 1.6;
+ERROR 42000: Incorrect argument type to variable 'tokudb_support_xa'
+SET @@session.tokudb_support_xa = "T";
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'T'
+SET @@session.tokudb_support_xa = "Y";
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'Y'
+SET @@session.tokudb_support_xa = TRÜE;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'TRÜE'
+SET @@session.tokudb_support_xa = ÕN;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'ÕN'
+SET @@session.tokudb_support_xa = OF;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+0
+SET @@session.tokudb_support_xa = ÓFF;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'ÓFF'
+SET @@global.tokudb_support_xa = -1;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = 2;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of '2'
+SET @@global.tokudb_support_xa = "T";
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'T'
+SET @@global.tokudb_support_xa = "Y";
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'Y'
+SET @@global.tokudb_support_xa = TRÜE;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'TRÜE'
+SET @@global.tokudb_support_xa = ÕN;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'ÕN'
+SET @@global.tokudb_support_xa = OF;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+SET @@global.tokudb_support_xa = ÓFF;
+ERROR 42000: Variable 'tokudb_support_xa' can't be set to the value of 'ÓFF'
+'#-------------------FN_DYNVARS_046_05----------------------------#'
+SET @@global.tokudb_support_xa = 0;
+SET @@session.tokudb_support_xa = 1;
+SELECT @@global.tokudb_support_xa AS res_is_0;
+res_is_0
+0
+SET @@global.tokudb_support_xa = 0;
+SELECT @@session.tokudb_support_xa AS res_is_1;
+res_is_1
+1
+'#----------------------FN_DYNVARS_046_06------------------------#'
+SELECT IF(@@global.tokudb_support_xa, "ON", "OFF") =
+VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES
+WHERE VARIABLE_NAME='tokudb_support_xa';
+IF(@@global.tokudb_support_xa, "ON", "OFF") =
+VARIABLE_VALUE
+1
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.GLOBAL_VARIABLES
+WHERE VARIABLE_NAME='tokudb_support_xa';
+VARIABLE_VALUE
+OFF
+'#----------------------FN_DYNVARS_046_07------------------------#'
+SELECT IF(@@session.tokudb_support_xa, "ON", "OFF") =
+VARIABLE_VALUE FROM INFORMATION_SCHEMA.SESSION_VARIABLES
+WHERE VARIABLE_NAME='tokudb_support_xa';
+IF(@@session.tokudb_support_xa, "ON", "OFF") =
+VARIABLE_VALUE
+1
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SELECT VARIABLE_VALUE FROM INFORMATION_SCHEMA.SESSION_VARIABLES
+WHERE VARIABLE_NAME='tokudb_support_xa';
+VARIABLE_VALUE
+ON
+'#---------------------FN_DYNVARS_046_08-------------------------#'
+SET @@session.tokudb_support_xa = OFF;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+0
+SET @@session.tokudb_support_xa = ON;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = OFF;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+SET @@global.tokudb_support_xa = ON;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
+'#---------------------FN_DYNVARS_046_09----------------------#'
+SET @@session.tokudb_support_xa = TRUE;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SET @@session.tokudb_support_xa = FALSE;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+0
+SET @@global.tokudb_support_xa = TRUE;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = FALSE;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+0
+SET @@session.tokudb_support_xa = @session_start_value;
+SELECT @@session.tokudb_support_xa;
+@@session.tokudb_support_xa
+1
+SET @@global.tokudb_support_xa = @global_start_value;
+SELECT @@global.tokudb_support_xa;
+@@global.tokudb_support_xa
+1
