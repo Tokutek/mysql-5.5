@@ -1,7 +1,7 @@
 ################# mysql-test\t\tokudb_support_xa_basic.test ###################
 #                                                                             #
 # Variable Name: tokudb_support_xa                                            #
-# Scope: GLOBAL | SESSION                                                     #
+# Scope: GLOBAL                                                               #
 # Access Type: Dynamic                                                        #
 # Data Type: boolean                                                          #
 # Default Value: 1                                                            #
