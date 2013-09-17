@@ -311,12 +311,6 @@ def	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	5	0	NO	bigint	
 def	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	6	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_info	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_fractal_tree_info	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_user_data	database_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_user_data	data_size	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
-def	information_schema	TokuDB_user_data	table_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_user_data_exact	database_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_user_data_exact	data_size	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
-def	information_schema	TokuDB_user_data_exact	table_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TRIGGERS	ACTION_CONDITION	9	NULL	YES	longtext	4294967295	4294967295	NULL	NULL	utf8	utf8_general_ci	longtext			select	
 def	information_schema	TRIGGERS	ACTION_ORDER	8	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(4)			select	
 def	information_schema	TRIGGERS	ACTION_ORIENTATION	11		NO	varchar	9	27	NULL	NULL	utf8	utf8_general_ci	varchar(9)			select	
@@ -719,12 +713,6 @@ NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_allocated	bigint	
 NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
-3.0000	information_schema	TokuDB_user_data	database_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-3.0000	information_schema	TokuDB_user_data	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-NULL	information_schema	TokuDB_user_data	data_size	bigint	NULL	NULL	NULL	NULL	bigint(0)
-3.0000	information_schema	TokuDB_user_data_exact	database_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-3.0000	information_schema	TokuDB_user_data_exact	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-NULL	information_schema	TokuDB_user_data_exact	data_size	bigint	NULL	NULL	NULL	NULL	bigint(0)
 3.0000	information_schema	TRIGGERS	TRIGGER_CATALOG	varchar	512	1536	utf8	utf8_general_ci	varchar(512)
 3.0000	information_schema	TRIGGERS	TRIGGER_SCHEMA	varchar	64	192	utf8	utf8_general_ci	varchar(64)
 3.0000	information_schema	TRIGGERS	TRIGGER_NAME	varchar	64	192	utf8	utf8_general_ci	varchar(64)
