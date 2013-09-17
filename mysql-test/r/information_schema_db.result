@@ -35,9 +35,7 @@ TABLE_PRIVILEGES
 TRIGGERS
 USER_PRIVILEGES
 VIEWS
-TokuDB_user_data_exact
 TokuDB_fractal_tree_info
-TokuDB_user_data
 TokuDB_fractal_tree_block_map
 TokuDB_file_map
 show tables from INFORMATION_SCHEMA like 'T%';
@@ -47,9 +45,7 @@ TABLESPACES
 TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
-TokuDB_user_data_exact
 TokuDB_fractal_tree_info
-TokuDB_user_data
 TokuDB_fractal_tree_block_map
 TokuDB_file_map
 create database `inf%`;
