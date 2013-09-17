@@ -53,8 +53,6 @@ DROP TABLE tmp_proxies_priv;
 
 CREATE TEMPORARY TABLE tmp_plugin LIKE plugin; 
 INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb','ha_tokudb.so'); 
-INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_user_data','ha_tokudb.so'); 
-INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_user_data_exact','ha_tokudb.so'); 
 INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_file_map','ha_tokudb.so');
 INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_fractal_tree_info','ha_tokudb.so');
 INSERT INTO tmp_plugin (name,dl) VALUES ('tokudb_fractal_tree_block_map','ha_tokudb.so');
