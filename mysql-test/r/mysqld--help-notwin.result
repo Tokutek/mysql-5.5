@@ -772,10 +772,14 @@ The following options may be given as the first argument:
  TokuDB path to gdb for extra debug info on fatal signal
  --tokudb-init-flags=# 
  Sets TokuDB DB_ENV->open flags
+ --tokudb-last-lock-timeout=name 
+ last TokuDB lock timeout
  --tokudb-load-save-space 
  if on, intial loads are slower but take less space
  --tokudb-lock-timeout=# 
  TokuDB lock timeout
+ --tokudb-lock-timeout-debug=# 
+ TokuDB lock timeout debug
  --tokudb-log-client-errors 
  Tokudb Log Client Errors
  --tokudb-log-dir=name 
@@ -1072,8 +1076,10 @@ tokudb-fsync-log-period 0
 tokudb-gdb-on-fatal TRUE
 tokudb-gdb-path /usr/bin/gdb
 tokudb-init-flags 11403457
+tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space FALSE
 tokudb-lock-timeout 4000
+tokudb-lock-timeout-debug 0
 tokudb-log-client-errors FALSE
 tokudb-log-dir (No default value)
 tokudb-max-lock-memory 0
