@@ -76,7 +76,10 @@ TRIGGERS
 USER_PRIVILEGES
 VIEWS
 TokuDB_fractal_tree_info
+TokuDB_trx
 TokuDB_fractal_tree_block_map
+TokuDB_locks
+TokuDB_lock_waits
 TokuDB_file_map
 columns_priv
 db
@@ -117,7 +120,10 @@ TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
 TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_trx	TokuDB_trx
 TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_locks	TokuDB_locks
+TokuDB_lock_waits	TokuDB_lock_waits
 TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
@@ -140,7 +146,10 @@ TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
 TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_trx	TokuDB_trx
 TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_locks	TokuDB_locks
+TokuDB_lock_waits	TokuDB_lock_waits
 TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
@@ -163,7 +172,10 @@ TABLE_CONSTRAINTS	TABLE_CONSTRAINTS
 TABLE_PRIVILEGES	TABLE_PRIVILEGES
 TRIGGERS	TRIGGERS
 TokuDB_fractal_tree_info	TokuDB_fractal_tree_info
+TokuDB_trx	TokuDB_trx
 TokuDB_fractal_tree_block_map	TokuDB_fractal_tree_block_map
+TokuDB_locks	TokuDB_locks
+TokuDB_lock_waits	TokuDB_lock_waits
 TokuDB_file_map	TokuDB_file_map
 tables_priv	tables_priv
 time_zone	time_zone
@@ -655,7 +667,10 @@ TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
 TokuDB_fractal_tree_info
+TokuDB_trx
 TokuDB_fractal_tree_block_map
+TokuDB_locks
+TokuDB_lock_waits
 TokuDB_file_map
 create database information_schema;
 ERROR 42000: Access denied for user 'root'@'localhost' to database 'information_schema'
@@ -668,7 +683,10 @@ TABLE_CONSTRAINTS	SYSTEM VIEW
 TABLE_PRIVILEGES	SYSTEM VIEW
 TRIGGERS	SYSTEM VIEW
 TokuDB_fractal_tree_info	SYSTEM VIEW
+TokuDB_trx	SYSTEM VIEW
 TokuDB_fractal_tree_block_map	SYSTEM VIEW
+TokuDB_locks	SYSTEM VIEW
+TokuDB_lock_waits	SYSTEM VIEW
 TokuDB_file_map	SYSTEM VIEW
 create table t1(a int);
 ERROR 42000: Access denied for user 'root'@'localhost' to database 'information_schema'
@@ -684,7 +702,10 @@ TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
 TokuDB_fractal_tree_info
+TokuDB_trx
 TokuDB_fractal_tree_block_map
+TokuDB_locks
+TokuDB_lock_waits
 TokuDB_file_map
 select table_name from tables where table_name='user';
 table_name
@@ -884,8 +905,8 @@ TABLES	TABLE_NAME	select
 TABLE_CONSTRAINTS	TABLE_NAME	select
 TABLE_PRIVILEGES	TABLE_NAME	select
 VIEWS	TABLE_NAME	select
-INNODB_BUFFER_PAGE	TABLE_NAME	select
 INNODB_BUFFER_PAGE_LRU	TABLE_NAME	select
+INNODB_BUFFER_PAGE	TABLE_NAME	select
 delete from mysql.user where user='mysqltest_4';
 delete from mysql.db where user='mysqltest_4';
 flush privileges;
@@ -894,7 +915,7 @@ table_schema IN ('mysql', 'INFORMATION_SCHEMA', 'test', 'mysqltest')
 AND table_name not like 'ndb%' AND table_name not like 'innodb_%'
 GROUP BY TABLE_SCHEMA;
 table_schema	count(*)
-information_schema	33
+information_schema	36
 mysql	23
 create table t1 (i int, j int);
 create trigger trg1 before insert on t1 for each row
@@ -1363,6 +1384,9 @@ TABLE_PRIVILEGES	information_schema.TABLE_PRIVILEGES	1
 TokuDB_file_map	information_schema.TokuDB_file_map	1
 TokuDB_fractal_tree_block_map	information_schema.TokuDB_fractal_tree_block_map	1
 TokuDB_fractal_tree_info	information_schema.TokuDB_fractal_tree_info	1
+TokuDB_locks	information_schema.TokuDB_locks	1
+TokuDB_lock_waits	information_schema.TokuDB_lock_waits	1
+TokuDB_trx	information_schema.TokuDB_trx	1
 TRIGGERS	information_schema.TRIGGERS	1
 USER_PRIVILEGES	information_schema.USER_PRIVILEGES	1
 VIEWS	information_schema.VIEWS	1

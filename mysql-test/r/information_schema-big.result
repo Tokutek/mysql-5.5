@@ -50,7 +50,10 @@ TRIGGERS	TRIGGER_SCHEMA
 USER_PRIVILEGES	GRANTEE
 VIEWS	TABLE_SCHEMA
 TokuDB_fractal_tree_info	dictionary_name
+TokuDB_trx	trx_id
 TokuDB_fractal_tree_block_map	dictionary_name
+TokuDB_locks	locks_trx_id
+TokuDB_lock_waits	requesting_trx_id
 TokuDB_file_map	dictionary_name
 SELECT t.table_name, c1.column_name
 FROM information_schema.tables t
@@ -99,5 +102,8 @@ TRIGGERS	TRIGGER_SCHEMA
 USER_PRIVILEGES	GRANTEE
 VIEWS	TABLE_SCHEMA
 TokuDB_fractal_tree_info	dictionary_name
+TokuDB_trx	trx_id
 TokuDB_fractal_tree_block_map	dictionary_name
+TokuDB_locks	locks_trx_id
+TokuDB_lock_waits	requesting_trx_id
 TokuDB_file_map	dictionary_name
