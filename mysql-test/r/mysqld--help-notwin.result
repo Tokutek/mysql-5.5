@@ -777,8 +777,6 @@ The following options may be given as the first argument:
  TokuDB lock timeout
  --tokudb-lock-timeout-debug=# 
  TokuDB lock timeout debug
- --tokudb-log-client-errors 
- Tokudb Log Client Errors
  --tokudb-log-dir=name 
  TokuDB Log Directory
  --tokudb-max-lock-memory=# 
@@ -1076,7 +1074,6 @@ tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space FALSE
 tokudb-lock-timeout 4000
 tokudb-lock-timeout-debug 0
-tokudb-log-client-errors FALSE
 tokudb-log-dir (No default value)
 tokudb-max-lock-memory 0
 tokudb-pk-insert-mode 1
