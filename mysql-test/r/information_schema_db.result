@@ -36,7 +36,10 @@ TRIGGERS
 USER_PRIVILEGES
 VIEWS
 TokuDB_fractal_tree_info
+TokuDB_trx
 TokuDB_fractal_tree_block_map
+TokuDB_locks
+TokuDB_lock_waits
 TokuDB_file_map
 show tables from INFORMATION_SCHEMA like 'T%';
 Tables_in_information_schema (T%)
@@ -46,7 +49,10 @@ TABLE_CONSTRAINTS
 TABLE_PRIVILEGES
 TRIGGERS
 TokuDB_fractal_tree_info
+TokuDB_trx
 TokuDB_fractal_tree_block_map
+TokuDB_locks
+TokuDB_lock_waits
 TokuDB_file_map
 create database `inf%`;
 create database mbase;
