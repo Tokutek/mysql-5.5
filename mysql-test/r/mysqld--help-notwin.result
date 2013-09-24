@@ -1047,7 +1047,8 @@ time-format %H:%i:%s
 timed-mutexes FALSE
 tmp-table-size 16777216
 tokudb ON
-tokudb-analyze-time 60
+tokudb-analyze-time 5
+tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
 tokudb-cache-size 0
 tokudb-checkpoint-lock FALSE
