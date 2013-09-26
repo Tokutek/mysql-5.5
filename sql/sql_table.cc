@@ -1622,6 +1622,19 @@ static int mysql_update_frm(ALTER_PARTITION_PARAM_TYPE *lpt, const char *shadow_
   return 0;
 }
 
+static int mysql_update_frm_table(TABLE *table, const char *new_db, const char *tmp_name) {
+  int error;
+  char path[FN_REFLEN + 1];
+  build_table_filename(path, sizeof(path) - 1, new_db, tmp_name, "", FN_IS_TMP);
+  uchar *frm_data; size_t frm_len;
+  error = readfrm(path, &frm_data, &frm_len);
+  if (error)
+    return error;
+  error= table->file->new_alter_table_frm_data(frm_data, frm_len);
+  my_free(frm_data);
+  return error;
+}
+
 /*
   SYNOPSIS
     mysql_write_frm()
@@ -6665,6 +6678,11 @@ copy_table:
     DEBUG_SYNC(thd, "alter_table_manage_keys");
     alter_table_manage_keys(table, table->file->indexes_are_disabled(),
                             alter_info->keys_onoff);
+    if (!new_table) 
+    {
+      error= mysql_update_frm_table(table, new_db, tmp_name);
+      assert(error == 0);
+    }
     error= trans_commit_stmt(thd);
     if (trans_commit_implicit(thd))
       error= 1;
@@ -6792,18 +6810,6 @@ copy_table:
       The final .frm file is already created as a temporary file
       and will be renamed to the original table name later.
     */
-    {
-    char path[FN_REFLEN + 1];
-    build_table_filename(path, sizeof(path) - 1, new_db, tmp_name, "", FN_IS_TMP);
-    uchar *frm_data; size_t frm_len;
-    int error = readfrm(path, &frm_data, &frm_len);
-    assert(error == 0);
-
-    error= table->file->new_alter_table_frm_data(frm_data, frm_len);
-    assert(error == 0);
-
-    my_free(frm_data);
-    }
 
     /* Need to commit before a table is unlocked (NDB requirement). */
     DBUG_PRINT("info", ("Committing before unlocking table"));
