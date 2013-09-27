@@ -1077,7 +1077,7 @@ tokudb-init-flags 11403457
 tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space FALSE
 tokudb-lock-timeout 4000
-tokudb-lock-timeout-debug 0
+tokudb-lock-timeout-debug 1
 tokudb-log-dir (No default value)
 tokudb-max-lock-memory 0
 tokudb-pk-insert-mode 1
