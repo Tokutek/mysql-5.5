@@ -775,7 +775,8 @@ The following options may be given as the first argument:
  --tokudb-last-lock-timeout=name 
  last TokuDB lock timeout
  --tokudb-load-save-space 
- if on, intial loads are slower but take less space
+ compress intermediate bulk loader files to save space
+ (Defaults to on; use --skip-tokudb-load-save-space to disable.)
  --tokudb-lock-timeout=# 
  TokuDB lock timeout
  --tokudb-lock-timeout-debug=# 
@@ -1075,7 +1076,7 @@ tokudb-gdb-on-fatal TRUE
 tokudb-gdb-path /usr/bin/gdb
 tokudb-init-flags 11403457
 tokudb-last-lock-timeout (No default value)
-tokudb-load-save-space FALSE
+tokudb-load-save-space TRUE
 tokudb-lock-timeout 4000
 tokudb-lock-timeout-debug 1
 tokudb-log-dir (No default value)
