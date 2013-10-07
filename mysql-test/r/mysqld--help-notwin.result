@@ -770,6 +770,8 @@ The following options may be given as the first argument:
  (Defaults to on; use --skip-tokudb-gdb-on-fatal to disable.)
  --tokudb-gdb-path=name 
  TokuDB path to gdb for extra debug info on fatal signal
+ --tokudb-hide-default-row-format 
+ hide the default row format
  --tokudb-init-flags=# 
  Sets TokuDB DB_ENV->open flags
  --tokudb-last-lock-timeout=name 
@@ -777,6 +779,8 @@ The following options may be given as the first argument:
  --tokudb-load-save-space 
  compress intermediate bulk loader files to save space
  (Defaults to on; use --skip-tokudb-load-save-space to disable.)
+ --tokudb-loader-memory-size=# 
+ TokuDB loader memory size
  --tokudb-lock-timeout=# 
  TokuDB lock timeout
  --tokudb-lock-timeout-debug=# 
@@ -1074,19 +1078,21 @@ tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
 tokudb-gdb-on-fatal TRUE
 tokudb-gdb-path /usr/bin/gdb
+tokudb-hide-default-row-format FALSE
 tokudb-init-flags 11403457
 tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space TRUE
+tokudb-loader-memory-size 100000000
 tokudb-lock-timeout 4000
 tokudb-lock-timeout-debug 1
 tokudb-log-dir (No default value)
 tokudb-max-lock-memory 0
 tokudb-pk-insert-mode 1
 tokudb-prelock-empty TRUE
-tokudb-read-block-size 131072
+tokudb-read-block-size 65536
 tokudb-read-buf-size 131072
 tokudb-read-status-frequency 10000
-tokudb-row-format tokudb_default
+tokudb-row-format tokudb_zlib
 tokudb-tmp-dir (No default value)
 tokudb-write-status-frequency 1000
 transaction-alloc-block-size 8192
