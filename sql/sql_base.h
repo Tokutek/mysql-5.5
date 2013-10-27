@@ -173,7 +173,8 @@ bool get_key_map_from_key_list(key_map *map, TABLE *table,
                                List<String> *index_list);
 TABLE *open_table_uncached(THD *thd, const char *path, const char *db,
 			   const char *table_name,
-                           bool add_to_temporary_tables_list);
+                           bool add_to_temporary_tables_list,
+                           bool open_in_engine = true);
 TABLE *find_locked_table(TABLE *list, const char *db, const char *table_name);
 TABLE *find_write_locked_table(TABLE *list, const char *db,
                                const char *table_name);

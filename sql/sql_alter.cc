@@ -107,3 +107,103 @@ bool Alter_table_statement::execute(THD *thd)
 
   DBUG_RETURN(result);
 }
+
+Alter_table_ctx::Alter_table_ctx()
+  : datetime_field(NULL), error_if_not_empty(false),
+    tables_opened(0),
+    db(NULL), table_name(NULL), alias(NULL),
+    new_db(NULL), new_name(NULL), new_alias(NULL)
+#ifndef DBUG_OFF
+    , tmp_table(false)
+#endif
+{
+}
+
+
+Alter_table_ctx::Alter_table_ctx(THD *thd, TABLE_LIST *table_list,
+                                 uint tables_opened_arg,
+                                 char *new_db_arg, char *new_name_arg)
+  : datetime_field(NULL), error_if_not_empty(false),
+    tables_opened(tables_opened_arg),
+    new_db(new_db_arg), new_name(new_name_arg)
+#ifndef DBUG_OFF
+    , tmp_table(false)
+#endif
+{
+  /*
+    Assign members db, table_name, new_db and new_name
+    to simplify further comparisions: we want to see if it's a RENAME
+    later just by comparing the pointers, avoiding the need for strcmp.
+  */
+  db= table_list->db;
+  table_name= table_list->table_name;
+  alias= (lower_case_table_names == 2) ? table_list->alias : table_name;
+
+  if (!new_db || !my_strcasecmp(table_alias_charset, new_db, db))
+    new_db= db;
+
+  if (new_name)
+  {
+    DBUG_PRINT("info", ("new_db.new_name: '%s'.'%s'", new_db, new_name));
+
+    if (lower_case_table_names == 1) // Convert new_name/new_alias to lower case
+    {
+      my_casedn_str(files_charset_info, new_name);
+      new_alias= new_name;
+    }
+    else if (lower_case_table_names == 2) // Convert new_name to lower case
+    {
+      strmov(new_alias= new_alias_buff, new_name);
+      my_casedn_str(files_charset_info, new_name);
+    }
+    else
+      new_alias= new_name; // LCTN=0 => case sensitive + case preserving
+
+    if (!is_database_changed() &&
+        !my_strcasecmp(table_alias_charset, new_name, table_name))
+    {
+      /*
+        Source and destination table names are equal:
+        make is_table_renamed() more efficient.
+      */
+      new_alias= table_name;
+      new_name= table_name;
+    }
+  }
+  else
+  {
+    new_alias= alias;
+    new_name= table_name;
+  }
+
+  my_snprintf(tmp_name, sizeof(tmp_name), "%s-%lx_%lx", tmp_file_prefix,
+              current_pid, thd->thread_id);
+  /* Safety fix for InnoDB */
+  if (lower_case_table_names)
+    my_casedn_str(files_charset_info, tmp_name);
+
+  if (table_list->table->s->tmp_table == NO_TMP_TABLE)
+  {
+    build_table_filename(path, sizeof(path) - 1, db, table_name, "", 0);
+
+    build_table_filename(new_path, sizeof(new_path) - 1, new_db, new_name, "", 0);
+
+    build_table_filename(new_filename, sizeof(new_filename) - 1,
+                         new_db, new_name, reg_ext, 0);
+
+    build_table_filename(tmp_path, sizeof(tmp_path) - 1, new_db, tmp_name, "",
+                         FN_IS_TMP);
+  }
+  else
+  {
+    /*
+      We are not filling path, new_path and new_filename members if
+      we are altering temporary table as these members are not used in
+      this case. This fact is enforced with assert.
+    */
+    build_tmptable_filename(thd, tmp_path, sizeof(tmp_path));
+#ifndef DBUG_OFF
+    tmp_table= true;
+#endif
+  }
+}
