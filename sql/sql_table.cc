@@ -1608,6 +1608,20 @@ uint build_table_shadow_filename(char *buff, size_t bufflen,
 }
 
 
+static int mysql_update_frm(ALTER_PARTITION_PARAM_TYPE *lpt, const char *shadow_path)
+{
+  int error;
+  my_free(lpt->pack_frm_data);
+  lpt->pack_frm_data = NULL;
+  error= readfrm(shadow_path, &lpt->pack_frm_data, &lpt->pack_frm_len);
+  if (error)
+    return error;
+  error= lpt->table->file->new_alter_table_frm_data(lpt->pack_frm_data, lpt->pack_frm_len);
+  if (error)
+    return error;
+  return 0;
+}
+
 /*
   SYNOPSIS
     mysql_write_frm()
@@ -1698,7 +1712,8 @@ bool mysql_write_frm(ALTER_PARTITION_PARAM_TYPE *lpt, uint flags)
                           lpt->key_info_buffer, lpt->table->file)) ||
         lpt->table->file->ha_create_handler_files(shadow_path, NULL,
                                                   CHF_CREATE_FLAG,
-                                                  lpt->create_info))
+                                                  lpt->create_info) ||
+        mysql_update_frm(lpt, shadow_path))
     {
       mysql_file_delete(key_file_frm, shadow_frm_name, MYF(0));
       error= 1;
