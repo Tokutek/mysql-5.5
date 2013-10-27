@@ -2689,8 +2689,20 @@ void MDL_ticket::downgrade_shared_lock(enum_mdl_type type)
 {
   mysql_mutex_assert_not_owner(&LOCK_open);
 
-  /* verify that type < m_type for some definition of < */
-  assert(type <= m_type);
+  /*
+    Do nothing if already downgraded. Used when we FLUSH TABLE under
+    LOCK TABLES and a table is listed twice in LOCK TABLES list.
+    Note that this code might even try to "downgrade" a weak lock
+    (e.g. SW) to a stronger one (e.g SNRW). So we can't even assert
+    here that target lock is weaker than existing lock.
+  */
+  if (m_type == type || !has_stronger_or_equal_type(type))
+    return;
+
+  /* Only allow downgrade from EXCLUSIVE and SHARED_NO_WRITE. */
+  DBUG_ASSERT(m_type == MDL_EXCLUSIVE ||
+              m_type == MDL_SHARED_NO_WRITE ||
+              m_type == MDL_SHARED_NO_READ_WRITE);
 
   mysql_prlock_wrlock(&m_lock->m_rwlock);
   /*
