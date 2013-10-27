@@ -3739,7 +3739,7 @@ static TABLE *create_table_from_items(THD *thd, HA_CREATE_INFO *create_info,
         */
         if (open_table(thd, create_table, thd->mem_root, &ot_ctx))
         {
-          quick_rm_table(create_info->db_type, create_table->db,
+          quick_rm_table(thd, create_info->db_type, create_table->db,
                          table_case_name(create_info, create_table->table_name),
                          0);
         }
