@@ -8292,7 +8292,7 @@ do_mysql_inplace_alter_table(THD *thd,
 
   if (table->file->ha_prepare_inplace_alter_table(altered_table, ha_alter_info))
   {
-    result= INPLACE_ALTER_ERROR; goto do_rollback;
+    result= INPLACE_ALTER_ERROR; goto do_wait_x_rollback;
   }
 
   /*                                                                                                                                                                                                     
@@ -8317,14 +8317,14 @@ do_mysql_inplace_alter_table(THD *thd,
  
   if (table->file->ha_inplace_alter_table(altered_table, ha_alter_info))
   {
-    result= INPLACE_ALTER_ERROR; goto do_rollback;
+    result= INPLACE_ALTER_ERROR; goto do_wait_x_rollback;
   }
   
   // MDL X
   while (stall_inplace_alter_table_mdl_x) sleep(1);
   if (wait_while_table_is_used(thd, table, HA_EXTRA_NOT_USED))
   {
-    result= INPLACE_ALTER_ERROR; goto do_rollback;
+    result= INPLACE_ALTER_ERROR; goto do_wait_x_rollback;
   }
   
   if (table->file->ha_commit_inplace_alter_table(altered_table, ha_alter_info, true))
@@ -8407,7 +8407,16 @@ do_mysql_inplace_alter_table(THD *thd,
 
   goto do_return;
   
-do_rollback:
+do_wait_x_rollback:
+  {
+    THD::killed_state saved_killed_state = thd->killed;
+    thd->killed = THD::NOT_KILLED;
+    while (wait_while_table_is_used(thd, table, HA_EXTRA_NOT_USED) && thd->killed)
+        thd->killed = THD::NOT_KILLED;
+    assert(mdl_ticket->get_type() == MDL_EXCLUSIVE);
+    if (thd->killed == THD::NOT_KILLED)
+      thd->killed = saved_killed_state;
+  }
   if (table->file->ha_commit_inplace_alter_table(altered_table, ha_alter_info, false))
   {
     result= INPLACE_ALTER_ERROR; goto do_close;
