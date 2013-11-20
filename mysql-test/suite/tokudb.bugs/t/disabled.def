@@ -1,1 +1,2 @@
 4472 : #4521 MDL for alter table in 5.5 prohibits this test from having any chance of working
+checkpoint_lock_2: test can not work when the checkpoint_safe_lock is a fair rwlock
