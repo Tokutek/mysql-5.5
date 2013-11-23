@@ -54,7 +54,7 @@ TokuDB_trx	trx_id
 TokuDB_fractal_tree_block_map	dictionary_name
 TokuDB_locks	locks_trx_id
 TokuDB_lock_waits	requesting_trx_id
-TokuDB_file_map	dictionary_name
+TokuDB_file_map	table_schema
 SELECT t.table_name, c1.column_name
 FROM information_schema.tables t
 INNER JOIN
@@ -106,4 +106,4 @@ TokuDB_trx	trx_id
 TokuDB_fractal_tree_block_map	dictionary_name
 TokuDB_locks	locks_trx_id
 TokuDB_lock_waits	requesting_trx_id
-TokuDB_file_map	dictionary_name
+TokuDB_file_map	table_schema
