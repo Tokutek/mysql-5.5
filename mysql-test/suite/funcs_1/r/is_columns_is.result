@@ -297,11 +297,11 @@ def	information_schema	TABLE_PRIVILEGES	PRIVILEGE_TYPE	5		NO	varchar	64	192	NULL
 def	information_schema	TABLE_PRIVILEGES	TABLE_CATALOG	2		NO	varchar	512	1536	NULL	NULL	utf8	utf8_general_ci	varchar(512)			select	
 def	information_schema	TABLE_PRIVILEGES	TABLE_NAME	4		NO	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
 def	information_schema	TABLE_PRIVILEGES	TABLE_SCHEMA	3		NO	varchar	64	192	NULL	NULL	utf8	utf8_general_ci	varchar(64)			select	
-def	information_schema	TokuDB_file_map	database	3		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_file_map	dictionary	5		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_file_map	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_file_map	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
-def	information_schema	TokuDB_file_map	table	4		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_file_map	table_dictionary_name	5		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_file_map	table_name	4		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_file_map	table_schema	3		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_fractal_tree_block_map	blocknum	4	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_block_map	checkpoint_count	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_block_map	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
@@ -717,9 +717,9 @@ NULL	information_schema	TABLESPACES	NODEGROUP_ID	bigint	NULL	NULL	NULL	NULL	bigi
 3.0000	information_schema	TABLE_PRIVILEGES	IS_GRANTABLE	varchar	3	9	utf8	utf8_general_ci	varchar(3)
 3.0000	information_schema	TokuDB_file_map	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_file_map	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-3.0000	information_schema	TokuDB_file_map	database	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-3.0000	information_schema	TokuDB_file_map	table	varchar	256	768	utf8	utf8_general_ci	varchar(256)
-3.0000	information_schema	TokuDB_file_map	dictionary	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_file_map	table_schema	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_file_map	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_file_map	table_dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_fractal_tree_block_map	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_fractal_tree_block_map	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_fractal_tree_block_map	checkpoint_count	bigint	NULL	NULL	NULL	NULL	bigint(0)
