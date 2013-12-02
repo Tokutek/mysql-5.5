@@ -349,8 +349,8 @@ enum legacy_db_type
   DB_TYPE_MARIA,
   /** Performance schema engine. */
   DB_TYPE_PERFORMANCE_SCHEMA,
-  DB_TYPE_TOKUDB=41,
-  DB_TYPE_FIRST_DYNAMIC=42,
+  DB_TYPE_TOKUDB=42,
+  DB_TYPE_FIRST_DYNAMIC=43,
   DB_TYPE_DEFAULT=127 // Must be last
 };
 
@@ -747,7 +747,6 @@ struct handlerton
     This is going away and new engines will just use "name" for this.
   */
   enum legacy_db_type db_type;
-  enum legacy_db_type other_db_type;
 
   /*
     each storage engine has it's own memory area (actually a pointer)
