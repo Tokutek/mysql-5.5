@@ -6162,7 +6162,7 @@ int TC_LOG_MMAP::open(const char *opt_name)
   syncing= 0;
   active=pages;
   pool=pages+1;
-  pool_last=pages+npages-1;
+  pool_last_ptr= &((pages+npages-1)->next);
 
   return 0;
 
@@ -6208,11 +6208,10 @@ void TC_LOG_MMAP::get_active_from_pool()
   }
   while ((*best_p == 0 || best_free == 0) && overflow());
 
-  active=*best_p;
-  if ((*best_p)->next)              // unlink the page from the pool
-    *best_p=(*best_p)->next;
-  else
-    pool_last=*best_p;
+  /* Unlink the page from the pool. */
+  if (!(*best_p)->next)
+    pool_last_ptr= best_p;
+  *best_p=(*best_p)->next;
 
   mysql_mutex_unlock(&LOCK_pool);
 
@@ -6378,8 +6377,8 @@ int TC_LOG_MMAP::sync()
 
   /* page is synced. let's move it to the pool */
   mysql_mutex_lock(&LOCK_pool);
-  pool_last->next=syncing;
-  pool_last=syncing;
+  (*pool_last_ptr)=syncing;
+  pool_last_ptr=&(syncing->next);
   syncing->next=0;
   syncing->state= err ? PS_ERROR : PS_POOL;
   mysql_cond_signal(&COND_pool);             // in case somebody's waiting
