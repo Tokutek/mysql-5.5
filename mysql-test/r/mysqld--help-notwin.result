@@ -722,6 +722,8 @@ The following options may be given as the first argument:
  round-robin fashion
  --tokudb[=name]     Enable or disable TokuDB plugin. Possible values are ON,
  OFF, FORCE (don't start if the plugin fails to load).
+ --tokudb-alter-print-error 
+ Print errors for alter table operations
  --tokudb-analyze-time=# 
  analyze time
  --tokudb-backup-throttle=# 
@@ -772,6 +774,7 @@ The following options may be given as the first argument:
  TokuDB path to gdb for extra debug info on fatal signal
  --tokudb-hide-default-row-format 
  hide the default row format
+ (Defaults to on; use --skip-tokudb-hide-default-row-format to disable.)
  --tokudb-init-flags=# 
  Sets TokuDB DB_ENV->open flags
  --tokudb-last-lock-timeout=name 
@@ -1055,6 +1058,7 @@ time-format %H:%i:%s
 timed-mutexes FALSE
 tmp-table-size 16777216
 tokudb ON
+tokudb-alter-print-error FALSE
 tokudb-analyze-time 5
 tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
@@ -1078,7 +1082,7 @@ tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
 tokudb-gdb-on-fatal TRUE
 tokudb-gdb-path /usr/bin/gdb
-tokudb-hide-default-row-format FALSE
+tokudb-hide-default-row-format TRUE
 tokudb-init-flags 11403457
 tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space TRUE
