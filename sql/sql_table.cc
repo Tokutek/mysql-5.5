@@ -6237,12 +6237,14 @@ bool mysql_alter_table(THD *thd,char *new_db, char *new_name,
     Alter_table_ctx alter_ctx(thd, table_list, tables_opened, new_db, new_name);
     copied= deleted= 0; // needed for my_ok
     
+    Alter_info tmp_alter_info(*alter_info, thd->mem_root);
+    
     enum inplace_alter_table_result r;
     r= mysql_inplace_alter_table(thd,
                                  table_list,
                                  table,
                                  create_info,
-                                 alter_info,
+                                 &tmp_alter_info,
                                  order_num, order, ignore, &alter_ctx);
     switch (r) {
     case INPLACE_ALTER_SUCCESS:
