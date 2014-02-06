@@ -4,3 +4,10 @@ hcad_with_locks: cant alter table concurrent with reading a table in 5.5
 
 # virtual columns
 virtual_columns: no virtual columns in MySQL 5.5
+
+null_bytes_drop_default: only 5.6
+null_bytes_add_key: only 5.6
+null_bytes_drop_key: only 5.6
+null_bytes_col_rename: only 5.6
+
+
