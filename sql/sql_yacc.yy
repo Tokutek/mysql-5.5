@@ -10593,6 +10593,7 @@ replace:
           }
           replace_lock_option insert2
           {
+            Lex->noar= 0; 
             Select->set_lock_for_tables($3);
             Lex->current_select= &Lex->select_lex;
           }
