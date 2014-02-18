@@ -5894,6 +5894,11 @@ sub valgrind_arguments {
     mtr_add_arg($args, "--num-callers=16");
     mtr_add_arg($args, "--suppressions=%s/valgrind.supp", $glob_mysql_test_dir)
       if -f "$glob_mysql_test_dir/valgrind.supp";
+    # Ensure the jemalloc works with mysqld
+    if ($$exe =~ /mysqld/)
+    {
+      mtr_add_arg($args, "--soname-synonyms=somalloc=NONE");
+    }
   }
 
   # Add valgrind options, can be overriden by user
