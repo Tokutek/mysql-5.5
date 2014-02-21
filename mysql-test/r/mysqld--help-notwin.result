@@ -777,6 +777,8 @@ The following options may be given as the first argument:
  (Defaults to on; use --skip-tokudb-hide-default-row-format to disable.)
  --tokudb-init-flags=# 
  Sets TokuDB DB_ENV->open flags
+ --tokudb-killed-time=# 
+ TokuDB killed time
  --tokudb-last-lock-timeout=name 
  last TokuDB lock timeout
  --tokudb-load-save-space 
@@ -1084,6 +1086,7 @@ tokudb-gdb-on-fatal TRUE
 tokudb-gdb-path /usr/bin/gdb
 tokudb-hide-default-row-format TRUE
 tokudb-init-flags 11403457
+tokudb-killed-time 4000
 tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space TRUE
 tokudb-loader-memory-size 100000000
