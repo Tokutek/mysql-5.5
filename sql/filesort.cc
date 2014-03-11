@@ -589,7 +589,7 @@ static ha_rows find_all_keys(SORTPARAM *param, SQL_SELECT *select,
                     DBUG_SET("+d,ha_rnd_init_fail"););
     if ((error= file->ha_rnd_init(1)))
     {
-      file->print_error(error, MYF(0));
+      file->print_error(error, MYF(ME_FATALERROR));
       DBUG_RETURN(HA_POS_ERROR);
     }
     file->extra_opt(HA_EXTRA_CACHE,
@@ -688,7 +688,7 @@ static ha_rows find_all_keys(SORTPARAM *param, SQL_SELECT *select,
   DBUG_PRINT("test",("error: %d  indexpos: %d",error,indexpos));
   if (error != HA_ERR_END_OF_FILE)
   {
-    file->print_error(error,MYF(ME_ERROR | ME_WAITTANG)); // purecov: inspected
+    file->print_error(error,MYF(ME_ERROR | ME_WAITTANG | ME_FATALERROR)); // purecov: inspected
     DBUG_RETURN(HA_POS_ERROR);			/* purecov: inspected */
   }
   if (indexpos && idx &&
