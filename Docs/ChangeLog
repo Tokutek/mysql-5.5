@@ -1,0 +1,719 @@
+------------------------------------------------------------
+revno: 4610
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.37-release
+timestamp: Fri 2014-03-14 19:46:27 +0100
+message:
+  Bug#18402229 - Resolve mysql conflict with mysql-community-client
+------------------------------------------------------------
+revno: 4609
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.37-release
+timestamp: Wed 2014-03-12 14:30:20 +0100
+message:
+  Bug#18389088 - Resolve conflict with mysql-libs-compat
+------------------------------------------------------------
+revno: 4608
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.37-release
+timestamp: Thu 2014-03-06 12:45:07 +0100
+message:
+  Corrected typo in changelog
+------------------------------------------------------------
+revno: 4607
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.37-release
+timestamp: Thu 2014-03-06 11:23:15 +0100
+message:
+  Bug#18327194 - Resolve confict issues during upgrade
+------------------------------------------------------------
+revno: 4606
+tags: clone-5.5.37-build
+committer: Satya Bodapati <satya.bodapati@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-02-28 12:45:53 +0530
+message:
+  Bug#18124788 - COMPRESSED TABLES REGRESSION FROM 5.6.13
+  
+  After incrementing the number of pending uncompression operations,
+  buffer pool zip mutex can be released immediately.
+  
+  Approved by Vasil. rb#4514
+------------------------------------------------------------
+revno: 4605
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5
+timestamp: Tue 2014-02-25 09:07:44 +0100
+message:
+  Bug#18235669 MYSQL_CONFIG TO PROVIDE R FLAG ON SOLARIS
+  
+  'mysql_config --libs' outputs -L/path/to/library
+  on SunOS we also want it to output '-R/path/to/library'
+  in order to find libraries at runtime.
+------------------------------------------------------------
+revno: 4604
+committer: sayantan dutta <sayantan.dutta@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-02-25 18:42:14 +0530
+message:
+  Bug #17926328 - MTR SHOULD NOT WAIT FOR CHILDREN WHEN ABORTING TEST RUN ON WINDOWS
+------------------------------------------------------------
+revno: 4603
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-02-17 18:19:04 +0530
+message:
+  Updated/added copyright header. Added line "use is subject to license terms" 
+  to copyright header.
+------------------------------------------------------------
+revno: 4602
+committer: Thirunarayanan B<thirunarayanan.balathandayuth@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-02-17 13:45:34 +0530
+message:
+  Bug #18010711	 UNIQUE PREFIX INDEX ON BINARY COLUMN:
+                    FAILING ASSERTION: FLEN == LEN
+  
+  Problem:
+         Broken invariant triggered when building a unique index on a
+  binary column and the input data contains duplicate keys. This was broken
+  in debug builds only.
+  
+  Fix:
+         Fixed length of the binary datatype can be greater than length of
+  the shorter prefix on which index is being created.
+------------------------------------------------------------
+revno: 4601
+committer: Vamsikrishna Bhagi <vamsikrishna.bhagi@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-02-12 15:17:37 +0530
+message:
+  Bug #18186103  BUFFER OVERFLOW IN CLIENT
+  
+  Problem: While printing the Server version, mysql client
+           doesn't check for the buffer overflow in a
+           String variable.
+  
+  Solution: Used a different print function which checks the
+            allocated length before writing into the string.
+------------------------------------------------------------
+revno: 4600
+committer: Neeraj Bisht <neeraj.x.bisht@oracle.com>
+branch nick: 5.5
+timestamp: Wed 2014-02-12 14:33:56 +0530
+message:
+  Bug#17075846 - UNQUOTED FILE NAMES FOR VARIABLE VALUES ARE
+  	       ACCEPTED BUT PARSED INCORRECTLY
+  
+  When we are setting the value in a system variable, 
+  We can set it like 
+  
+  set sys_var="Iden1.Iden2";		//1
+  set sys_var='Iden1.Iden2';		//2
+  set sys_var=Iden1.Iden2;		//3
+  set sys_var=.ident1.ident2; 		//4
+  set sys_var=`Iden1.Iden2`;		//5
+  
+  
+  While parsing, for case 1(when ANSI_QUOTES is enable) and 2,
+  we will take as string literal(we will make item of type Item_string).
+  for case 3 & 4, taken as Item_field, where Iden1 is a table name and
+  iden2 is a field name.
+  for case 5, again Item_field type, where iden1.iden2 is taken as
+  field name.
+  
+  
+  Now in case 1, when we are assigning some value to system variable
+  (which can take string or enumerate type data), we are setting only 
+  field part.
+  This means only iden2 value will be set for system variable. This 
+  result in wrong result.
+  
+  Solution:
+  
+  (for string type) We need to Document that we are not allowed to set 
+  system variable which takes string as identifier, otherwise result 
+  in unexpected behaviour.
+  
+  (for enumerate type)
+  if we pass iden1.iden2, we will give an error ER_WRONG_TYPE_FOR_VAR
+  (Incorrect argument type to variable).
+------------------------------------------------------------
+revno: 4599
+committer: sayantan dutta <sayantan.dutta@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-02-11 17:15:50 +0530
+message:
+  Bug #18027288 - MTR SUITE ABORTS WHEN A CLIENT TRIES TO CONNECT SERVER WITH A WRONG PORT NUMBER
+------------------------------------------------------------
+revno: 4598
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-02-11 16:44:37 +0530
+message:
+  Bug#18185930 UPD_NODE_INSERT_BLOB CAUSES BTR_EXTERN_OWNER_FLAG ASSERTION
+  
+  Problem:
+  
+  In the clustered index, when an update operation is done the overall
+  scenario (after rb#4479) is as follows:
+  
+  1.  Delete mark the old record that is to be updated.
+  2.  The old record disowns the blobs.
+  3.  Insert the new record into clustered index.
+  4.  For non-updated blobs, new record must own it. Verified by assert.
+  5.  For non-updated blobs, in new record marked as inherited.
+  
+  Scenario involving DB_LOCK_WAIT:
+  
+  If step 3 times out, then we will skip 1 and 2 and will continue from
+  step 3.  This skipping is achieved by the UPD_NODE_INSERT_BLOB state.
+  In this case, step 4 is not correct.  Because of step 1, the new
+  record need not own the blobs.  Hence the assert failure.
+  
+  Solution:
+  
+  The assert in step 4 is removed.  Instead code is added to ensure that
+  the record owns the blob.  
+  
+  Note:
+  
+  This is a regression caused by rb#4479.
+  
+  rb#4571 approved by Marko
+------------------------------------------------------------
+revno: 4597
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-02-11 08:27:00 +0100
+message:
+  - Add support for el7 (with systemd enabled)
+  - Enable shared libmysqld by cmake option
+------------------------------------------------------------
+revno: 4596
+committer: Thirunarayanan B<thirunarayanan.balathandayuth@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-02-10 10:13:35 +0530
+message:
+  Bug #14049391   INNODB MISCALCULATES AUTO-INCREMENT AFTER DECREASING
+                          AUTO_INCREMENT_INCREMENT
+  Problem:
+  =======
+  When auto_increment_increment system variable decreases,
+  immediate next value of auto increment column is not affected.
+  
+  Solution:
+  ========
+  	Get the previous inserted value of auto increment column by
+  subtracting the previous auto_increment_increment from next
+  auto increment value. After that calculate the current autoinc value
+  using newly changed auto_increment_increment variable.
+  
+  	Approved by Sunny [rb#4394]
+------------------------------------------------------------
+revno: 4595
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-02-06 14:11:38 +0530
+message:
+  Fixing the bug 18184414: WRONG COPYRIGHT TO FILE INCLUDE/MYSQL_VERSION.H.IN
+------------------------------------------------------------
+revno: 4594
+committer: Anirudh Mangipudi <anirudh.mangipudi@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-02-06 11:16:55 +0530
+message:
+  Bug#14211271 ISSUES WITH SSL ON DEBIAN WHEEZY I386 AND KFREEBSD-I386
+  
+  Problem:
+  It was reported that on Debian and KFreeBSD platforms, i386 architecture 
+  machines certain SSL tests are failing. main.ssl_connect  rpl.rpl_heartbeat_ssl
+  rpl.rpl_ssl1 rpl.rpl_ssl main.ssl_cipher, main.func_encrypt were the tests that
+   were reportedly failing (crashing). The reason for the crashes are said to be
+  due to the assembly code of yaSSL.
+  
+  Solution:
+  There was initially a workaround suggested i.e., to enable 
+  -DTAOCRYPT_DISABLE_X86ASM flag which would prevent the crash, but at an expense
+   of 4X reduction of speed. Since this was unacceptable, the fix was the 
+  functions using assembly, now input variables from the function call using 
+  extended inline assembly on GCC instead of relying on direct assembly code.
+------------------------------------------------------------
+revno: 4593
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5
+timestamp: Tue 2014-02-04 15:34:36 +0100
+message:
+  Bug#18123048 ENABLE BUILD OF SHARED LIBMYSQLD ON LINUX
+  
+  Added a new option: WITH_EMBEDDED_SHARED_LIBRARY
+------------------------------------------------------------
+revno: 4592
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5-review
+timestamp: Tue 2014-02-04 09:01:06 +0100
+message:
+  Bug#18173037 BUILD FAILURE WHEN USING -WERROR WITH ARGUEMNTS
+  
+  Don't strip away -Werror=xxx flags from CMAKE_C_FLAGS
+------------------------------------------------------------
+revno: 4591
+committer: Kent Boortz <kent.boortz@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-02-03 16:04:44 +0100
+message:
+  Bug#11751526 / Bug#42421 - MYSQL_INSTALL_DB.PL NOT RELOCATABLE ON WINDOWS
+    Corrected how to find "resolveip"
+------------------------------------------------------------
+revno: 4590 [merge]
+author: 
+committer: Laasya Moduludu <laasya.moduludu@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-01-31 13:32:25 +0100
+message:
+  Merge from mysql-5.5.36-release
+    ------------------------------------------------------------
+    revno: 4570.1.1
+    tags: mysql-5.5.36
+    committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+    branch nick: mysql-5.5.36-release
+    timestamp: Wed 2014-01-08 11:09:04 +0100
+    message:
+      Updating the current copyright year in the welcome message for MySQL.
+------------------------------------------------------------
+revno: 4589
+committer: Praveenkumar Hulakund <praveenkumar.hulakund@oracle.com>
+branch nick: mysql_5_5
+timestamp: Fri 2014-01-31 09:19:12 +0530
+message:
+  Bug#14117012 - CHILD PROCESS MYSQL UTILITIES PICKING UP LOCAL
+                 CONFIG FILES CAUSES TEST
+  
+  Utility as "mysql_upgrade" forks "mysql"/"mysqlcheck". Attaching
+  "mysql_upgrade" shows following calls after forking "mysql" or
+  "mysql_check" when configuration file information is passed as
+  first argument to "mysql_upgrade".
+  
+  strace -f ./mysql_upgrade --defaults-file=../pdb/my.cnf --socket=../pdb/mysql.sock -f
+  
+  [pid  6254] stat("/etc/my.cnf", 0x7fff8e772680) = -1 ENOENT (No such file or directory)
+  [pid  6254] stat("/etc/mysql/my.cnf", 0x7fff8e772680) = -1 ENOENT (No such file or directory)
+  [pid  6254] stat("/usr/local/mysql/etc/my.cnf", 0x7fff8e772680) = -1 ENOENT (No such file or directory)
+  [pid  6254] stat("/home/user_name/.my.cnf", {st_mode=S_IFREG|0664, st_size=19, ...}) = 0
+  [pid  6254] open("/home/user_name/.my.cnf", O_RDONLY) = 3
+  
+  
+  But when tool forks "mysqlcheck"/"mysql", "--no-defaults" is passed
+  as first argument. Before forking, in function "find_tool" of
+  "mysql_upgrade", check is made to verify whether tool can be
+  executable or not by calling "mysqlcheck --help" and "mysql --help".
+  But argument "--no-defaults", "--defaults-file" or
+  "defaults-extra-file" is not passed to "mysql" and "mysqlcheck".
+  So my.cnf is searched in default paths.
+  
+  Fix:
+  ------
+  Modified code to pass "--no-defaults" as first argument to "mysql"
+  and "mysqlcheck" while checking tool can be executed or not.
+------------------------------------------------------------
+revno: 4588
+committer: Ritheesh Vedire <ritheesh.vedire@oracle.com>
+branch nick: bug16814264_5.5
+timestamp: Fri 2014-01-31 04:25:39 +0530
+message:
+  Bug#16814264: FILTER OUT THE PERFORMANCE_SCHEMA RELAY LOG EVENTS FROM RELAY LOG
+  
+    Performance schema tables are local to a server and they should not
+    be allowed to be executed by the slave from the relay log.
+    From 5.6.10, P_S events are not written into the binary log.
+    But prior to that, from mysql 5.5 onwards, P_S events are written 
+    to the binary log by master.
+    The following are problematic scenarios:
+        
+    1. Master 5.5 -> Slave 5.5
+       ========================
+      A) RBR: Slave crashes
+      B) SBR: P_S statements are replicated.
+        
+    2.Master 5.5 -> Slave 5.6
+      ========================
+      A) RBR: SQL thd generates error
+      B) SBR : P_S statements are replicated
+        
+    3. 5.5 binlog executed on a server 5.5 using mysqlbinlog|mysql
+       =================================================================
+       A) RBR: Server crash  (because of BINLOG'... statement)
+       B) SBR: P_S statements are executed
+        
+    4. 5.5 binlog executed on server 5.6 using mysqlbinlog|mysql
+       ================================================================
+       A) RBR: SQL error (because of BINLOG'... statement)
+       B) SBR: P_S statements are executed.
+        
+        
+      The generalized behaviour should be:
+      a) Slave SQL thread should certainly ignore P_S events read from
+         the relay log.
+      b) mysqlbinlog|mysql should replay the binlog succesfully.
+        
+------------------------------------------------------------
+revno: 4587
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-01-30 12:38:13 +0530
+message:
+  Bug #14668683 ASSERT REC_GET_DELETED_FLAG(REC, PAGE_IS_COMP(PAGE))
+  
+  Problem:
+  
+  The function row_upd_changes_ord_field_binary() is used to decide whether to
+  use row_upd_clust_rec_by_insert() or row_upd_clust_rec().  The function
+  row_upd_changes_ord_field_binary() does not make use of charset information.
+  Based on binary comparison it decides that r1 and r2 differ in their ordering
+  fields.
+  
+  In the function row_upd_clust_rec_by_insert(), an update is done by delete +
+  insert.  These operations internally make use of cmp_dtuple_rec_with_match()
+  to compare records r1 and r2.  This comparison takes place with the use of
+  charset information.
+  
+  This means that it is possible for the deleted record to be reused in the
+  subsequent insert.  In the given scenario, the characters 'a' and 'A' are
+  considered equal in the my_charset_latin1.  When this happens, the ownership
+  information of externally stored blobs are not correctly handled.
+  
+  Solution:
+  
+  When an update is done by delete followed by insert, disown the relevant
+  externally stored fields during the delete marking itself (within the same
+  mtr).  If the insert succeeds, then nothing with respect to blob ownership
+  needs to be done.  If the insert fails, then the disown done earlier will be
+  removed when the operation is rolled back.
+  
+  rb#4479 approved by Marko.
+------------------------------------------------------------
+revno: 4586
+committer: bin.x.su@oracle.com
+branch nick: mysql-5.5
+timestamp: Fri 2014-01-24 09:57:25 +0800
+message:
+  BUG 18117322 - DEFINE INNODB_THREAD_SLEEP_DELAY MAX VALUE
+  
+  The maximum value for innodb_thread_sleep_delay is 4294967295 (32-bit) or
+  18446744073709551615 (64-bit) microseconds. This is way too big, since
+  the max value of innodb_thread_sleep_delay is limited by
+  innodb_adaptive_max_sleep_delay if that value is set to non-zero value
+  (its default is 150,000).
+  
+  Solution
+  The maximum value of innodb_thread_sleep_delay should be the same as
+  the maximum value of innodb_adaptive_max_sleep_delay, which is 1000000.
+  
+  Approved by Jimmy, rb#4429
+------------------------------------------------------------
+revno: 4585
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5
+timestamp: Thu 2014-01-23 09:02:47 +0100
+message:
+  Backport of Bug#16809055 MYSQL 5.6 AND 5.7 STILL USE LIBMYSQLCLIENT.SO.18
+  Backported only the softlink part of the patch,
+  *not* the bumping of library version.
+  
+  With this patch, the libmysql/ directory contains:
+  libmysqlclient.a
+  libmysqlclient_r.a -> libmysqlclient.a
+  libmysqlclient_r.so -> libmysqlclient.so*
+  libmysqlclient_r.so.18 -> libmysqlclient.so.18*
+  libmysqlclient_r.so.18.0.0 -> libmysqlclient.so.18.0.0*
+  libmysqlclient.so -> libmysqlclient.so.18*
+  libmysqlclient.so.18 -> libmysqlclient.so.18.0.0*
+  libmysqlclient.so.18.0.0*
+------------------------------------------------------------
+revno: 4584
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5-review
+timestamp: Thu 2014-01-16 18:01:06 +0100
+message:
+  Bug#16316074 RFE: MAKE TMPDIR A BUILD-TIME CONFIGURABLE OPTION
+  Bug#68338    RFE: make tmpdir a build-time configurable option
+  
+  Post-push fix: windows needs DEFAULT_TMPDIR as well.
+------------------------------------------------------------
+revno: 4583
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5-review
+timestamp: Thu 2014-01-16 15:43:29 +0100
+message:
+  Bug#16316074 RFE: MAKE TMPDIR A BUILD-TIME CONFIGURABLE OPTION
+  Bug#68338    RFE: make tmpdir a build-time configurable option
+  
+  Post-push fix: 'cmake -LH | grep TMP' showed TMPDIR as a BOOL option,
+  which was a bit confusing: show it as a PATH instead.
+------------------------------------------------------------
+revno: 4582
+committer: Thayumanavar <thayumanavar.x.sachithanantha@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-01-13 12:04:16 +0530
+message:
+  BUG#18054998 - BACKPORT FIX FOR BUG#11765785 to 5.5
+  
+  This is a backport of the patch of bug#11765785. Commit message
+  by Prabakaran Thirumalai from bug#11765785 is reproduced below:
+  Description:
+  ------------
+  Global Query ID (global_query_id ) is not incremented for PING and 
+  statistics command. These two query types are filtered before 
+  incrementing the global query id. This causes race condition and 
+  results in duplicate query id for different queries originating from 
+  different connections.
+        
+  Analysis:
+  ---------
+  sqlparse.cc::dispath_command() is the only place in code which sets 
+  thd->query_ id to global_query_id and then increments it based on the 
+  query type. In all other places it is incremented first and then 
+  assigned to thd->query_id.
+        
+  This is done such that global_query_id is not incremented for PING 
+  and statistics commands in dispatch_command() function.
+        
+  Fix:
+  ----
+  As per suggestion from Serg, "There is no reason to skip query_id for 
+  the PING and STATISTICS command.", removing the check which filters 
+  PING and statistics commands.
+        
+  Instead of using get_query_id() and next_query_id() which can still 
+  cause race condition if context switch happens soon after executing 
+  get_query_id(), changing the code to use next_query_id() instead of 
+  get_query_id() as it is done in other parts of code which deals with 
+  global_query_id.
+        
+  Removed get_query_id() function and forced next_query_id() caller 
+  to use the return value by specifying warn_unused_result attribute.
+------------------------------------------------------------
+revno: 4581
+committer: Venkata Sidagam <venkata.sidagam@oracle.com>
+branch nick: 5.5
+timestamp: Sat 2014-01-11 14:48:29 +0530
+message:
+  Bug #17760379 COLLATIONS WITH CONTRACTIONS BUFFER-OVERFLOW THEMSELVES IN THE FOOT
+  
+  Description: A typo in create_tailoring() causes the "contraction_flags" to be written
+  into cs->contractions in the wrong place. This causes two problems:
+  (1) Anyone relying on `contraction_flags` to decide "could this character be
+  part of a contraction" is 100% broken.
+  (2) Anyone relying on `contractions` to determine the weight of a contraction
+  is mostly broken
+  
+  Analysis: When we are preparing the contraction in create_tailoring(), we are corrupting the 
+  cs->contractions memory location which is supposed to store the weights(8k) + contraction information(256 bytes). We started storing the contraction information after the 4k location. This is because of logic flaw in the code.
+  
+  Fix: When we create the contractions, we need to calculate the contraction with (char*) (cs->contractions + 0x40*0x40) from ((char*) cs->contractions) + 0x40*0x40. This makes the "cs->contractions" to move to 8k bytes and stores the contraction information from there. Similarly when we are calculating it for like range queries we need to calculate it from the 8k bytes onwards, this can be done by changing the logic to (const char*) (cs->contractions + 0x40*0x40). And for ucs2 charsets we need to modify the my_cs_can_be_contraction_head() and my_cs_can_be_contraction_tail() to point to 8k+ locations.
+------------------------------------------------------------
+revno: 4580
+committer: Sujatha Sivakumar <sujatha.sivakumar@oracle.com>
+branch nick: Bug17081415_mysql-5.5
+timestamp: Fri 2014-01-10 15:11:56 +0530
+message:
+  Bug#17081415:>=4GB ROW EVENT CRASHES SERVER WITH WILD MEMCPY
+  OF ROW DATA
+  
+  Problem:
+  ========
+  Inserting a row larger than 4G when server uses RBR leads
+  to crash.
+  
+  Analysis:
+  ========
+  Row-based binary logging logs changes in individual table
+  rows. During the execution of DML statements in RBR the
+  actual row data will be stored within "m_rows_buf" buffer
+  and this buffer contents will be written to binary log.
+  "m_rows_buf" is prepared within the following function
+  "Rows_log_event::do_add_row_data".
+  
+  When a huge row is specified as in this bug scenario where
+  row size is 4294971520 > UINT_MAX (4294967295) then the
+  "m_rows_buf" is reallocated to accommodate the row data and
+  then the row is copied to the buffer. During this realloc
+  call, the length is getting type casted to "uint" which
+  results in overflow. Because of the overflow the reallocated
+  memory happens to be incorrect than what was requested
+  and it results in a crash during copy of rowdata to buffer.
+  
+  Hence rows of size > 4GB cannot be written to binary log.
+  By default the event_length can be stored within 4 bytes
+  which in turn restricts an event's size to grow. Hence large
+  rows cannot be replicated using row based replication.
+  
+  Fix:
+  ===
+  An error is generated if the row size exceeds 4GB value.
+------------------------------------------------------------
+revno: 4579 [merge]
+committer: Luis Soares <luis.soares@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-01-09 12:53:49 +0000
+message:
+  BUG#17066269
+  
+  - Automerged from bug branch into latest mysql-5.5.
+  - Fixed trailing whitespaces.
+  - Updated the copyright notice year to 2014.
+    ------------------------------------------------------------
+    revno: 4560.1.1
+    committer: Luis Soares <luis.soares@oracle.com>
+    branch nick: mysql-5.5
+    timestamp: Wed 2013-12-18 11:17:24 +0000
+    message:
+      BUG#17066269: AUTO_INC VALUE NOT PROPERLY GENERATED WITH RBR AND
+      AUTO_INC COLUMN ONLY ON SLAVE
+      
+      In RBR, if the slave's table as one additional auto_inc column,
+      then, it will insert the value 0 instead of generating the next
+      auto_inc number.
+      
+      We fix this by checking that if an auto_inc extra column exists,
+      when compared to column data of the row event, we explicitly set
+      it to NULL and flag the engine that a nulled auto_inc column will
+      be inserted.
+------------------------------------------------------------
+revno: 4578
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-01-09 16:07:14 +0530
+message:
+  updating the current copyright year which reflects in the MySQL welcome message.
+------------------------------------------------------------
+revno: 4577
+committer: mithun <mithun.c.y@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-01-09 11:17:51 +0530
+message:
+  Bug #17307201 : FAILING ASSERTION: PREBUILT->TRX->CONC_STATE == 1
+                  FROM SUBSELECT
+  ISSUE         : In function find_all_keys.
+                  If selected row do not satisfy condition
+                  then we call unlock_row to release the locked
+                  row. Suppose if we have subquery in condition
+                  and we have an innodb error during its execution.
+                  Then we should not call the unlock_row. If the error
+                  is because of deadlock, innodb will rollback the
+                  transaction. And calling unlock_row without
+                  transaction is an invalid case hence an assertion
+                  failure.
+  SOLUTION      : We call unlock_row only if only there is no
+                  error occurred previously.
+                  The solution is back ported from 5.6
+                  defect number 14226481
+------------------------------------------------------------
+revno: 4576
+committer: Aditya A <aditya.a@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-01-09 07:39:10 +0530
+message:
+  Bug#16287752    INNODB_DATA_FILE_PATH MINIMUM SIZE 
+                  IN DOCUMENTATION
+  
+  Test script correction.
+------------------------------------------------------------
+revno: 4575
+committer: Aditya A <aditya.a@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-01-08 22:25:41 +0530
+message:
+  Bug#16287752    INNODB_DATA_FILE_PATH MINIMUM SIZE 
+                  IN DOCUMENTATION
+  Problem 
+  -------
+  The documentation says that we support 'K' prefix 
+  while specifiying size for innodb datafile in the
+  server variable for innodb_data_file_path ,but the
+  function srv_parse_megabytes() only handles only 
+  'M' (megabytes) and 'G' (gigabytes) .
+  
+  Fix
+  ---
+  Modify srv_parse_megabytes() to handle Kilobytes. 
+  
+  Add in documentation that while specifying size 
+  in KB it should be mentioned in multiples of 1024
+  other wise they will be rounded off to nearest
+  MB (megabyte) boundry .(eg if size mentioned
+  as 2313KB will be considered as 2 MB ).
+  
+  [ Approved by Marko #rb 2387 ]
+------------------------------------------------------------
+revno: 4574
+committer: Anirudh Mangipudi <anirudh.mangipudi@oracle.com>
+branch nick: yassl-5.5
+timestamp: Wed 2014-01-08 18:31:42 +0530
+message:
+  Bug#16715064 MYSQL COMMUNITY UTILITIES CANNOT CONNECT TO MYSQL ENTERPRISE
+  WITH SSL ENABLED
+  Problem:
+  It was reported that MySQL community utilities cannot connect to a MySQL
+  Enterprise 5.6.x server with SSL configured. We can reproduce the issue
+  when we try to connect an MySQL Enterprise Server with a MySQL Client with
+  --ssl-ca parameter enabled.
+  We get an ERROR 2026 (HY000): SSL connection error: unknown error number.
+  
+  Solution:
+  The root cause of the problem was determined to be the difference in handling
+  of the certificates by OpenSSL(Enterprise) and yaSSL(Community). OpenSSL expects
+  a blank certificate to be sent when a parameter (ssl-ca, or ssl-cert or ssl-key)
+  has not been specified.On the other hand yaSSL doesn't send any certificate and 
+  since OpenSSL does not expect this behaviour it returns an Unknown SSL error.
+  The issue was resolved by yaSSL adding capability to send blank certificate when
+  any of the parameter is missing.
+------------------------------------------------------------
+revno: 4573
+committer: Nisha Gopalakrishnan <nisha.gopalakrishnan@oracle.com>
+branch nick: mysql-5.5-17324415
+timestamp: Wed 2014-01-08 10:04:05 +0530
+message:
+  BUG#17324415:GETTING MYSQLD --HELP AS ROOT EXITS WITH 1
+  
+  Analysis
+  --------
+  
+  Running 'MYSQLD --help --verbose' as ROOT user without
+  using '--user' option displays the help contents but
+  aborts at the end with an exit code '1'.
+  
+  While starting the server, a validation is performed to
+  ensure when the server is started as root user, it should
+  be done using '--user' option. Else we abort. In case
+  of help, we dump the help contents and abort.
+  
+  Fix:
+  ---
+  During the validation, we skip aborting the server incase
+  we are using the help option under the condition mentioned
+  above.
+  
+  NOTE: Test case has not been added since it requires using 
+        'root' user.
+------------------------------------------------------------
+revno: 4572
+committer: Bharathy Satish <bharathy.x.satish@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-01-07 15:11:05 +0530
+message:
+  Bug #17503460 MYSQL READ ONLY DOESN'T WORK FOR DROP TRIGGER
+  
+  Problem: Drop Trigger succeeds even after setting read_only 
+  variable to ON.
+  Fix: Fix is to report the standard error 
+  (ER_OPTION_PREVENTS_STATEMENT)when global read_only variable 
+  is set to ON.
+------------------------------------------------------------
+revno: 4571
+author: laasya.moduludu@oracle.com
+committer: Laasya Moduludu <laasya.moduludu@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-01-06 11:43:05 +0100
+message:
+  Raise version number after cloning 5.5.36
