@@ -760,6 +760,9 @@ The following options may be given as the first argument:
  disable slow update
  --tokudb-disable-slow-upsert 
  disable slow upsert
+ --tokudb-empty-scan[=name] 
+ TokuDB algorithm to check if the table is empty when
+ opened. 
  --tokudb-fs-reserve-percent=# 
  TokuDB file system space reserve (percent free required)
  --tokudb-fsync-log-period=# 
@@ -1077,6 +1080,7 @@ tokudb-disable-prefetching FALSE
 tokudb-disable-slow-alter FALSE
 tokudb-disable-slow-update FALSE
 tokudb-disable-slow-upsert FALSE
+tokudb-empty-scan rl
 tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
 tokudb-gdb-on-fatal TRUE
