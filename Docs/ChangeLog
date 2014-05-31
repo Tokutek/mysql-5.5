@@ -1,0 +1,366 @@
+------------------------------------------------------------
+revno: 4629
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.38-release
+timestamp: Sun 2014-05-11 18:24:12 +0200
+message:
+  Increment release version to resolve upgrade conflict issue
+------------------------------------------------------------
+revno: 4628
+tags: clone-5.5.38-build
+committer: Alexander Nozdrin <alexander.nozdrin@oracle.com>
+branch nick: 5.5-build
+timestamp: Wed 2014-04-30 20:48:29 +0400
+message:
+  Patch for Bug#18511348 (DDL_I18N_UTF8 AND DDL_I18N_KOI8R
+  ARE PERMANENTLY SKIPPED IN 5.5/5.6).
+  
+  The problem was that some result files were not updated,
+  so the tests were skipped.
+  
+  The fix is to record updated result files.
+------------------------------------------------------------
+revno: 4627
+committer: mithun <mithun.c.y@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-04-28 21:07:27 +0530
+message:
+  Bug #18167356: EXPLAIN W/ EXISTS(SELECT* UNION SELECT*)
+                 WHERE ONE OF SELECT* IS DISTINCT FAILS.
+  ISSUE:
+  ------
+  There are 2 issues related to explain union.
+  1. If we have subquery with union of selects. And, one of
+     the select need temp table to materialize its results
+     then it will replace its query structure with a simple
+     select from temporary table. Trying to display new
+     internal temporary table scan resulted in crash. But to
+     display the query plan, we should save the original
+     query structure.
+  2. Multiple execution of prepared explain statement which
+     have union of subqueries resulted in crash. If we have
+     constant subqueries, fake select used in union operation
+     will be evaluated once before using it for explain.
+     During first execution we have set fake select options to
+     SELECT_DESCRIBE, but did not reset after the explain.
+     Hence during next execution of prepared statement during
+     first time evaluation of fake select we had our select
+     options as SELECT_DESCRIBE this resulted in improperly
+     initialized data structures and crash.
+  
+  SOLUTION:
+  ---------
+  1. If called by explain now we save the original query
+     structure. And this will be used for displaying.
+  2. Reset the fake select options after it is called for
+     explain of union.
+------------------------------------------------------------
+revno: 4626
+committer: Nisha Gopalakrishnan <nisha.gopalakrishnan@oracle.com>
+branch nick: mysql-5.5-17994219
+timestamp: Mon 2014-04-28 16:28:09 +0530
+message:
+  BUG#17994219: CREATE TABLE .. SELECT PRODUCES INVALID STRUCTURE,
+                BREAKS RBR
+  
+  Analysis:
+  --------
+  A table created using a query of the format:
+  CREATE TABLE t1 AS SELECT REPEAT('A',1000) DIV 1 AS a;
+  breaks the Row Based Replication.
+  
+  The query above creates a table having a field of datatype
+  'bigint' with a display width of 3000 which is beyond the
+  maximum acceptable value of 255.
+  
+  In the RBR mode, CREATE TABLE SELECT statement is
+  replicated as a combination of CREATE TABLE statement
+  equivalent to one the returned by SHOW CREATE TABLE and
+  row events for rows inserted. When this CREATE TABLE event
+  is executed on the slave, an error is reported:
+  Display width out of range for column 'a' (max = 255)
+  
+  The following is the output of 'SHOW CREATE TABLE t1':
+  CREATE TABLE t1(`a` bigint(3000) DEFAULT NULL)
+                    ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  
+  The problem is due to the combination of two facts:
+  
+  1) The above CREATE TABLE SELECT statement uses the display
+     width of the result of DIV operation as the display width
+     of the column created without validating the width for out
+     of bound condition.
+  2) The DIV operation incorrectly returns the length of its first
+     argument as the display width of its result; thus allowing
+     creation of a table with an incorrect display width of 3000
+     for the field.
+  
+  Fix:
+  ----
+  This fix changes the DIV operation implementation to correctly
+  evaluate the display width of its result. We check if DIV's
+  results estimated width crosses maximum width for integer
+  value (21) and if yes set it to this maximum value.
+  
+  This patch also fixes fixes maximum display width evaluation
+  for DIV function when its first argument is in UCS2.
+------------------------------------------------------------
+revno: 4625 [merge]
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-04-24 11:06:02 +0200
+message:
+  - Support for enterprise packages
+  - Upgrade from MySQL-* packages
+  - Fix Cflags for el7
+    ------------------------------------------------------------
+    revno: 4606.1.8
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.37-repo
+    timestamp: Mon 2014-04-07 16:36:09 +0200
+    message:
+      updated optflags variable and cmake option for debug build
+    ------------------------------------------------------------
+    revno: 4606.1.7
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.37-repo
+    timestamp: Mon 2014-04-07 14:51:44 +0200
+    message:
+      Fix Cflags for el7
+    ------------------------------------------------------------
+    revno: 4606.1.6
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.37-repo
+    timestamp: Fri 2014-04-04 05:58:49 +0200
+    message:
+      Changed permisison for filter-requires.sh and filter-provides.sh
+    ------------------------------------------------------------
+    revno: 4606.1.5
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.37-repo
+    timestamp: Thu 2014-04-03 12:56:26 +0200
+    message:
+      Support for enterprise packages
+------------------------------------------------------------
+revno: 4624
+committer: Nisha Gopalakrishnan <nisha.gopalakrishnan@oracle.com>
+branch nick: mysql-5.5-18080920
+timestamp: Thu 2014-04-24 09:30:21 +0530
+message:
+  BUG#18080920: CRASH; MY_REALLOC_STR DEREFERENCES NEGATIVE VALUE 
+                INTO CLIENT_ERRORS ARRAY
+                
+  Analysis:
+  --------
+  The client may crash while executing a statement due to
+  the missing mapping of the server error to it's equivalent
+  client error.
+  
+  When trying to reallocate memory for the packet buffer, if
+  the system is out of memory or the packet buffer is large,
+  the server errors 'ER_OUT_OF_RESOURCES' or 'ER_PACKET_TOO_LARGE'
+  is returned respectively. The client error number calculated is
+  negative and when trying to dereference the array of client 
+  error messages with the calculated error number, the client
+  crashes.
+  
+  Fix:
+  ----
+  Map the server error returned to it's equivalent client error
+  prior to dereferencing the array of client error messages.
+  
+  Note: Test case is not added since it is difficult to simulate
+  the error condition.
+------------------------------------------------------------
+revno: 4623
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5-merge
+timestamp: Wed 2014-04-23 17:01:35 +0200
+message:
+  Backport from trunk:
+    Bug#18396916 MAIN.OUTFILE_LOADDATA TEST FAILS ON ARM, AARCH64, PPC/PPC64
+    
+    The recorded results for the failing tests were wrong.
+    They were introduced by the patch for
+    Bug#30946 mysqldump silently ignores --default-character-set when used with --tab
+    
+    Correct results were returned for platforms where 'char' is implemented as unsigned.
+    This was reported as 
+    Bug#46895 Test "outfile_loaddata" fails (reproducible)
+    Bug#11755168 46895: TEST "OUTFILE_LOADDATA" FAILS (REPRODUCIBLE)
+    The patch for that bug fixed only parts of the problem,
+    leaving the incorrect results in the .result file.
+    
+    Solution: use 'uchar' for field_terminator and line_terminator on all platforms.
+    Also: remove some un-necessary casts, leaving the ones we actually need.
+------------------------------------------------------------
+revno: 4622
+committer: Igor Solodovnikov <igor.solodovnikov@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-04-23 12:46:00 +0300
+message:
+  Bug #17514920	MYSQL_THREAD_INIT() CALL WITHOUT MYSQL_INIT() IS CRASHING IN WINDOWS
+  
+  It is error to call mysql_thread_init() before libmysql is initialized with mysql_library_init(). Thus to fix this bug we need to detect if library was initialized and return error result if mysql_thread_init() is called with uninitialized library.
+  
+  Fixed by checking my_thread_global_init_done and returning nonzero if the library is not initialized.
+------------------------------------------------------------
+revno: 4621
+committer: Igor Solodovnikov <igor.solodovnikov@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-04-17 16:33:55 +0300
+message:
+  Bug #18053212	MYSQL_GET_SERVER_VERSION() CALL WITHOUT A VALID CONNECTION RESULTS IN SEG FAULT
+  
+  When there is no connection mysql_get_server_version() will return 0
+  and report CR_COMMANDS_OUT_OF_SYNC error.
+------------------------------------------------------------
+revno: 4620
+committer: Sujatha Sivakumar <sujatha.sivakumar@oracle.com>
+branch nick: Bug17942050_mysql-5.5
+timestamp: Tue 2014-04-15 15:17:25 +0530
+message:
+  Bug#17942050:KILL OF TRUNCATE TABLE WILL LEAD TO BINARY LOG
+  WRITTEN WHILE ROWS REMAINS
+  
+  Problem:
+  ========
+  When truncate table fails while using transactional based
+  engines even though the operation errors out we still
+  continue and log it to binlog. Because of this master has
+  data but the truncate will be written to binary log which
+  will cause inconsistency.
+  
+  Analysis:
+  ========
+  Truncate table can happen either through drop and create of
+  table or by deleting rows. In the second case the existing
+  code is written in such a way that even if an error occurs
+  the truncate statement will always be binlogged. Which is not
+  correct.
+  
+  Binlogging of TRUNCATE TABLE statement should check whether
+  truncate is executed "transactionally or not". If the table
+  is transaction based we log the TRUNCATE TABLE only on
+  successful completion.
+  
+  If table is non transactional there are possibilities that on
+  error we could have partial changes done hence in such cases
+  we do log in spite of errors as some of the lines might have
+  been removed, so the statement has to be sent to slave.
+  
+  Fix:
+  ===
+  Using table handler whether truncate table is being executed
+  in transaction based mode or not is identified and statement
+  is binlogged accordingly.
+------------------------------------------------------------
+revno: 4619
+committer: Georgi Kodinov <georgi.kodinov@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-04-11 10:42:30 +0300
+message:
+  Addendum #1 to the fix for bug #18359924
+  
+  Removed unused variable.
+  Fixed long (>80 lines)
+------------------------------------------------------------
+revno: 4618
+committer: Georgi Kodinov <georgi.kodinov@oracle.com>
+branch nick: B18359924-5.5
+timestamp: Thu 2014-04-10 13:18:32 +0300
+message:
+  Bug #18359924: INNODB AND MYISAM CORRUPTION ON PREFIX INDEXES
+  
+  The problem was in the validation of the input data for blob types.
+  When assigned binary data, the character blob types were only checking if 
+  the length of these data is a multiple of the minimum char length for the 
+  destination charset. 
+  And since e.g. UTF-8's minimum character length is 1 (becuase it's 
+  variable length) even byte sequences that are invalid utf-8 strings (e.g. 
+  wrong leading byte etc) were copied verbatim into utf-8 columns when
+  coming from binary strings or fields.
+  Storing invalid data into string columns was having all kinds of ill effects 
+  on code that assumed that the encoding data are valid to begin with.
+  
+  Fixed by additionally checking the incoming binary string for validity when 
+  assigning it to a non-binary string column.
+  Made sure the conversions to charsets with no known "invalid" ranges 
+  are not covered by the extra check.
+  Removed trailing spaces.
+  
+  Test case added.
+------------------------------------------------------------
+revno: 4617
+committer: Arun Kuruvila <arun.kuruvila@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-04-10 11:10:31 +0530
+message:
+  Description: When we execute a correlated subquery on an
+  archive table which is using an auto increment column, the
+  server hangs. In order to recover the mysqld process, it
+  has to be terminated abnormally using SIGKILL. The problem
+  is observed in mysql-5.5.
+  Bug #18065452 "PREPARING" STATE HOGS CPU WITH ARCHIVE
+                 + SUBQUERY
+  
+  Analysis: This happens because the server is trapped inside
+  an infinite loop in the function,
+  "subselect_indexsubquery_engine::exec()". This function
+  resolves the correlated suquery by doing an index lookup
+  for the appropriate engine. In  case of archive engine,
+  after reaching the end of records, "table->status" is not
+  set to STATUS_NOT_FOUND. As a result the loop is not 
+  terminated.
+  
+  Fix: The "table->status" is set to STATUS_NOT_FOUND when
+  the end of records is reached.
+------------------------------------------------------------
+revno: 4616
+committer: Serge Kozlov <serge.kozlov@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-04-04 10:42:25 +0400
+message:
+  BUG#18506556. Added sync slave with master for clean-up
+------------------------------------------------------------
+revno: 4615
+committer: Thirunarayanan B<thirunarayanan.balathandayuth@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-04-01 11:36:58 +0530
+message:
+  Bug #17858679   TOO MANY TIMES OF MEMSET DECREASE
+  		THE PERFORMANCE UNDER HEAVY INSERT
+  	Fixing the build problem in 5.5.
+------------------------------------------------------------
+revno: 4614
+committer: Thirunarayanan B<thirunarayanan.balathandayuth@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-04-01 10:46:13 +0530
+message:
+  Bug #17858679	TOO MANY TIMES OF MEMSET DECREASE
+  		THE PERFORMANCE UNDER HEAVY INSERT
+  Problem:
+  	There are three memset call to allocate memory for system fields
+  in each insert.
+  
+  Solution:
+  	Instead of calling it in 3 times, we can combine it into
+  one memset call. It will reduce the CPU usage under heavy insert.
+  
+  	Approved by Marko rb-4916
+------------------------------------------------------------
+revno: 4613 [merge]
+author: balasubramanian.kandasamy@oracle.com
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-03-27 11:17:41 +0100
+message:
+  Merge from mysql-5.5.37-release
+    ------------------------------------------------------------
+    revno: 4606.1.4
+    tags: mysql-5.5.37
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.37-release
+    timestamp: Fri 2014-03-14 19:46:27 +0100
+    message:
+      Bug#18402229 - Resolve mysql conflict with mysql-community-client
