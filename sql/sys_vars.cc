@@ -50,6 +50,8 @@
 #include "../storage/perfschema/pfs_server.h"
 #endif /* WITH_PERFSCHEMA_STORAGE_ENGINE */
 
+#include "sql_backup.h"
+
 TYPELIB bool_typelib={ array_elements(bool_values)-1, "", bool_values, 0 };
 
 /*
@@ -3348,6 +3350,27 @@ static Sys_var_mybool Sys_pseudo_slave_mode(
        SESSION_ONLY(pseudo_slave_mode), NO_CMD_LINE, DEFAULT(FALSE),
        NO_MUTEX_GUARD, NOT_IN_BINLOG, ON_CHECK(check_pseudo_slave_mode));
 
+
+static bool update_backup_throttle(sys_var *self, THD *thd, enum_var_type type)
+{
+    sql_backup_throttle(backup_throttle);
+    return false;
+}
+
+static Sys_var_ulong Sys_tokudb_backup_throttle(
+       "tokudb_backup_throttle",
+       "The rate (bytes per second) that the backup is allowed to read data out of the mysql data directory",
+       GLOBAL_VAR(backup_throttle), CMD_LINE(REQUIRED_ARG),
+       VALID_RANGE(0, ULONG_MAX), DEFAULT(ULONG_MAX), BLOCK_SIZE(1),
+       NO_MUTEX_GUARD, NOT_IN_BINLOG, ON_CHECK(0),
+       ON_UPDATE(update_backup_throttle));
+
+static Sys_var_charptr Sys_tokubackup_version(
+       "tokubackup_version",
+       "The version number of the installed tokutek backup library",
+       READ_ONLY GLOBAL_VAR(tokubackup_version), NO_CMD_LINE, IN_SYSTEM_CHARSET,
+       DEFAULT(0));
+                            
 
 /****************************************************************************
   Used templates

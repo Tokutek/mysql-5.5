@@ -1614,6 +1614,7 @@ bool my_yyoverflow(short **a, YYSTYPE **b, ulong *yystacksize);
         part_column_list
         server_def server_options_list server_option
         definer_opt no_definer definer
+        backup
 END_OF_INPUT
 
 %type <NONE> call sp_proc_stmts sp_proc_stmts1 sp_proc_stmt
@@ -1737,6 +1738,7 @@ verb_clause:
 statement:
           alter
         | analyze
+        | backup
         | binlog_base64_event
         | call
         | change
@@ -11410,6 +11412,16 @@ opt_describe_column:
             if (Lex->wild == NULL)
               MYSQL_YYABORT;
           }
+        ;
+
+
+/* backup */
+backup: BACKUP_SYM TO_SYM TEXT_STRING
+        {
+          LEX *lex=Lex;
+          lex->sql_command = SQLCOM_BACKUP;
+          lex->backup_dir  = $3.str;
+        }
         ;
 
 
