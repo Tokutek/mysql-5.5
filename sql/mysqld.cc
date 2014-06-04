@@ -3086,6 +3086,7 @@ SHOW_VAR com_status_vars[]= {
   {"xa_recover",           (char*) offsetof(STATUS_VAR, com_stat[(uint) SQLCOM_XA_RECOVER]),SHOW_LONG_STATUS},
   {"xa_rollback",          (char*) offsetof(STATUS_VAR, com_stat[(uint) SQLCOM_XA_ROLLBACK]),SHOW_LONG_STATUS},
   {"xa_start",             (char*) offsetof(STATUS_VAR, com_stat[(uint) SQLCOM_XA_START]),SHOW_LONG_STATUS},
+  {"backup",               (char*) offsetof(STATUS_VAR, com_stat[(uint) SQLCOM_BACKUP]), SHOW_LONG_STATUS},
   {NullS, NullS, SHOW_LONG}
 };
 
