@@ -77,6 +77,7 @@ SET (SQL_SOURCE
                sql_signal.cc rpl_handler.cc mdl.cc sql_admin.cc
                transaction.cc sys_vars.cc sql_truncate.cc datadict.cc
                sql_reload.cc
+               sql_backup.cc
                ${GEN_SOURCES}
                ${MYSYS_LIBWRAP_SOURCE})
 
@@ -156,7 +157,7 @@ ELSE()
 ENDIF()
 
 SET_TARGET_PROPERTIES(mysqld PROPERTIES ENABLE_EXPORTS TRUE) 
-TARGET_LINK_LIBRARIES(mysqld ${JEMALLOC_LIBRARY} sql mysys)
+TARGET_LINK_LIBRARIES(mysqld ${HOT_BACKUP_LIBS} ${JEMALLOC_LIBRARY} sql mysys)
 
 # Provide plugins with minimal set of libraries
 SET(INTERFACE_LIBS ${LIBRT})
