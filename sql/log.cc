@@ -1521,7 +1521,7 @@ binlog_trans_log_savepos(THD *thd, my_off_t *pos)
     thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
-  DBUG_ASSERT(mysql_bin_log.is_open());
+  DBUG_ASSERT(cache_mngr && mysql_bin_log.is_open());
   *pos= cache_mngr->trx_cache.get_byte_position();
   DBUG_PRINT("return", ("*pos: %lu", (ulong) *pos));
   DBUG_VOID_RETURN;
@@ -1584,6 +1584,9 @@ int binlog_init(void *p)
 
 static int binlog_close_connection(handlerton *hton, THD *thd)
 {
+  int error= thd->binlog_setup_trx_data();
+  if (error)
+    return error;
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
   DBUG_ASSERT(cache_mngr->trx_cache.empty() && cache_mngr->stmt_cache.empty());
@@ -1789,6 +1792,9 @@ static int binlog_commit(handlerton *hton, THD *thd, bool all)
 {
   int error= 0;
   DBUG_ENTER("binlog_commit");
+  error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -1845,6 +1851,9 @@ static int binlog_rollback(handlerton *hton, THD *thd, bool all)
 {
   DBUG_ENTER("binlog_rollback");
   int error= 0;
+  error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -4534,7 +4543,7 @@ bool use_trans_cache(const THD* thd, bool is_transactional)
   return
     ((thd->is_current_stmt_binlog_format_row() ||
      thd->variables.binlog_direct_non_trans_update) ? is_transactional :
-     (is_transactional || !cache_mngr->trx_cache.empty()));
+     (is_transactional || (cache_mngr && !cache_mngr->trx_cache.empty())));
 }
 
 /**
@@ -4734,6 +4743,10 @@ int THD::binlog_write_table_map(TABLE *table, bool is_transactional)
   Table_map_log_event
     the_event(this, table, table->s->table_map_id, is_transactional);
 
+  error= this->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
+
   if (binlog_table_maps == 0)
     binlog_start_trans_and_stmt();
 
@@ -4824,6 +4837,7 @@ MYSQL_BIN_LOG::remove_pending_rows_event(THD *thd, bool is_transactional)
 {
   DBUG_ENTER("MYSQL_BIN_LOG::remove_pending_rows_event");
 
+  thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -4861,6 +4875,7 @@ MYSQL_BIN_LOG::flush_and_set_pending_rows_event(THD *thd,
   DBUG_PRINT("enter", ("event: 0x%lx", (long) event));
 
   int error= 0;
+  thd->binlog_setup_trx_data();
   binlog_cache_mngr *const cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
 
@@ -6118,9 +6133,9 @@ int TC_LOG_MMAP::open(const char *opt_name)
     pg->state=PS_POOL;
     mysql_mutex_init(key_PAGE_lock, &pg->lock, MY_MUTEX_INIT_FAST);
     mysql_cond_init(key_PAGE_cond, &pg->cond, 0);
-    pg->start=(my_xid *)(data + i*tc_log_page_size);
-    pg->end=(my_xid *)(pg->start + tc_log_page_size);
+    pg->ptr= pg->start=(my_xid *)(data + i*tc_log_page_size);
     pg->size=pg->free=tc_log_page_size/sizeof(my_xid);
+    pg->end=pg->start + pg->size;
   }
   pages[0].size=pages[0].free=
                 (tc_log_page_size-TC_LOG_HEADER_SIZE)/sizeof(my_xid);
@@ -6147,7 +6162,7 @@ int TC_LOG_MMAP::open(const char *opt_name)
   syncing= 0;
   active=pages;
   pool=pages+1;
-  pool_last=pages+npages-1;
+  pool_last_ptr= &((pages+npages-1)->next);
 
   return 0;
 
@@ -6173,8 +6188,7 @@ void TC_LOG_MMAP::get_active_from_pool()
   PAGE **p, **best_p=0;
   int best_free;
 
-  if (syncing)
-    mysql_mutex_lock(&LOCK_pool);
+  mysql_mutex_lock(&LOCK_pool);
 
   do
   {
@@ -6194,20 +6208,19 @@ void TC_LOG_MMAP::get_active_from_pool()
   }
   while ((*best_p == 0 || best_free == 0) && overflow());
 
-  active=*best_p;
+  /* Unlink the page from the pool. */
+  if (!(*best_p)->next)
+    pool_last_ptr= best_p;
+  *best_p=(*best_p)->next;
+
+  mysql_mutex_unlock(&LOCK_pool);
+
+  mysql_mutex_lock(&active->lock);
   if (active->free == active->size) // we've chosen an empty page
   {
-    tc_log_cur_pages_used++;
+    thread_safe_increment(tc_log_cur_pages_used, &LOCK_status);
     set_if_bigger(tc_log_max_pages_used, tc_log_cur_pages_used);
   }
-
-  if ((*best_p)->next)              // unlink the page from the pool
-    *best_p=(*best_p)->next;
-  else
-    pool_last=*best_p;
-
-  if (syncing)
-    mysql_mutex_unlock(&LOCK_pool);
 }
 
 /**
@@ -6274,9 +6287,17 @@ int TC_LOG_MMAP::log_xid(THD *thd, my_xid xid)
   /* no active page ? take one from the pool */
   if (active == 0)
     get_active_from_pool();
+  else
+    mysql_mutex_lock(&active->lock);
 
   p=active;
-  mysql_mutex_lock(&p->lock);
+
+  /*
+    p->free is always > 0 here because to decrease it one needs
+    to take p->lock and before it one needs to take LOCK_active.
+    But checked that active->free > 0 under LOCK_active and
+    haven't release it ever since
+  */
 
   /* searching for an empty slot */
   while (*p->ptr)
@@ -6291,37 +6312,51 @@ int TC_LOG_MMAP::log_xid(THD *thd, my_xid xid)
   p->free--;
   p->state= PS_DIRTY;
 
-  /* to sync or not to sync - this is the question */
-  mysql_mutex_unlock(&LOCK_active);
-  mysql_mutex_lock(&LOCK_sync);
   mysql_mutex_unlock(&p->lock);
 
+  mysql_mutex_lock(&LOCK_sync);
   if (syncing)
   {                                          // somebody's syncing. let's wait
+    mysql_mutex_unlock(&LOCK_active);
+    mysql_mutex_lock(&p->lock);
     p->waiters++;
-    /*
-      note - it must be while (), not do ... while () here
-      as p->state may be not PS_DIRTY when we come here
-    */
-    while (p->state == PS_DIRTY && syncing)
+    for (;;)
+    {
+      int not_dirty = p->state != PS_DIRTY;
+      if (not_dirty || !syncing)
+        break;
+      mysql_mutex_unlock(&p->lock);
       mysql_cond_wait(&p->cond, &LOCK_sync);
+      mysql_mutex_lock(&p->lock);
+    }
     p->waiters--;
     err= p->state == PS_ERROR;
     if (p->state != PS_DIRTY)                   // page was synced
     {
-      if (p->waiters == 0)
-        mysql_cond_signal(&COND_pool);       // in case somebody's waiting
       mysql_mutex_unlock(&LOCK_sync);
+      if (p->waiters == 0)
+        mysql_cond_signal(&COND_pool);     // in case somebody's waiting
+      mysql_mutex_unlock(&p->lock);
       goto done;                             // we're done
     }
-  }                                          // page was not synced! do it now
-  DBUG_ASSERT(active == p && syncing == 0);
-  mysql_mutex_lock(&LOCK_active);
-  syncing=p;                                 // place is vacant - take it
-  active=0;                                  // page is not active anymore
-  mysql_cond_broadcast(&COND_active);        // in case somebody's waiting
-  mysql_mutex_unlock(&LOCK_active);
-  mysql_mutex_unlock(&LOCK_sync);
+    DBUG_ASSERT(!syncing);
+    mysql_mutex_unlock(&p->lock);
+    syncing = p;
+    mysql_mutex_unlock(&LOCK_sync);
+
+    mysql_mutex_lock(&LOCK_active);
+    active=0;                                  // page is not active anymore
+    mysql_cond_broadcast(&COND_active);
+    mysql_mutex_unlock(&LOCK_active);
+  }
+  else
+  {
+    syncing = p;                               // place is vacant - take it
+    mysql_mutex_unlock(&LOCK_sync);
+    active = 0;                                // page is not active anymore
+    mysql_cond_broadcast(&COND_active);
+    mysql_mutex_unlock(&LOCK_active);
+  }
   err= sync();
 
 done:
@@ -6342,18 +6377,19 @@ int TC_LOG_MMAP::sync()
 
   /* page is synced. let's move it to the pool */
   mysql_mutex_lock(&LOCK_pool);
-  pool_last->next=syncing;
-  pool_last=syncing;
+  (*pool_last_ptr)=syncing;
+  pool_last_ptr=&(syncing->next);
   syncing->next=0;
   syncing->state= err ? PS_ERROR : PS_POOL;
-  mysql_cond_broadcast(&syncing->cond);      // signal "sync done"
   mysql_cond_signal(&COND_pool);             // in case somebody's waiting
   mysql_mutex_unlock(&LOCK_pool);
 
   /* marking 'syncing' slot free */
   mysql_mutex_lock(&LOCK_sync);
+  mysql_cond_broadcast(&syncing->cond);      // signal "sync done"
   syncing=0;
-  mysql_cond_signal(&active->cond);        // wake up a new syncer
+  if(active)
+    mysql_cond_signal(&active->cond);        // wake up a new syncer
   mysql_mutex_unlock(&LOCK_sync);
   return err;
 }
@@ -6614,6 +6650,9 @@ void TC_LOG_BINLOG::close()
 int TC_LOG_BINLOG::log_xid(THD *thd, my_xid xid)
 {
   DBUG_ENTER("TC_LOG_BINLOG::log");
+  int error= thd->binlog_setup_trx_data();
+  if (error)
+    DBUG_RETURN(error);
   binlog_cache_mngr *cache_mngr=
     (binlog_cache_mngr*) thd_get_ha_data(thd, binlog_hton);
   /*
