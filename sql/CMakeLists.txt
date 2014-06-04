@@ -155,8 +155,16 @@ IF(NOT WITHOUT_DYNAMIC_PLUGINS)
   ENDIF()
 ENDIF()
 
+IF(UNIX)
+  SET(JEMALLOC_LIBRARY -Wl,--whole-archive jemalloc -Wl,--no-whole-archive)
+ELSEIF(APPLE)
+  SET(JEMALLOC_LIBRARY -Wl,-force_load jemalloc)
+ELSE()
+  SET(JEMALLOC_LIBRARY)
+ENDIF()
+
 SET_TARGET_PROPERTIES(mysqld PROPERTIES ENABLE_EXPORTS TRUE) 
-TARGET_LINK_LIBRARIES(mysqld sql mysys)
+TARGET_LINK_LIBRARIES(mysqld ${JEMALLOC_LIBRARY} sql mysys)
 
 # Provide plugins with minimal set of libraries
 SET(INTERFACE_LIBS ${LIBRT})
