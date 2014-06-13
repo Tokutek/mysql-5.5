@@ -733,6 +733,8 @@ The following options may be given as the first argument:
  fractal tree block size
  --tokudb-cache-size=# 
  TokuDB cache table size
+ --tokudb-check-jemalloc=# 
+ Check if jemalloc is linked
  --tokudb-checkpoint-lock 
  Tokudb Checkpoint Lock
  --tokudb-checkpoint-on-flush-logs 
@@ -1068,6 +1070,7 @@ tokudb-analyze-time 5
 tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
 tokudb-cache-size 0
+tokudb-check-jemalloc 1
 tokudb-checkpoint-lock FALSE
 tokudb-checkpoint-on-flush-logs FALSE
 tokudb-checkpointing-period 60
