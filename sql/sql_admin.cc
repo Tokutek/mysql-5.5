@@ -526,6 +526,11 @@ static bool mysql_admin_table(THD* thd, TABLE_LIST* tables,
       /* purecov: end */
     }
 
+    if (operator_func == &handler::ha_optimize && (table->table->file->ha_table_flags() & HA_CAN_WRITE_DURING_OPTIMIZE) 
+        && table->mdl_request.ticket && table->mdl_request.ticket->get_type() == MDL_SHARED_NO_READ_WRITE) 
+    {
+      table->mdl_request.ticket->downgrade_shared_lock(MDL_SHARED_WRITE);
+    } else
     /*
       Close all instances of the table to allow MyISAM "repair"
       to rename files.
