@@ -731,6 +731,8 @@ The following options may be given as the first argument:
  read data out of the mysql data directory
  --tokudb-block-size=# 
  fractal tree block size
+ --tokudb-bulk-fetch enable bulk fetch
+ (Defaults to on; use --skip-tokudb-bulk-fetch to disable.)
  --tokudb-cache-size=# 
  TokuDB cache table size
  --tokudb-check-jemalloc=# 
@@ -1069,6 +1071,7 @@ tokudb-alter-print-error FALSE
 tokudb-analyze-time 5
 tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
+tokudb-bulk-fetch TRUE
 tokudb-cache-size 0
 tokudb-check-jemalloc 1
 tokudb-checkpoint-lock FALSE
