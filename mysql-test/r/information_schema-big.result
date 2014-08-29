@@ -49,11 +49,11 @@ TABLE_PRIVILEGES	TABLE_SCHEMA
 TRIGGERS	TRIGGER_SCHEMA
 USER_PRIVILEGES	GRANTEE
 VIEWS	TABLE_SCHEMA
-TokuDB_fractal_tree_info	dictionary_name
+TokuDB_fractal_tree_info	table_schema
 TokuDB_trx	trx_id
-TokuDB_fractal_tree_block_map	dictionary_name
-TokuDB_locks	locks_trx_id
-TokuDB_lock_waits	requesting_trx_id
+TokuDB_fractal_tree_block_map	table_schema
+TokuDB_locks	locks_table_schema
+TokuDB_lock_waits	lock_waits_table_schema
 TokuDB_file_map	table_schema
 SELECT t.table_name, c1.column_name
 FROM information_schema.tables t
@@ -101,9 +101,9 @@ TABLE_PRIVILEGES	TABLE_SCHEMA
 TRIGGERS	TRIGGER_SCHEMA
 USER_PRIVILEGES	GRANTEE
 VIEWS	TABLE_SCHEMA
-TokuDB_fractal_tree_info	dictionary_name
+TokuDB_fractal_tree_info	table_schema
 TokuDB_trx	trx_id
-TokuDB_fractal_tree_block_map	dictionary_name
-TokuDB_locks	locks_trx_id
-TokuDB_lock_waits	requesting_trx_id
+TokuDB_fractal_tree_block_map	table_schema
+TokuDB_locks	locks_table_schema
+TokuDB_lock_waits	lock_waits_table_schema
 TokuDB_file_map	table_schema

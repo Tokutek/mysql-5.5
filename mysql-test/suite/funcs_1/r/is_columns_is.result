@@ -308,22 +308,34 @@ def	information_schema	TokuDB_fractal_tree_block_map	dictionary_name	1		NO	varch
 def	information_schema	TokuDB_fractal_tree_block_map	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_fractal_tree_block_map	offset	5	NULL	YES	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_block_map	size	6	NULL	YES	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	table_dictionary_name	9		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	table_name	8		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_block_map	table_schema	7		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_allocated	3	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_in_use	4	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	5	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	6	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_fractal_tree_info	dictionary_name	1		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_fractal_tree_info	internal_file_name	2		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_info	table_dictionary_name	9		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_info	table_name	8		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_fractal_tree_info	table_schema	7		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_locks	locks_dname	3		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_locks	locks_key_left	4		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_locks	locks_key_right	5		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_locks	locks_mysql_thread_id	2	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_locks	locks_table_dictionary_name	8		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_locks	locks_table_name	7		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_locks	locks_table_schema	6		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_locks	locks_trx_id	1	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_lock_waits	blocking_trx_id	2	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_lock_waits	lock_waits_dname	3		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_lock_waits	lock_waits_key_left	4		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_lock_waits	lock_waits_key_right	5		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_lock_waits	lock_waits_start_time	6	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
+def	information_schema	TokuDB_lock_waits	lock_waits_table_dictionary_name	9		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_lock_waits	lock_waits_table_name	8		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
+def	information_schema	TokuDB_lock_waits	lock_waits_table_schema	7		NO	varchar	256	768	NULL	NULL	utf8	utf8_general_ci	varchar(256)			select	
 def	information_schema	TokuDB_lock_waits	requesting_trx_id	1	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_trx	trx_id	1	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
 def	information_schema	TokuDB_trx	trx_mysql_thread_id	2	0	NO	bigint	NULL	NULL	19	0	NULL	NULL	bigint(0)			select	
@@ -726,23 +738,35 @@ NULL	information_schema	TokuDB_fractal_tree_block_map	checkpoint_count	bigint	NU
 NULL	information_schema	TokuDB_fractal_tree_block_map	blocknum	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_block_map	offset	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_block_map	size	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_fractal_tree_block_map	table_schema	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_block_map	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_block_map	table_dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_fractal_tree_info	dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_fractal_tree_info	internal_file_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_allocated	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_num_blocks_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_size_allocated	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_fractal_tree_info	bt_size_in_use	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_fractal_tree_info	table_schema	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_info	table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_fractal_tree_info	table_dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_locks	locks_trx_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_locks	locks_mysql_thread_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 3.0000	information_schema	TokuDB_locks	locks_dname	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_locks	locks_key_left	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_locks	locks_key_right	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_locks	locks_table_schema	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_locks	locks_table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_locks	locks_table_dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_lock_waits	requesting_trx_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_lock_waits	blocking_trx_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 3.0000	information_schema	TokuDB_lock_waits	lock_waits_dname	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_lock_waits	lock_waits_key_left	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 3.0000	information_schema	TokuDB_lock_waits	lock_waits_key_right	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_lock_waits	lock_waits_start_time	bigint	NULL	NULL	NULL	NULL	bigint(0)
+3.0000	information_schema	TokuDB_lock_waits	lock_waits_table_schema	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_lock_waits	lock_waits_table_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
+3.0000	information_schema	TokuDB_lock_waits	lock_waits_table_dictionary_name	varchar	256	768	utf8	utf8_general_ci	varchar(256)
 NULL	information_schema	TokuDB_trx	trx_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 NULL	information_schema	TokuDB_trx	trx_mysql_thread_id	bigint	NULL	NULL	NULL	NULL	bigint(0)
 3.0000	information_schema	TRIGGERS	TRIGGER_CATALOG	varchar	512	1536	utf8	utf8_general_ci	varchar(512)
