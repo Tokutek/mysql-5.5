@@ -1,5 +1,6 @@
 --source include/have_innodb.inc
 --source include/not_embedded.inc
+set default_storage_engine='innodb';
 
 --echo #
 --echo # Bug #18806829 OPENING INNODB TABLES WITH MANY FOREIGN KEY
@@ -28,6 +29,7 @@ while ($i)
 --enable_query_log
 
 --source include/restart_mysqld.inc
+set default_storage_engine='innodb';
 
 update t1 set f1 = 28 where f1 = 2882;
 
@@ -68,6 +70,7 @@ while ($i)
 --enable_query_log
 
 --source include/restart_mysqld.inc
+set default_storage_engine='innodb';
 
 --error ER_ROW_IS_REFERENCED_2
 delete from t1 where f1 = 29;
