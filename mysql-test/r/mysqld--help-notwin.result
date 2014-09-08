@@ -815,6 +815,8 @@ The following options may be given as the first argument:
  session. Possible values are TOKUDB_UNCOMPRESSED,
  TOKUDB_ZLIB, TOKUDB_QUICKLZ, TOKUDB_LZMA, TOKUDB_FAST,
  TOKUDB_SMALL and TOKUDB_DEFAULT
+ --tokudb-support-xa Enable TokuDB support for the XA two-phase commit
+ (Defaults to on; use --skip-tokudb-support-xa to disable.)
  --tokudb-tmp-dir=name 
  Tokudb Tmp Dir
  --tokudb-version=name 
@@ -1107,6 +1109,7 @@ tokudb-read-block-size 65536
 tokudb-read-buf-size 131072
 tokudb-read-status-frequency 10000
 tokudb-row-format tokudb_zlib
+tokudb-support-xa TRUE
 tokudb-tmp-dir (No default value)
 tokudb-write-status-frequency 1000
 transaction-alloc-block-size 8192
