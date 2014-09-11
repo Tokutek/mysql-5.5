@@ -3711,7 +3711,6 @@ end_with_restore_list:
   {
       if (check_global_access(thd, SUPER_ACL))
           goto error;
-      fprintf(stderr, "Check table access worked\n");
       int r = sql_backups(mysql_real_data_home, lex->backup_dir, thd);
       res = (r!=0); // FALSE means everything A-OK.  r==0 if everything is OK.
       if (!res)
