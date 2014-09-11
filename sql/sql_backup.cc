@@ -35,7 +35,7 @@ static int mysql_backup_poll_fun(float progress, const char *progress_string, vo
         }
     }
     int r = snprintf(bp->the_string, bp->len, "Backup about %.0f%% done: %s", percentage, progress_string);
-    assert((size_t)r<bp->len);
+    assert((size_t)r < bp->len);
     thd_proc_info(bp->thd, bp->the_string);
     if (old_string) my_free(old_string);
     return 0;
@@ -125,7 +125,6 @@ public:
 
     bool find_log_bin(THD *thd) {
         if (opt_bin_logname == NULL) {
-            printf("BACKUP: opt_bin_logname not set.\n");
             return false;
         }
 
@@ -170,7 +169,7 @@ public:
 
                 // If the left dir is not a child of the right dir,
                 // move on to the next one.
-                if (!dir_is_child_of_dir(m_dirs[i], m_dirs[j])) {
+                if (this->dir_is_child_of_dir(m_dirs[i], m_dirs[j]) == false) {
                     continue;
                 }
 
@@ -196,10 +195,30 @@ public:
                     continue;
                 }
 
+                if (this->dirs_are_the_same(m_dirs[i], m_dirs[j])) {
+                    // If the dir on the left is mysqld's data dir this is ok.
+                    if (i == m_mysql_data_dir_index) {
+                        m_valid_dirs[j] = false;
+                        continue;
+                    }
+
+                    // If the dir on the left is the tokudb data dir,
+                    // and the other is not mysql's data dir, then
+                    // it's also ok.
+                    if (i == m_tokudb_data_dir_index &&
+                        j != m_mysql_data_dir_index) {
+                        m_valid_dirs[j] = false;
+                        continue;
+                    }
+                }
+
                 // If we got this far then we have discovered an
                 // invalid scenario, we need to return the failure to
                 // abort the backup.
                 valid_dir_set = false;
+                sql_print_error("Hot Backup can't backup %s as a subdirectory of %s.  Backup not started.\n", 
+                                m_dirs[i], m_dirs[j]);
+                return valid_dir_set;
             }
         }
 
@@ -259,7 +278,16 @@ private:
         }
 
         return false;
-    };
+    }
+
+    bool dirs_are_the_same(const char *left, const char *right) {
+        int r = strcmp(left, right);
+        if (r == 0) {
+            return true;
+        }
+
+        return false;
+    }
 
     // Removes the trailing bin log file from the system variable.
     void truncate_and_set_file_name(char *str, int length) {
@@ -281,7 +309,6 @@ private:
         if (pos != 0) {
             const int size = pos + 1;
             str[size] = 0;
-            printf("BACKUP substring: %s\n", str);
         }
 
         m_valid_dirs[m_count] = true;
@@ -354,7 +381,7 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
     sources.find_log_bin(thd);
     bool valid_arrangement = sources.verify_source_dir_arrangement();
     if (valid_arrangement == false) {
-        sql_print_error("Some of the directories passed to Hot Backup are invalid subdirectories of one another.  Backup not started.\n");
+        // Error reported in above function.
         return -1;
     }
 
@@ -379,10 +406,7 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
         return r;
     }
 
-    
-
-    // We should honor permissions, but for now just do it.    
-    fprintf(stderr, "Now I call backup from %s:%d.  The dest directory is %s, source dir is %s\n", __FILE__, __LINE__, dest_dir, source_dir);
+    // We should honor permissions, but for now just do it.
     const char *source_dirs[MYSQL_MAX_DIR_COUNT] = {NULL};
     const char *dest_dirs[MYSQL_MAX_DIR_COUNT] = {NULL};
     int count = sources.set_valid_dirs_and_get_count(source_dirs, 
@@ -391,7 +415,7 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
         dest_dirs[i] = destinations.m_dirs[i];
     }
 
-    printf("Initiating backup with the following source and destination directories:\n");
+    sql_print_information("Hot Backup initiating backup with the following source and destination directories:\n");
     for (int i = 0; i < count; ++i) {
         printf("%d: %s -> %s\n", i + 1, source_dirs[i], dest_dirs[i]);
     }
