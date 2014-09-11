@@ -129,6 +129,13 @@ public:
             return false;
         }
 
+        // If this has been set to just a filename, and not a path to
+        // a regular file, we don't want to back this up to its own
+        // directory, just skip it.
+        if (opt_bin_logname[0] != '/') {
+            return false;
+        }
+
         int length = strlen(opt_bin_logname);
         char *buf = (char *)my_malloc(length + 1, 0);
         if (buf == NULL) {
