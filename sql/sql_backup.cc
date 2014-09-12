@@ -57,174 +57,102 @@ class source_dirs {
     int m_log_bin_dir_index;
     const char *m_dirs[MYSQL_MAX_DIR_COUNT];
     bool m_valid_dirs[MYSQL_MAX_DIR_COUNT];
+public:
+    bool log_bin_set;
+    bool tokudb_data_set;
+    bool tokudb_log_set;
 
 public:
-    source_dirs() : m_count(1),
+    source_dirs() : m_count(0),
                     m_mysql_data_dir_index(0), 
                     m_tokudb_data_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX), 
                     m_tokudb_log_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX),
-                    m_log_bin_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX) {
-        m_dirs[0] = mysql_real_data_home; // Default: Just mysql's data dir.
-        m_valid_dirs[0] = true;
-        for (int i = 1; i < MYSQL_MAX_DIR_COUNT; ++i) {
+                    m_log_bin_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX),
+                    log_bin_set(false),
+                    tokudb_data_set(false),
+                    tokudb_log_set(false) {
+        for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
             m_dirs[i] = NULL;
             m_valid_dirs[i] = false;
         }
     }
 
     ~source_dirs() {
-        // NOTE: Start at the second dir entry, we don't want to free
-        // mysql's data dir string!
-        for (int i = 1; i < MYSQL_MAX_DIR_COUNT; ++i) {
+        for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
             if (m_dirs[i]) {
                 my_free((void*)m_dirs[i]);
             }
         }
     }
 
-    bool tokudb_data_dir_set(void) const {
-        if (m_tokudb_data_dir_index != BAD_BACKUP_SOURCE_DIR_INDEX &&
-            m_valid_dirs[m_tokudb_data_dir_index]) {
-            return true;
-        } 
+    bool set_dirs(THD *thd) {
+        bool result = true;
 
-        return false;
-    }
-
-    bool tokudb_log_dir_set(void) const {
-        if (m_tokudb_log_dir_index != BAD_BACKUP_SOURCE_DIR_INDEX &&
-            m_valid_dirs[m_tokudb_log_dir_index]) {
-            return true;
-        } 
-
-        return false;
-    }
-
-    bool log_bin_dir_set(void) const {
-        if (m_log_bin_dir_index != BAD_BACKUP_SOURCE_DIR_INDEX &&
-            m_valid_dirs[m_log_bin_dir_index]) {
-            return true;
-        }
-
-        return false;
-    }
-
-    void find_tokudb_data_dir(THD *thd) {
-        bool variable_found = this->find_plug_in_sys_var("tokudb_data_dir", thd);
-        if (variable_found) {
-            m_tokudb_data_dir_index = m_count - 1;
-        }
-    }
-
-    void find_tokudb_log_dir(THD *thd) {
-        bool variable_found = this->find_plug_in_sys_var("tokudb_log_dir", thd);
-        if (variable_found) {
-            m_tokudb_log_dir_index = m_count - 1;
-        }
-    }
-
-    bool find_log_bin(THD *thd) {
-        if (opt_bin_logname == NULL) {
+        // First sanitize the trailing slash.
+        char *mysql_data = strdup(mysql_real_data_home);
+        if (mysql_data == NULL) {
+            // HUH? Memory error?
             return false;
+        }
+
+        size_t length = strlen(mysql_data);
+        mysql_data[length - 1] = 0;
+        m_count = 0;
+        m_dirs[m_count++] = mysql_data;
+        const char *tokudb_data = NULL;
+        tokudb_data = this->find_plug_in_sys_var("tokudb_data_dir", thd);
+        if (tokudb_data) {
+            m_dirs[m_count++] = tokudb_data;
+            tokudb_data_set = true;
+        }
+
+        const char *tokudb_log = NULL;
+        tokudb_log = this->find_plug_in_sys_var("tokudb_log_dir", thd);
+        if (tokudb_log) {
+            m_dirs[m_count++] = tokudb_log;
+            tokudb_log_set = true;
+        }
+
+        const char *log_bin = NULL;
+        log_bin = this->find_log_bin_dir(thd);
+        if (log_bin != NULL && dir_is_child_of_dir(log_bin, mysql_data) == false) {
+            m_dirs[m_count++] = log_bin;
+            log_bin_set = true;
+        }
+
+        return result;
+    }
+
+    const char * find_log_bin_dir(THD *thd) {
+        if (opt_bin_logname == NULL) {
+            return NULL;
         }
 
         // If this has been set to just a filename, and not a path to
         // a regular file, we don't want to back this up to its own
         // directory, just skip it.
         if (opt_bin_logname[0] != '/') {
-            return false;
+            return NULL;
         }
 
         int length = strlen(opt_bin_logname);
         char *buf = (char *)my_malloc(length + 1, 0);
         if (buf == NULL) {
-            return false;
+            return NULL;
         }
 
         bool r = normalize_binlog_name(buf, opt_bin_logname, false);
-        if (r) { 
-            return false;
+        if (r) {
+            return NULL;
         }
+
+        // Add end of string char.
         buf[length] = 0;
 
         // NOTE: We have to extract the directory of this field.
         this->truncate_and_set_file_name(buf, length);
-        return true;
+        return buf;
     }
-
-    bool verify_source_dir_arrangement(void) {
-        bool valid_dir_set = true;
-        for (int i = 0; i < m_count; ++i) {
-            for (int j = 0; j < m_count; ++j) {
-                // We don't want to compare one dir to itself.
-                if (i == j) {
-                    continue;
-                }
-
-                // The dir may have been erased on a previous
-                // iteration.
-                if (m_dirs[i] == NULL || m_dirs[j] == NULL) {
-                    continue;
-                }
-
-                // If the left dir is not a child of the right dir,
-                // move on to the next one.
-                if (this->dir_is_child_of_dir(m_dirs[i], m_dirs[j]) == false) {
-                    continue;
-                }
-
-                // We only allow a select number of scenarios where
-                // child dirs can be backed up.  These special cases
-                // require reducing the number of directories sent to
-                // hot backup.  All other cases are errors.
-                if (j == m_mysql_data_dir_index) {
-                    // We have to eliminate the child dir from the
-                    // list of dirs backed up.  Remove dirs[i] from
-                    // list of dirs to back up, but not from the list
-                    // of dirs to check, there could still be an error
-                    // where dirs[i] is a parent of another dir.
-                    m_valid_dirs[i] = false;
-                    continue;
-                }
-
-                if (j == m_tokudb_data_dir_index && 
-                    i == m_tokudb_log_dir_index) {
-                    // This is ok, but we have to eliminate the log
-                    // dir from the lsit of source files.
-                    m_valid_dirs[i] = false;
-                    continue;
-                }
-
-                if (this->dirs_are_the_same(m_dirs[i], m_dirs[j])) {
-                    // If the dir on the left is mysqld's data dir this is ok.
-                    if (i == m_mysql_data_dir_index) {
-                        m_valid_dirs[j] = false;
-                        continue;
-                    }
-
-                    // If the dir on the left is the tokudb data dir,
-                    // and the other is not mysql's data dir, then
-                    // it's also ok.
-                    if (i == m_tokudb_data_dir_index &&
-                        j != m_mysql_data_dir_index) {
-                        m_valid_dirs[j] = false;
-                        continue;
-                    }
-                }
-
-                // If we got this far then we have discovered an
-                // invalid scenario, we need to return the failure to
-                // abort the backup.
-                valid_dir_set = false;
-                sql_print_error("Hot Backup can't backup %s as a subdirectory of %s.  Backup not started.\n", 
-                                m_dirs[i], m_dirs[j]);
-                return valid_dir_set;
-            }
-        }
-
-        return valid_dir_set;
-    }
-
 
     int set_valid_dirs_and_get_count(const char *array[], const int size) {
         int count = 0;
@@ -233,20 +161,19 @@ public:
         }
 
         for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
-            if (m_valid_dirs[i]) {
+            if (m_dirs[i] != NULL) {
                 count++;
-                array[i] = m_dirs[i];
-            } else {
-                array[i] = NULL;
             }
+
+            array[i] = m_dirs[i];
         }
 
         return count;
     }
 
 private:
-    bool find_plug_in_sys_var(const char *name, THD *thd) {
-        bool result = false;
+    const char * find_plug_in_sys_var(const char *name, THD *thd) {
+        const char * result = NULL;
         String null_string;
         String name_to_find(name, &my_charset_bin);
         Item *item = get_system_var(thd,
@@ -257,12 +184,7 @@ private:
             String scratch;
             String * str = item->val_str(&scratch);
             if (str) {
-                m_dirs[m_count] = strdup(str->ptr());
-                if (m_dirs[m_count]) {
-                    m_valid_dirs[m_count] = true;
-                    m_count++;
-                    result = true;
-                }
+                result = strdup(str->ptr());
             }
         }
 
@@ -292,13 +214,13 @@ private:
     // Removes the trailing bin log file from the system variable.
     void truncate_and_set_file_name(char *str, int length) {
         const char slash = '/';
-        int pos = 0;
+        int position_of_last_slash = 0;
 
         // NOTE: We don't care about the leading slash, so it's ok to
         // only scan backwards to the 2nd character.
         for (int i = length; i > 0; --i) {
             if (str[i] == slash) {
-                pos = i;
+                position_of_last_slash = i;
                 break;
             }
         }
@@ -306,14 +228,10 @@ private:
         // NOTE: MySQL should not allow this to happen.  The user
         // needs to specify a file, not the root dir (/).  This
         // shouldn't happen, but it might, so let's pretend it's ok.
-        if (pos != 0) {
-            const int size = pos + 1;
-            str[size] = 0;
+        if (position_of_last_slash != 0) {
+            // NOTE: We are sanitizing the path by removing the last slash.
+            str[position_of_last_slash] = 0;
         }
-
-        m_valid_dirs[m_count] = true;
-        m_log_bin_dir_index = m_count;
-        m_dirs[m_count++] = str;
     }
 };
 
@@ -376,27 +294,20 @@ private:
 
 int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
     struct source_dirs sources;
-    sources.find_tokudb_data_dir(thd);
-    sources.find_tokudb_log_dir(thd);
-    sources.find_log_bin(thd);
-    bool valid_arrangement = sources.verify_source_dir_arrangement();
-    if (valid_arrangement == false) {
-        // Error reported in above function.
-        return -1;
-    }
+    sources.set_dirs(thd);
 
     struct destination_dirs destinations(dest_dir);
     int index = 0;
     destinations.set_backup_subdir("/mysql_data_dir", index);
-    if (sources.tokudb_data_dir_set()) {
+    if (sources.tokudb_data_set) {
        destinations.set_backup_subdir("/tokudb_data_dir", ++index);
     }
 
-    if (sources.tokudb_log_dir_set()) {
+    if (sources.tokudb_log_set) {
        destinations.set_backup_subdir("/tokudb_log_dir", ++index);
     }
 
-    if (sources.log_bin_dir_set()) {
+    if (sources.log_bin_set) {
         destinations.set_backup_subdir("/mysql_log_bin", ++index);
     }
 
