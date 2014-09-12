@@ -415,9 +415,9 @@ int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
         dest_dirs[i] = destinations.m_dirs[i];
     }
 
-    sql_print_information("Hot Backup initiating backup with the following source and destination directories:\n");
+    sql_print_information("Hot Backup initiating backup with the following source and destination directories:");
     for (int i = 0; i < count; ++i) {
-        printf("%d: %s -> %s\n", i + 1, source_dirs[i], dest_dirs[i]);
+        sql_print_information("%d: %s -> %s", i + 1, source_dirs[i], dest_dirs[i]);
     }
 
     backup_poll bp(thd);
