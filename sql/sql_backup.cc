@@ -101,14 +101,14 @@ public:
         m_dirs[m_count++] = mysql_data;
         const char *tokudb_data = NULL;
         tokudb_data = this->find_plug_in_sys_var("tokudb_data_dir", thd);
-        if (tokudb_data) {
+        if (tokudb_data != NULL && dir_is_child_of_dir(tokudb_data, mysql_data) == false) {
             m_dirs[m_count++] = tokudb_data;
             tokudb_data_set = true;
         }
 
         const char *tokudb_log = NULL;
         tokudb_log = this->find_plug_in_sys_var("tokudb_log_dir", thd);
-        if (tokudb_log) {
+        if (tokudb_log != NULL && dir_is_child_of_dir(tokudb_log, mysql_data) == false) {
             m_dirs[m_count++] = tokudb_log;
             tokudb_log_set = true;
         }
@@ -294,7 +294,9 @@ private:
 
 int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
     struct source_dirs sources;
-    sources.set_dirs(thd);
+    if (!sources.set_dirs(thd)) {
+        // WHAT?
+    }
 
     struct destination_dirs destinations(dest_dir);
     int index = 0;
