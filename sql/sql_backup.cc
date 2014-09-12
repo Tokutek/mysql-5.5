@@ -47,16 +47,15 @@ static void mysql_error_fun(int error_number, const char *error_string, void *er
 }
 
 const int MYSQL_MAX_DIR_COUNT = 4;
-const int BAD_BACKUP_SOURCE_DIR_INDEX = -1;
 
 class source_dirs {
     int m_count;
-    int m_mysql_data_dir_index;
-    int m_tokudb_data_dir_index;
-    int m_tokudb_log_dir_index;
-    int m_log_bin_dir_index;
     const char *m_dirs[MYSQL_MAX_DIR_COUNT];
-    bool m_valid_dirs[MYSQL_MAX_DIR_COUNT];
+    char *m_mysql_data_dir;
+    const char *m_tokudb_data_dir;
+    const char *m_tokudb_log_dir;
+    const char *m_log_bin_dir;
+
 public:
     bool log_bin_set;
     bool tokudb_data_set;
@@ -64,64 +63,148 @@ public:
 
 public:
     source_dirs() : m_count(0),
-                    m_mysql_data_dir_index(0), 
-                    m_tokudb_data_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX), 
-                    m_tokudb_log_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX),
-                    m_log_bin_dir_index(BAD_BACKUP_SOURCE_DIR_INDEX),
+                    m_mysql_data_dir(NULL),
+                    m_tokudb_data_dir(NULL),
+                    m_tokudb_log_dir(NULL),
+                    m_log_bin_dir(NULL),
                     log_bin_set(false),
                     tokudb_data_set(false),
                     tokudb_log_set(false) {
         for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
             m_dirs[i] = NULL;
-            m_valid_dirs[i] = false;
         }
     }
 
     ~source_dirs() {
         for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
-            if (m_dirs[i]) {
-                my_free((void*)m_dirs[i]);
+            if (m_mysql_data_dir) {
+                my_free((void*)m_mysql_data_dir);
+                m_mysql_data_dir = NULL;
+            }
+
+            if (m_tokudb_data_dir) {
+                my_free((void*)m_tokudb_data_dir);
+                m_tokudb_data_dir = NULL;
+            }
+
+            if (m_tokudb_log_dir) {
+                my_free((void*)m_tokudb_log_dir);
+                m_tokudb_log_dir = NULL;
+            }
+
+            if (m_log_bin_dir) {
+                my_free((void*)m_log_bin_dir);
+                m_log_bin_dir = NULL;
             }
         }
     }
 
-    bool set_dirs(THD *thd) {
-        bool result = true;
-
-        // First sanitize the trailing slash.
-        char *mysql_data = strdup(mysql_real_data_home);
-        if (mysql_data == NULL) {
+    bool find_and_allocate_dirs(THD *thd) {
+        // Sanitize the trailing slash of the MySQL Data Dir.
+        m_mysql_data_dir = strdup(mysql_real_data_home);
+        if (m_mysql_data_dir == NULL) {
             // HUH? Memory error?
             return false;
         }
 
-        size_t length = strlen(mysql_data);
-        mysql_data[length - 1] = 0;
-        m_count = 0;
-        m_dirs[m_count++] = mysql_data;
-        const char *tokudb_data = NULL;
-        tokudb_data = this->find_plug_in_sys_var("tokudb_data_dir", thd);
-        if (tokudb_data != NULL && dir_is_child_of_dir(tokudb_data, mysql_data) == false) {
-            m_dirs[m_count++] = tokudb_data;
+        const size_t length = strlen(m_mysql_data_dir);
+        m_mysql_data_dir[length - 1] = 0;
+        
+        // Note: These all allocate new strings or return NULL.
+        m_tokudb_data_dir = this->find_plug_in_sys_var("tokudb_data_dir", thd);
+        m_tokudb_log_dir = this->find_plug_in_sys_var("tokudb_log_dir", thd);
+        m_log_bin_dir = this->find_log_bin_dir(thd);
+        return true;
+    }
+
+    bool check_dirs_layout(void) {
+        // Ignore directories that are children of the MySQL data dir.
+        if (m_tokudb_data_dir != NULL && 
+            this->dir_is_child_of_dir(m_tokudb_data_dir, m_mysql_data_dir) == false) {
             tokudb_data_set = true;
         }
 
-        const char *tokudb_log = NULL;
-        tokudb_log = this->find_plug_in_sys_var("tokudb_log_dir", thd);
-        if (tokudb_log != NULL && dir_is_child_of_dir(tokudb_log, mysql_data) == false) {
-            m_dirs[m_count++] = tokudb_log;
+        if (m_tokudb_log_dir != NULL && 
+            this->dir_is_child_of_dir(m_tokudb_log_dir, m_mysql_data_dir) == false) {
             tokudb_log_set = true;
         }
 
-        const char *log_bin = NULL;
-        log_bin = this->find_log_bin_dir(thd);
-        if (log_bin != NULL && dir_is_child_of_dir(log_bin, mysql_data) == false) {
-            m_dirs[m_count++] = log_bin;
+        if (m_log_bin_dir != NULL && 
+            this->dir_is_child_of_dir(m_log_bin_dir, m_mysql_data_dir) == false) {
             log_bin_set = true;
         }
 
-        return result;
+        // Check if TokuDB log dir is a child of TokuDB data dir.  If it is, we want to ignore it.
+        if (tokudb_log_set && tokudb_data_set) {
+            if (this->dir_is_child_of_dir(m_tokudb_log_dir, m_tokudb_data_dir)) {
+                tokudb_log_set = false;
+            }
+        }
+
+        // Check if any of the three non-mysql dirs is a strict parent
+        // of the mysql data dir.  This is an error.  NOTE: They can
+        // be the same.
+        const char *error = "%s directory %s can't be a parent of mysql data dir %s when backing up";
+        if (tokudb_data_set &&
+            this->dir_is_child_of_dir(m_mysql_data_dir, m_tokudb_data_dir) == true && 
+            this->dirs_are_the_same(m_tokudb_data_dir, m_mysql_data_dir) == false) {
+            sql_print_error(error, "tokudb-data-dir", m_tokudb_data_dir, m_mysql_data_dir);
+            return false;
+        }
+
+        if (tokudb_log_set &&
+            this->dir_is_child_of_dir(m_mysql_data_dir, m_tokudb_log_dir) == true && 
+            this->dirs_are_the_same(m_tokudb_log_dir, m_mysql_data_dir) == false) {
+            sql_print_error(error, "tokudb-log-dir", m_tokudb_log_dir, m_mysql_data_dir);
+            return false;
+        }
+
+        if (log_bin_set &&
+            this->dir_is_child_of_dir(m_mysql_data_dir, m_log_bin_dir) == true && 
+            this->dirs_are_the_same(m_log_bin_dir, m_mysql_data_dir) == false) {
+            sql_print_error(error, "mysql log-bin", m_log_bin_dir, m_mysql_data_dir);
+            return false;
+        }
+
+        return true;
     }
+
+    void set_dirs(void) {
+        // Set the directories in the output array.
+        m_count = 0;
+        m_dirs[m_count++] = m_mysql_data_dir;
+
+        if (tokudb_log_set) {
+            m_dirs[m_count++] = m_tokudb_log_dir;
+        }
+
+        if (tokudb_data_set) {
+            m_dirs[m_count++] = m_tokudb_data_dir;
+        }
+
+        if (log_bin_set) {
+            m_dirs[m_count++] = m_log_bin_dir;
+        }
+    }
+
+    int set_valid_dirs_and_get_count(const char *array[], const int size) {
+        int count = 0;
+        if (size > MYSQL_MAX_DIR_COUNT) {
+            return count;
+        }
+
+        for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
+            if (m_dirs[i] != NULL) {
+                count++;
+            }
+
+            array[i] = m_dirs[i];
+        }
+
+        return count;
+    }
+
+private:
 
     const char * find_log_bin_dir(THD *thd) {
         if (opt_bin_logname == NULL) {
@@ -143,6 +226,7 @@ public:
 
         bool r = normalize_binlog_name(buf, opt_bin_logname, false);
         if (r) {
+            my_free((void*)buf);
             return NULL;
         }
 
@@ -154,24 +238,6 @@ public:
         return buf;
     }
 
-    int set_valid_dirs_and_get_count(const char *array[], const int size) {
-        int count = 0;
-        if (size > MYSQL_MAX_DIR_COUNT) {
-            return count;
-        }
-
-        for (int i = 0; i < MYSQL_MAX_DIR_COUNT; ++i) {
-            if (m_dirs[i] != NULL) {
-                count++;
-            }
-
-            array[i] = m_dirs[i];
-        }
-
-        return count;
-    }
-
-private:
     const char * find_plug_in_sys_var(const char *name, THD *thd) {
         const char * result = NULL;
         String null_string;
@@ -294,10 +360,15 @@ private:
 
 int sql_backups(const char *source_dir, const char *dest_dir, THD *thd) {
     struct source_dirs sources;
-    if (!sources.set_dirs(thd)) {
-        // WHAT?
+    if (sources.find_and_allocate_dirs(thd) == false) {
+        return -1;
     }
 
+    if (sources.check_dirs_layout() == false) {
+        return -1;
+    }
+
+    sources.set_dirs();
     struct destination_dirs destinations(dest_dir);
     int index = 0;
     destinations.set_backup_subdir("/mysql_data_dir", index);
