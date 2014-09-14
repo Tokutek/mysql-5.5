@@ -141,6 +141,20 @@ public:
             }
         }
 
+        // Check if log bin dir is a child of either TokuDB data dir.
+        if (log_bin_set && tokudb_data_set) {
+            if (this->dir_is_child_of_dir(m_log_bin_dir, m_tokudb_data_dir)) {
+                log_bin_set = false;
+            }
+        }
+
+        // Check if log bin dir is a child of either TokuDB log dir.
+        if (log_bin_set && tokudb_log_set) {
+            if (this->dir_is_child_of_dir(m_log_bin_dir, m_tokudb_log_dir)) {
+                log_bin_set = false;
+            }
+        }
+
         // Check if any of the three non-mysql dirs is a strict parent
         // of the mysql data dir.  This is an error.  NOTE: They can
         // be the same.
