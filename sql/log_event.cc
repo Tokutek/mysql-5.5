@@ -9056,6 +9056,8 @@ Write_rows_log_event::do_before_row_operations(const Slave_reporting_capability 
 {
   int error= 0;
 
+  m_table->file->rpl_before_write_rows();
+
   /*
     Increment the global status insert count variable
   */
@@ -9194,6 +9196,9 @@ Write_rows_log_event::do_after_row_operations(const Slave_reporting_capability *
   {
     m_table->file->print_error(local_error, MYF(0));
   }
+
+  m_table->file->rpl_after_write_rows();
+
   return error? error : local_error;
 }
 
@@ -9719,6 +9724,8 @@ int Rows_log_event::find_row(const Relay_log_info *rli)
   
   prepare_record(table, m_width, FALSE);
   error= unpack_current_row(rli);
+  if (error) 
+    DBUG_RETURN(error);
 
 #ifndef DBUG_OFF
   DBUG_PRINT("info",("looking for the following record"));
@@ -9728,6 +9735,8 @@ int Rows_log_event::find_row(const Relay_log_info *rli)
   if ((table->file->ha_table_flags() & HA_PRIMARY_KEY_REQUIRED_FOR_POSITION) &&
       table->s->primary_key < MAX_KEY)
   {
+    if (!table->file->rpl_lookup_rows())
+      DBUG_RETURN(0);
     /*
       Use a more efficient method to fetch the record given by
       table->record[0] if the engine allows it.  We first compute a
@@ -10042,6 +10051,8 @@ Delete_rows_log_event::Delete_rows_log_event(const char *buf, uint event_len,
 int 
 Delete_rows_log_event::do_before_row_operations(const Slave_reporting_capability *const)
 {
+  m_table->file->rpl_before_delete_rows();
+
   /*
     Increment the global status delete count variable
    */
@@ -10075,6 +10086,8 @@ Delete_rows_log_event::do_after_row_operations(const Slave_reporting_capability 
   m_table->file->ha_index_or_rnd_end();
   my_free(m_key);
   m_key= NULL;
+
+  m_table->file->rpl_after_delete_rows();
 
   return error;
 }
@@ -10177,6 +10190,7 @@ Update_rows_log_event::Update_rows_log_event(const char *buf, uint event_len,
 int 
 Update_rows_log_event::do_before_row_operations(const Slave_reporting_capability *const)
 {
+  m_table->file->rpl_before_update_rows();
   /*
     Increment the global status update count variable
   */
@@ -10204,6 +10218,8 @@ Update_rows_log_event::do_after_row_operations(const Slave_reporting_capability 
   m_table->file->ha_index_or_rnd_end();
   my_free(m_key); // Free for multi_malloc
   m_key= NULL;
+
+  m_table->file->rpl_after_update_rows();
 
   return error;
 }
