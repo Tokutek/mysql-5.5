@@ -188,12 +188,12 @@ public:
         m_count = 0;
         m_dirs[m_count++] = m_mysql_data_dir;
 
-        if (tokudb_log_set) {
-            m_dirs[m_count++] = m_tokudb_log_dir;
-        }
-
         if (tokudb_data_set) {
             m_dirs[m_count++] = m_tokudb_data_dir;
+        }
+
+        if (tokudb_log_set) {
+            m_dirs[m_count++] = m_tokudb_log_dir;
         }
 
         if (log_bin_set) {
