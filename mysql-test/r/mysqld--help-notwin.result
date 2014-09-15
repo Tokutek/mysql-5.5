@@ -815,6 +815,18 @@ The following options may be given as the first argument:
  session. Possible values are TOKUDB_UNCOMPRESSED,
  TOKUDB_ZLIB, TOKUDB_QUICKLZ, TOKUDB_LZMA, TOKUDB_FAST,
  TOKUDB_SMALL and TOKUDB_DEFAULT
+ --tokudb-rpl-lookup-rows 
+ lookup a row on rpl slave
+ (Defaults to on; use --skip-tokudb-rpl-lookup-rows to disable.)
+ --tokudb-rpl-lookup-rows-delay=# 
+ time in milliseconds to add to lookups on replication
+ slave
+ --tokudb-rpl-unique-checks 
+ enable unique checks on replication slave
+ (Defaults to on; use --skip-tokudb-rpl-unique-checks to disable.)
+ --tokudb-rpl-unique-checks-delay=# 
+ time in milliseconds to add to unique checks test on
+ replication slave
  --tokudb-support-xa Enable TokuDB support for the XA two-phase commit
  (Defaults to on; use --skip-tokudb-support-xa to disable.)
  --tokudb-tmp-dir=name 
@@ -1109,6 +1121,10 @@ tokudb-read-block-size 65536
 tokudb-read-buf-size 131072
 tokudb-read-status-frequency 10000
 tokudb-row-format tokudb_zlib
+tokudb-rpl-lookup-rows TRUE
+tokudb-rpl-lookup-rows-delay 0
+tokudb-rpl-unique-checks TRUE
+tokudb-rpl-unique-checks-delay 0
 tokudb-support-xa TRUE
 tokudb-tmp-dir (No default value)
 tokudb-write-status-frequency 1000
