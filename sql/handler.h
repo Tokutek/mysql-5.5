@@ -2795,6 +2795,22 @@ private:
   { return ENOTSUP; }
   virtual int upsert(THD *thd, List<Item> &update_fields, List<Item> &update_values)
   { return ENOTSUP; }
+public:
+  virtual void rpl_before_write_rows() {
+  }
+  virtual void rpl_after_write_rows() {
+  }
+  virtual void rpl_before_delete_rows() {
+  }
+  virtual void rpl_after_delete_rows() {
+  }
+  virtual void rpl_before_update_rows() {
+  }
+  virtual void rpl_after_update_rows() {
+  }
+  virtual bool rpl_lookup_rows() {
+      return true;
+  }
 };
 
 
