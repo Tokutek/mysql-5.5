@@ -1,0 +1,196 @@
+------------------------------------------------------------
+revno: 4703
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5.40-release
+timestamp: Mon 2014-09-08 11:33:55 +0200
+message:
+  Adding patch for security bug 19471516
+------------------------------------------------------------
+revno: 4702
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5.40-release
+timestamp: Fri 2014-09-05 08:37:21 +0200
+message:
+  Applying the patch to remove WL#7219 which was by mistake included by the dev team.
+------------------------------------------------------------
+revno: 4701
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5.40-release
+timestamp: Tue 2014-08-26 14:01:38 +0200
+message:
+  Renaming the enterprise packages to commercial
+------------------------------------------------------------
+revno: 4700
+tags: clone-5.5.40-build
+committer: Harin Vadodaria <harin.vadodaria@oracle.com>
+branch nick: 5.5
+timestamp: Sat 2014-08-23 08:59:03 +0530
+message:
+  Bug#19370676 : YASSL PRE-AUTH BUFFER OVERFLOW WHEN CLIENT
+                 LIES ABOUT SUITE_LEN_
+                 and
+  Bug#19355577 : YASSL PRE-AUTH BUFFER OVERFLOW WHEN CLIENT
+                 LIES ABOUT COMP_LEN_
+  
+  Description : Updating yaSSL to version 2.3.4.
+------------------------------------------------------------
+revno: 4699
+committer: Tor Didriksen <tor.didriksen@oracle.com>
+branch nick: 5.5
+timestamp: Thu 2014-08-21 16:42:04 +0200
+message:
+  Bug#18928848 II. MALLOC OF UNINITIALIZED MEMORY SIZE
+  
+  Several string functions have optimizations for constant
+  sub-expressions which lead to setting max_length == 0.
+  
+  For subqueries, where we need a temporary table to holde the result,
+  we need to ensure that we use a VARCHAR(0) column rather than a
+  CHAR(0) column when such expressions take part in grouping.
+  With CHAR(0) end_update() may write garbage into the next field.
+------------------------------------------------------------
+revno: 4698 [merge]
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-08-20 09:46:38 +0200
+message:
+  Add my.cnf.d to regular rpm for EL7 build
+    ------------------------------------------------------------
+    revno: 4676.2.7
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Tue 2014-08-12 19:37:49 +0200
+    message:
+      Corrected typo
+    ------------------------------------------------------------
+    revno: 4676.2.6
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Tue 2014-08-12 18:55:05 +0200
+    message:
+      Experimental testing
+    ------------------------------------------------------------
+    revno: 4676.2.5
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Tue 2014-08-12 18:26:46 +0200
+    message:
+      Experimental testing for patch
+    ------------------------------------------------------------
+    revno: 4676.2.4
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Tue 2014-08-12 16:53:31 +0200
+    message:
+      Added my.cnf.d directory, removed mysql-5.5-libmysqlclient-symbols.patch
+    ------------------------------------------------------------
+    revno: 4676.2.3
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Tue 2014-08-12 14:32:16 +0200
+    message:
+      Add patch mysql-5.5-libmysqlclient-symbols.patch for el7
+------------------------------------------------------------
+revno: 4697
+committer: mithun <mithun.c.y@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-08-12 17:16:51 +0530
+message:
+  Bug #11755818 : LIKE DOESN'T MATCH WHEN CP932_BIN/SJIS_BIN
+                  COLLATIONS ARE USED.
+  
+  ISSUE :
+  -------
+  Code points of HALF WIDTH KATAKANA in SJIS/CP932 range from
+  A1 to DF. In function my_wildcmp_mb_bin_impl while comparing
+  such single byte code points, there is a code which compares
+  signed character with unsigned character. Because of this,
+  comparisons of two same code points representing a HALF
+  WIDTH KATAKANA character always fails.
+  
+  Solution:
+  ---------
+  A code point of HALF WIDTH KATAKANA at-least need 8 bits.
+  Promoting the variable from uchar to int will fix the issue.
+------------------------------------------------------------
+revno: 4696 [merge]
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-08-06 09:56:37 +0200
+message:
+  - Merge from mysql-5.5.39-ol7-release branch
+  - Reverted version variable 
+    ------------------------------------------------------------
+    revno: 4676.2.2
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Mon 2014-08-04 15:56:19 +0200
+    message:
+      Updated for el7 regular rpms
+    ------------------------------------------------------------
+    revno: 4676.2.1
+    committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+    branch nick: mysql-5.5.39-ol7-release
+    timestamp: Thu 2014-07-24 11:37:40 +0200
+    message:
+      Bug#19223915 Provide mysql-compat-server dependencies
+------------------------------------------------------------
+revno: 4695
+committer: bin.x.su@oracle.com
+branch nick: mysql-5.5
+timestamp: Wed 2014-08-06 09:51:20 +0800
+message:
+  Remove unstable test case innodb_bug18942294, approved by Jimmy over IM.
+------------------------------------------------------------
+revno: 4694
+committer: Venkata Sidagam <venkata.sidagam@oracle.com>
+branch nick: 5.5
+timestamp: Fri 2014-08-01 17:09:55 +0530
+message:
+  Bug #18415196 MYSQL_UPGRADE DUPLICATE KEY ERROR FOR MYSQL.USER FOR 5.5.35+, 5.6.15+, 5.7.3+
+  
+  Follow-up patch. Removed unwanted code.
+------------------------------------------------------------
+revno: 4693
+committer: Venkata Sidagam <venkata.sidagam@oracle.com>
+branch nick: 5.5
+timestamp: Fri 2014-08-01 14:18:28 +0530
+message:
+  Bug #18415196 MYSQL_UPGRADE DUPLICATE KEY ERROR FOR MYSQL.USER FOR 5.5.35+, 5.6.15+, 5.7.3+
+  
+  Description: mysql_upgrade fails with below error, 
+  when there are duplicate entries(like 'root'@'LOCALHOST'
+  and 'root'@'localhost') in mysql.user table.
+  ERROR 1062 (23000) at line 1140: Duplicate entry 'localhost-root' for key 'PRIMARY'
+  FATAL ERROR: Upgrade failed
+  
+  Analysis: As part of the bug 12917151 fix we are 
+  making all the hostnames as lower case hostnames.
+  So, this has been done by mysql_upgrade.
+  In case of above mentioned duplicate entries 
+  mysql_upgrade tries to change hostname to lowercase.
+  Since there is already 'root'@'localhost' exists.
+  it is failing with "duplicate entry" error.
+  
+  Fix: Since its a valid error failure. We are 
+  making the error more verbose. So, that user will
+  delete the duplicate errors manually.
+  Along with existing error we are printing below
+  error as well.
+  ERROR 1644 (45000) at line 1153: Multiple accounts exist for @user_name, @host_name that differ only in Host lettercase; remove all except one of them
+------------------------------------------------------------
+revno: 4692 [merge]
+author: 
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-07-31 12:30:05 +0200
+message:
+  Merge from mysql-5.5.39-release
+    ------------------------------------------------------------
+    revno: 4676.1.7
+    tags: mysql-5.5.39
+    committer: Ashish Agarwal<ashish.y.agarwal@oracle.com>
+    branch nick: revert_patch
+    timestamp: Sat 2014-07-19 11:24:21 +0530
+    message:
+      WL#7219: Reverting the wl#7219 patch in mysql-5.5.39-release branch 
