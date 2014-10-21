@@ -6198,7 +6198,7 @@ void TC_LOG_MMAP::get_active_from_pool()
   do
   {
     best_p= p= &pool;
-    if ((*p)->waiters == 0) // can the first page be used ?
+    if ((*p)->waiters == 0 && (*p)->free > 0) // can the first page be used ?
       break;                // yes - take it.
 
     best_free=0;            // no - trying second strategy
@@ -6212,6 +6212,9 @@ void TC_LOG_MMAP::get_active_from_pool()
     }
   }
   while ((*best_p == 0 || best_free == 0) && overflow());
+
+  mysql_mutex_assert_owner(&LOCK_active);
+  active=*best_p;
 
   /* Unlink the page from the pool. */
   if (!(*best_p)->next)
@@ -6316,7 +6319,6 @@ int TC_LOG_MMAP::log_xid(THD *thd, my_xid xid)
   *p->ptr++= xid;
   p->free--;
   p->state= PS_DIRTY;
-
   mysql_mutex_unlock(&p->lock);
 
   mysql_mutex_lock(&LOCK_sync);
@@ -6325,11 +6327,8 @@ int TC_LOG_MMAP::log_xid(THD *thd, my_xid xid)
     mysql_mutex_unlock(&LOCK_active);
     mysql_mutex_lock(&p->lock);
     p->waiters++;
-    for (;;)
+    while (p->state == PS_DIRTY && syncing)
     {
-      int not_dirty = p->state != PS_DIRTY;
-      if (not_dirty || !syncing)
-        break;
       mysql_mutex_unlock(&p->lock);
       mysql_cond_wait(&p->cond, &LOCK_sync);
       mysql_mutex_lock(&p->lock);
@@ -6378,7 +6377,7 @@ int TC_LOG_MMAP::sync()
     sit down and relax - this can take a while...
     note - no locks are held at this point
   */
-  err= my_msync(fd, syncing->start, 1, MS_SYNC);
+  err= my_msync(fd, syncing->start, syncing->size * sizeof(my_xid), MS_SYNC);
 
   /* page is synced. let's move it to the pool */
   mysql_mutex_lock(&LOCK_pool);
@@ -6393,6 +6392,14 @@ int TC_LOG_MMAP::sync()
   mysql_mutex_lock(&LOCK_sync);
   mysql_cond_broadcast(&syncing->cond);      // signal "sync done"
   syncing=0;
+  /*
+    we check the "active" pointer without LOCK_active. Still, it's safe -
+    "active" can change from NULL to not NULL any time, but it
+    will take LOCK_sync before waiting on active->cond. That is, it can never
+    miss a signal.
+    And "active" can change to NULL only by the syncing thread
+    (the thread that will send a signal below)
+  */
   if(active)
     mysql_cond_signal(&active->cond);        // wake up a new syncer
   mysql_mutex_unlock(&LOCK_sync);
