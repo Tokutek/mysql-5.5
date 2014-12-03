@@ -570,6 +570,7 @@ static SYMBOL symbols[] = {
   { "TOKUDB_LZMA",             SYM(TOKU_LZMA_SYM)},
   { "TOKUDB_FAST",             SYM(TOKU_FAST_SYM)},
   { "TOKUDB_SMALL",            SYM(TOKU_SMALL_SYM)},
+  { "TOKUDB_SNAPPY",           SYM(TOKU_SNAPPY_SYM)},
   { "TRAILING",		SYM(TRAILING)},
   { "TRANSACTION",	SYM(TRANSACTION_SYM)},
   { "TRIGGER",          SYM(TRIGGER_SYM)},
