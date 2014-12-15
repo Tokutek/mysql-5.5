@@ -1,0 +1,322 @@
+------------------------------------------------------------
+revno: 4736
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5.41-release
+timestamp: Tue 2014-11-04 08:30:23 +0100
+message:
+   Added sles11 repo packages
+------------------------------------------------------------
+revno: 4735
+tags: clone-5.5.41-build
+committer: mithun <mithun.c.y@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-11-03 18:10:28 +0530
+message:
+  Bug #19372926 : 5.5.38 FAILS FUNC_MATH MTR TEST.
+  
+  Issue :
+  -------
+  This seems for some platform -(LONGLONG_MIN) is
+  not flagged as out of range.
+  
+  Fix:
+  ----
+  Fix is backported from mysql-5.6 bug 14314156.
+  Fixed by adding an explicit test for this value in
+  Item_func_neg::int_op().
+------------------------------------------------------------
+revno: 4734
+committer: Marko Makela <marko.makela@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-10-30 08:53:46 +0200
+message:
+  Bug#19904003 INNODB_LIMIT_OPTIMISTIC_INSERT_DEBUG=1 CAUSES INFINITE PAGE SPLIT
+  
+  The debug configuration parameter innodb_optimistic_insert_debug
+  which was introduced for testing corner cases in B-tree handling
+  had a bug in it. The value 1 would trigger an infinite sequence
+  of page splits.
+  
+  Fix: When the value 1 is specified, disable this debug feature.
+  Approved by Yasufumi Kinoshita
+------------------------------------------------------------
+revno: 4733
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-10-29 16:53:53 +0530
+message:
+  Bug #19908343 SERVER CRASHES WHEN EXECUTING ALTER TABLE
+  
+  Problem:
+  
+  In the function dict_foreign_remove_from_cache(), the rb tree was updated
+  without actually verifying whether the given foreign key object is there in the
+  rb tree or not.  There can be an existing foreign key object with the same id 
+  in the rb tree, which must not be removed.  Such a scenario comes when an
+  attempt is made to add a foreign key object with a duplicate identifier.
+  
+  Solution:
+  
+  When the foreign key object is removed from the dictionary cache, ensure
+  that the foreign key object removed from the rbt is the correct one.
+  
+  rb#7168 approved by Jimmy and Marko.
+------------------------------------------------------------
+revno: 4732
+committer: Marko Makela <marko.makela@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-10-27 14:27:08 +0200
+message:
+  Bug#19584379 Reporting corruption may corrupt the innodb data dictionary
+  
+  dict_set_corrupted(): Use the canonical way of searching for
+  less-than-equal (PAGE_CUR_LE) and then checking low_match.
+  
+  The code that was introduced in MySQL 5.5.17 in
+      Bug#11830883 SUPPORT "CORRUPTED" BIT FOR INNODB TABLES AND INDEXES
+  could position the cursor on the page supremum, and then attempt
+  to overwrite non-existing 7th field of the 1-field supremum record.
+  
+  Approved by Jimmy Yang
+------------------------------------------------------------
+revno: 4731
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Thu 2014-10-23 06:56:47 +0200
+message:
+  Rpm 4.9 and newer is more strict regarding weekday in %changelog
+------------------------------------------------------------
+revno: 4730
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-10-21 16:19:47 +0200
+message:
+  Fix changelog entries build failure
+------------------------------------------------------------
+revno: 4729
+committer: Balasubramanian Kandasamy <balasubramanian.kandasamy@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-10-21 14:48:58 +0200
+message:
+  Bug#19775856: When the socket option is relative, mysqld startup script fails on CentOS 6
+------------------------------------------------------------
+revno: 4728
+committer: Arun Kuruvila <arun.kuruvila@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-10-21 16:25:35 +0530
+message:
+  Bug #16581605: REPLACE.EXE UTILITY IS BROKEN IN 5.5
+  
+  Description:- Replace, the string replacement utility fails
+  on the windows platform.
+  
+  Analysis:- The utility takes files and multiple string
+  pairs as input. In the windows platform, the utility maps
+  the standard input incorrectly (Considers 0 as the fd for
+  standard input instead of 2048 on windows). Hence when the
+  input file is supplied to the utility due to the incorrect
+  mapping, a bad file descriptor error is generated causing
+  the utility to exit with an error.
+  
+  Fix:- "my_fileno()" is used for getting the correct file
+  despscriptor for standard input.
+------------------------------------------------------------
+revno: 4727
+committer: Annamalai Gurusami <annamalai.gurusami@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-10-20 15:43:28 +0530
+message:
+  The test case innodb.foreign-keys is failing in pb2 5.5.  This is because
+  some of the tables are created in InnoDB and some tables are created in MyISAM.
+  We need to create all tables on InnoDB.  Fix is to add engine=innodb to the
+  CREATE TABLE statements.  
+  
+  approved in IM by Marko and Vasil.
+------------------------------------------------------------
+revno: 4726
+committer: Arun Kuruvila <arun.kuruvila@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-10-17 11:14:26 +0530
+message:
+  Bug #14486004 MYSQL_SETPERMISSION DOES NOT QUOTE USER NAMES
+  
+  Description: Certain operations using the client tool
+  'mysql\_setpermisson' which uses username of the format 
+  "xxx-yyy" results in a syntax error.
+  
+  Analysis: The user name variable ( $user ) was not quoted
+  properly in the 'mysql\_setpermission' script. As a result,
+  while granting user privileges for a user with username of
+  the format 'xxx-yyy', results in a syntax error.
+  
+  Fix: The escape sequence has been applied for the user
+  variable in the script file.
+  
+  Note: Test case is not added for this fix.
+  'mysql\_setpermission' executable resides in different
+  directories on pb2 machines and on local boxes. Hence the 
+  test case cannot be made generic.
+------------------------------------------------------------
+revno: 4725
+committer: Jon Olav Hauglid <jon.hauglid@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-10-13 09:52:28 +0200
+message:
+  Bug#17633291: SET PROPER COMPILE OPTIONS FOR CLANG
+  Bug#17959689: MAKE GCC AND CLANG GIVE CONSISTENT COMPILATION WARNINGS
+  Bug#18313717: ENABLE -WERROR IN MAINTANER MODE WHEN COMPILING WITH CLANG
+  Bug#18510941: REMOVE CMAKE WORKAROUNDS FOR OLDER VERSIONS OF OS X/XCODE
+    
+  Backport from mysql-5.6 to mysql-5.5
+------------------------------------------------------------
+revno: 4724
+committer: Venkatesh Duggirala<venkatesh.duggirala@oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-10-08 21:54:35 +0530
+message:
+  Bug #18808072 MYSQLBINLOG USES LOCALTIME() TO PRINT EVENTS, CAUSES KERNEL MUTEX CONTENTION
+  
+  Problem: For every event read, mysqlbinlog calls localtime() which in turn
+  calls stat(/etc/localtime) which is causing kernel mutex contention.
+  
+  Analysis and Fix:
+  localtime() calls stat(/etc/localtime) for every instance of the call
+  where as localtime_r() the reentrant version was optimized to store
+  the read only tz internal structure. Hence it will not call
+  stat(/etc/localtime). It will call only once at the beginning.
+  The mysql server is calling localtime_r() and mysqlbinlog tool is
+  one place where we are still using localtime().
+  
+  Once the process (mysqlbinlog) is started if timezone is changed
+  it will be not picked up the the process and it will continue
+  with the same values as the beginning of the process. This
+  behavior is in-lined with mysql server.
+  
+  Also adding localtime_r() and gmtime_r() support for windows.
+------------------------------------------------------------
+revno: 4723
+committer: Sujatha Sivakumar <sujatha.sivakumar@oracle.com>
+branch nick: Bug19145698_mysql-5.5
+timestamp: Wed 2014-10-08 10:50:02 +0530
+message:
+  Bug#19145698: READ OUT OF BOUNDS ISSUE
+  
+  Problem:
+  ========
+  In a master slave replication if a slave receives a
+  Start_log_event_v3 the payload is expected to be of fixed
+  size. If a payload which is smaller than the fixed size is
+  received it causes a read out of bounds issue.
+  
+  Analysis:
+  ========
+  According to documentation the fixed data part of
+  Start_log_event_v3 looks as shown below.
+  
+  2 bytes: The binary log format version
+  50 bytes: The MySQL server's version
+  4 bytes: Timestamp in seconds when this event was created
+  
+  Since the payload is expected to be of fixed size, therefore
+  ST_SERVER_VER_LEN (50) bytes are memcpy'ed into
+  server_version. But if a malicious master sends a shorter
+  payload it causes a read out of bounds issue.
+  
+  Fix:
+  ===
+  In Start_log_event_v3 event's constructor a check has been
+  added which expects the minimum payload length to be of size
+  common_header_len + ST_COMMON_HEADER_LEN_OFFSET bytes. If a
+  malicious packet of lesser length is received it will be
+  considered as an invalid event.
+------------------------------------------------------------
+revno: 4722
+committer: Jon Olav Hauglid <jon.hauglid@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-10-06 12:54:53 +0200
+message:
+  Create .gitignore as a copy of .bzrignore
+------------------------------------------------------------
+revno: 4721
+committer: magnus.blaudd@oracle.com
+branch nick: 5.5
+timestamp: Thu 2014-10-02 15:58:02 +0200
+message:
+  Bug#19553099 EXPIRE_LOGS_DAYS=1 CRASH MYSQLD DURING RESTART, DBUG_SYNC(NULL, ...)
+  
+   - Restarting mysqld with --expire-log-days=1 triggers 'log_in_use()' to be called while current_thd is NULL.
+   - Check current_thd before calling DEBUG_SYNC() to avoid passing NULL pointer to DEBUG_SYNC()
+   - Wrap debug code construct inside #ifndef DBUG_OFF like in other parts of the file
+------------------------------------------------------------
+revno: 4720
+committer: Kristofer Pettersson <kristofer.pettersson@oracle.com>
+branch nick: mysql-5.5
+timestamp: Mon 2014-09-29 10:17:38 +0200
+message:
+  Bug#19695101 UPGRADE YASSL TO 2.3.5
+------------------------------------------------------------
+revno: 4719
+committer: Sayantan Dutta <sayantan.dutta@oracle.com>
+branch nick: mysql-5.5
+timestamp: Fri 2014-09-26 11:50:07 +0530
+message:
+  Bug #18964545 - ADD MTR SUPPORT FOR DEBUGGING WITH LLDB revert
+------------------------------------------------------------
+revno: 4718
+committer: Bill Qu <bill.qu@Oracle.com>
+branch nick: mysql-5.5
+timestamp: Wed 2014-09-24 09:44:48 +0800
+message:
+  Bug #15868071 	USING SET GLOBAL SQL_LOG_BIN SHOULD NOT BE ALLOWED
+  
+  Normally, SET SESSION SQL_LOG_BIN is used by DBAs to run a
+  non-conflicting command locally only, ensuring it does not
+  get replicated.
+  Setting GLOBAL SQL_LOG_BIN would not require all sessions to
+  disconnect. When SQL_LOG_BIN is changed globally, it does not
+  immediately take effect for any sessions. It takes effect by
+  becoming the session-level default inherited at the start of
+  each new session, and this setting is kept and cached for the
+  duration of that session. Setting it intentionally is unlikely
+  to have a useful effect under any circumstance; setting it
+  unintentionally, such as while intending to use SET [SESSION]
+  is potentially disastrous. Accidentally using SET GLOBAL
+  SQL_LOG_BIN will not show an immediate effect to the user,
+  instead not having the desired session-level effect, and thus
+  causing other potential problems with local-only maintenance
+  being binlogged and executed on slaves; And transactions from
+  new sessions (after SQL_LOG_BIN is changed globally) are not
+  binlogged and replicated, which would result in irrecoverable
+  or difficult data loss.
+  This is the regular GLOBAL variables way to work, but in
+  replication context it does not look right on a working server
+  (with connected sessions) 'set global sql_log_bin' and none of
+  that connections is affected. Unexperienced DBA after noticing
+  that the command did "nothing" will change the session var and
+  most probably won't unset the global var, causing new sessions
+  to not be binlog.
+  Setting GLOBAL SQL_LOG_BIN allows DBA to stop binlogging on all
+  new sessions, which can be used to make a server "replication
+  read-only" without restarting the server. But this has such big
+  requirements, stop all existing connections, that it is more
+  likely to make a mess, it is too risky to allow the GLOBAL variable.
+  
+  The statement 'SET GLOBAL SQL_LOG_BIN=N' will produce an error
+  in 5.5, 5.6 and 5.7. Reading the GLOBAL SQL_LOG_BIN will produce
+  a deprecation warning in 5.7.
+------------------------------------------------------------
+revno: 4717 [merge]
+author: murthy.narkedimilli@oracle.com
+committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+branch nick: mysql-5.5
+timestamp: Tue 2014-09-23 08:51:23 +0200
+message:
+  Merge from mysql-5.5.40-release
+    ------------------------------------------------------------
+    revno: 4700.1.3
+    tags: mysql-5.5.40
+    committer: Murthy Narkedimilli <murthy.narkedimilli@oracle.com>
+    branch nick: mysql-5.5.40-release
+    timestamp: Mon 2014-09-08 11:33:55 +0200
+    message:
+      Adding patch for security bug 19471516
