@@ -16,7 +16,7 @@
 # Common warning flags for GCC, G++, Clang and Clang++
 SET(MY_WARNING_FLAGS "-Wall -Wextra -Wformat-security")
 MY_CHECK_C_COMPILER_FLAG("-Wvla" HAVE_WVLA) # Requires GCC 4.3+ or Clang
-IF(HAVE_WVLA)
+IF(MYSQL_MAINTAINER_MODE AND HAVE_WVLA)
   SET(MY_WARNING_FLAGS "${MY_WARNING_FLAGS} -Wvla")
 ENDIF()
 
