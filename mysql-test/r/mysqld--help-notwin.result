@@ -771,11 +771,6 @@ The following options may be given as the first argument:
  TokuDB file system space reserve (percent free required)
  --tokudb-fsync-log-period=# 
  TokuDB fsync log period
- --tokudb-gdb-on-fatal 
- TokuDB enable gdb debug info on fatal signal
- (Defaults to on; use --skip-tokudb-gdb-on-fatal to disable.)
- --tokudb-gdb-path=name 
- TokuDB path to gdb for extra debug info on fatal signal
  --tokudb-hide-default-row-format 
  hide the default row format
  (Defaults to on; use --skip-tokudb-hide-default-row-format to disable.)
@@ -1080,7 +1075,6 @@ tmp-table-size 16777216
 tokudb ON
 tokudb-alter-print-error FALSE
 tokudb-analyze-time 5
-tokudb-backup-throttle 18446744073709551615
 tokudb-block-size 4194304
 tokudb-bulk-fetch TRUE
 tokudb-cache-size 0
@@ -1103,8 +1097,6 @@ tokudb-disable-slow-upsert FALSE
 tokudb-empty-scan rl
 tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
-tokudb-gdb-on-fatal TRUE
-tokudb-gdb-path /usr/bin/gdb
 tokudb-hide-default-row-format TRUE
 tokudb-init-flags 11403457
 tokudb-killed-time 4000
