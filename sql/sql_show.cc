@@ -8402,3 +8402,28 @@ static void get_cs_converted_string_value(THD *thd,
   return;
 }
 #endif
+
+extern "C" int get_thread_query_string(my_thread_id id, String &qs) {
+    mysql_mutex_lock(&LOCK_thd_remove);
+    I_List_iterator<THD> it(threads);
+    THD* tmp;
+    while ((tmp= it++))
+    {
+      /* ID */
+      if (tmp->thread_id == id)
+      {
+        /* Lock THD mutex that protects its data when looking at it. */
+        mysql_mutex_lock(&tmp->LOCK_thd_data);
+
+        /* INFO */
+        if (tmp->query())
+        {
+          qs = String(tmp->query(), tmp->query_length(), system_charset_info);
+        }
+        mysql_mutex_unlock(&tmp->LOCK_thd_data);
+        break;
+      }
+    }
+    mysql_mutex_unlock(&LOCK_thd_remove);
+    return 0;
+}
