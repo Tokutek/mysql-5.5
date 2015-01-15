@@ -774,8 +774,6 @@ The following options may be given as the first argument:
  --tokudb-hide-default-row-format 
  hide the default row format
  (Defaults to on; use --skip-tokudb-hide-default-row-format to disable.)
- --tokudb-init-flags=# 
- Sets TokuDB DB_ENV->open flags
  --tokudb-killed-time=# 
  TokuDB killed time
  --tokudb-last-lock-timeout=name 
@@ -793,6 +791,12 @@ The following options may be given as the first argument:
  TokuDB Log Directory
  --tokudb-max-lock-memory=# 
  TokuDB max memory for locks
+ --tokudb-optimize-index-fraction=# 
+ optimize index fraction (default 1.0 all)
+ --tokudb-optimize-index-name=name 
+ optimize index name (default all indexes)
+ --tokudb-optimize-throttle=# 
+ optimize throttle (default no throttle)
  --tokudb-pk-insert-mode=# 
  set the primary key insert mode
  --tokudb-prelock-empty 
@@ -1098,7 +1102,6 @@ tokudb-empty-scan rl
 tokudb-fs-reserve-percent 5
 tokudb-fsync-log-period 0
 tokudb-hide-default-row-format TRUE
-tokudb-init-flags 11403457
 tokudb-killed-time 4000
 tokudb-last-lock-timeout (No default value)
 tokudb-load-save-space TRUE
@@ -1107,6 +1110,9 @@ tokudb-lock-timeout 4000
 tokudb-lock-timeout-debug 1
 tokudb-log-dir (No default value)
 tokudb-max-lock-memory 0
+tokudb-optimize-index-fraction 1
+tokudb-optimize-index-name (No default value)
+tokudb-optimize-throttle 0
 tokudb-pk-insert-mode 1
 tokudb-prelock-empty TRUE
 tokudb-read-block-size 65536
