@@ -62,9 +62,12 @@ static int rr_index_desc(READ_RECORD *info);
                       occurs (except for end-of-records error)
   @param idx          index to scan
   @param reverse      Scan in the reverse direction
+
+  @retval true   error
+  @retval false  success
 */
 
-void init_read_record_idx(READ_RECORD *info, THD *thd, TABLE *table,
+bool init_read_record_idx(READ_RECORD *info, THD *thd, TABLE *table,
                           bool print_error, uint idx, bool reverse)
 {
   int error;
@@ -83,10 +86,12 @@ void init_read_record_idx(READ_RECORD *info, THD *thd, TABLE *table,
   {
     if (print_error)
       table->file->print_error(error, MYF(0));
+    return true;
   }
 
   /* read_record will be changed to rr_index in rr_index_first */
   info->read_record= reverse ? rr_index_last : rr_index_first;
+  return false;
 }
 
 
@@ -174,12 +179,16 @@ void init_read_record_idx(READ_RECORD *info, THD *thd, TABLE *table,
   --------------
     This is the most basic access method of a table using rnd_init,
     rnd_next and rnd_end. No indexes are used.
+
+  @retval true   error
+  @retval false  success
 */
-void init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
+bool init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
 		      SQL_SELECT *select,
 		      int use_record_cache, bool print_error, 
                       bool disable_rr_cache)
 {
+  int error= 0;
   IO_CACHE *tempfile;
   DBUG_ENTER("init_read_record");
 
@@ -231,8 +240,9 @@ void init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
     info->io_cache=tempfile;
     reinit_io_cache(info->io_cache,READ_CACHE,0L,0,0);
     info->ref_pos=table->file->ref;
-    if (!table->file->inited)
-      table->file->ha_rnd_init(0);
+    if (!table->file->inited &&
+        (error= table->file->ha_rnd_init(0)))
+      goto err;
 
     /*
       table->sort.addon_field is checked because if we use addon fields,
@@ -269,7 +279,8 @@ void init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
   else if (table->sort.record_pointers)
   {
     DBUG_PRINT("info",("using record_pointers"));
-    table->file->ha_rnd_init(0);
+    if ((error= table->file->ha_rnd_init(0)))
+      goto err;
     info->cache_pos=table->sort.record_pointers;
     info->cache_end=info->cache_pos+ 
                     table->sort.found_records*info->ref_length;
@@ -280,7 +291,8 @@ void init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
   {
     DBUG_PRINT("info",("using rr_sequential"));
     info->read_record=rr_sequential;
-    table->file->ha_rnd_init(1);
+    if ((error= table->file->ha_rnd_init(1)))
+      goto err;
     /* We can use record cache if we don't update dynamic length tables */
     if (!table->no_cache &&
 	(use_record_cache > 0 ||
@@ -299,7 +311,12 @@ void init_read_record(READ_RECORD *info,THD *thd, TABLE *table,
       !table->file->pushed_cond)
     table->file->cond_push(select->cond);
 
-  DBUG_VOID_RETURN;
+  DBUG_RETURN(false);
+
+err:
+  if (print_error)
+    table->file->print_error(error, MYF(0));
+  DBUG_RETURN(true);
 } /* init_read_record */
 
 

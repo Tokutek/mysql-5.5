@@ -192,7 +192,8 @@ int search_topics(THD *thd, TABLE *topics, struct st_find_field *find_fields,
   int count= 0;
 
   READ_RECORD read_record_info;
-  init_read_record(&read_record_info, thd, topics, select, 1, 0, FALSE);
+  if (init_read_record(&read_record_info, thd, topics, select, 1, 0, FALSE))
+    DBUG_RETURN(0);
   while (!read_record_info.read_record(&read_record_info))
   {
     if (!select->cond->val_int())		// Doesn't match like
@@ -232,7 +233,8 @@ int search_keyword(THD *thd, TABLE *keywords, struct st_find_field *find_fields,
   int count= 0;
 
   READ_RECORD read_record_info;
-  init_read_record(&read_record_info, thd, keywords, select, 1, 0, FALSE);
+  if (init_read_record(&read_record_info, thd, keywords, select, 1, 0, FALSE))
+    DBUG_RETURN(0);
   while (!read_record_info.read_record(&read_record_info) && count<2)
   {
     if (!select->cond->val_int())		// Dosn't match like
@@ -364,7 +366,8 @@ int search_categories(THD *thd, TABLE *categories,
 
   DBUG_ENTER("search_categories");
 
-  init_read_record(&read_record_info, thd, categories, select,1,0,FALSE);
+  if (init_read_record(&read_record_info, thd, categories, select,1,0,FALSE))
+    DBUG_RETURN(0);
   while (!read_record_info.read_record(&read_record_info))
   {
     if (select && !select->cond->val_int())
@@ -398,7 +401,8 @@ void get_all_items_for_category(THD *thd, TABLE *items, Field *pfname,
   DBUG_ENTER("get_all_items_for_category");
 
   READ_RECORD read_record_info;
-  init_read_record(&read_record_info, thd, items, select,1,0,FALSE);
+  if (init_read_record(&read_record_info, thd, items, select,1,0,FALSE))
+    DBUG_VOID_RETURN;
   while (!read_record_info.read_record(&read_record_info))
   {
     if (!select->cond->val_int())

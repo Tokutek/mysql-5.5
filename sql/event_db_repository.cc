@@ -495,7 +495,8 @@ Event_db_repository::table_scan_all_for_i_s(THD *thd, TABLE *schema_table,
   READ_RECORD read_record_info;
   DBUG_ENTER("Event_db_repository::table_scan_all_for_i_s");
 
-  init_read_record(&read_record_info, thd, event_table, NULL, 1, 0, FALSE);
+  if (init_read_record(&read_record_info, thd, event_table, NULL, 1, 1, FALSE))
+    DBUG_RETURN(TRUE);
 
   /*
     rr_sequential, in read_record(), returns 137==HA_ERR_END_OF_FILE,
@@ -999,7 +1000,8 @@ Event_db_repository::drop_schema_events(THD *thd, LEX_STRING schema)
     DBUG_VOID_RETURN;
 
   /* only enabled events are in memory, so we go now and delete the rest */
-  init_read_record(&read_record_info, thd, table, NULL, 1, 0, FALSE);
+  if (init_read_record(&read_record_info, thd, table, NULL, 1, 1, FALSE))
+    DBUG_VOID_RETURN;
   while (!ret && !(read_record_info.read_record(&read_record_info)) )
   {
     char *et_field= get_field(thd->mem_root, table->field[field]);

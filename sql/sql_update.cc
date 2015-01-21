@@ -543,9 +543,15 @@ int mysql_update(THD *thd,
       */
 
       if (used_index == MAX_KEY || (select && select->quick))
-        init_read_record(&info, thd, table, select, 0, 1, FALSE);
+        error= init_read_record(&info, thd, table, select, 0, 1, FALSE);
       else
-        init_read_record_idx(&info, thd, table, 1, used_index, reverse);
+        error= init_read_record_idx(&info, thd, table, 1, used_index, reverse);
+
+      if (error)
+      {
+        close_cached_file(&tempfile);
+        goto err;
+      }
 
       thd_proc_info(thd, "Searching rows for update");
       ha_rows tmp_limit= limit;
@@ -620,7 +626,8 @@ int mysql_update(THD *thd,
   if (select && select->quick && select->quick->reset())
     goto err;
   table->file->try_semi_consistent_read(1);
-  init_read_record(&info, thd, table, select, 0, 1, FALSE);
+  if ((error= init_read_record(&info, thd, table, select, 0, 1, FALSE)))
+    goto err;
 
   updated= found= 0;
   /*

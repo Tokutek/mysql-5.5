@@ -269,10 +269,11 @@ bool mysql_delete(THD *thd, TABLE_LIST *table_list, COND *conds,
     DBUG_RETURN(TRUE);
   }
   if (usable_index==MAX_KEY || (select && select->quick))
-    init_read_record(&info, thd, table, select, 1, 1, FALSE);
+    error= init_read_record(&info, thd, table, select, 1, 1, FALSE);
   else
-    init_read_record_idx(&info, thd, table, 1, usable_index, reverse);
-
+    error= init_read_record_idx(&info, thd, table, 1, usable_index, reverse);
+  if (error)
+    goto exit_without_my_ok;
   init_ftfuncs(thd, select_lex, 1);
   thd_proc_info(thd, "updating");
 
@@ -418,6 +419,12 @@ cleanup:
     DBUG_PRINT("info",("%ld records deleted",(long) deleted));
   }
   DBUG_RETURN(error >= 0 || thd->is_error());
+
+exit_without_my_ok:
+  delete select;
+  free_underlaid_joins(thd, select_lex);
+  table->set_keyread(false);
+  DBUG_RETURN((error || thd->is_error() || thd->killed) ? 1 : 0);
 }
 
 
@@ -896,7 +903,8 @@ int multi_delete::do_table_deletes(TABLE *table, bool ignore)
   READ_RECORD info;
   ha_rows last_deleted= deleted;
   DBUG_ENTER("do_deletes_for_table");
-  init_read_record(&info, thd, table, NULL, 0, 1, FALSE);
+  if (init_read_record(&info, thd, table, NULL, 0, 1, FALSE))
+    DBUG_RETURN(1);
   /*
     Ignore any rows not found in reference tables as they may already have
     been deleted by foreign key handling
