@@ -724,8 +724,10 @@ The following options may be given as the first argument:
  OFF, FORCE (don't start if the plugin fails to load).
  --tokudb-alter-print-error 
  Print errors for alter table operations
+ --tokudb-analyze-delete-fraction=# 
+ fraction of rows allowed to be deleted
  --tokudb-analyze-time=# 
- analyze time
+ analyze time (seconds)
  --tokudb-block-size=# 
  fractal tree block size
  --tokudb-bulk-fetch enable bulk fetch
@@ -1081,6 +1083,7 @@ timed-mutexes FALSE
 tmp-table-size 16777216
 tokudb ON
 tokudb-alter-print-error FALSE
+tokudb-analyze-delete-fraction 1
 tokudb-analyze-time 5
 tokudb-block-size 4194304
 tokudb-bulk-fetch TRUE
